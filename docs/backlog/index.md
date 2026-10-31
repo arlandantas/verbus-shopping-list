@@ -27,10 +27,10 @@ Ordem = ordem de execução. Tudo até S-030 roda só com emuladores (sem input 
 | S-020 | M2 | Autocompletar a partir do catálogo | done | S-019 |
 | S-021 | M2 | Detalhe do item | done | S-019 |
 | S-013 | M1 | Projeto Firebase real e deploy manual (input: projeto + login) | todo | S-012 |
-| S-022 | M3 | Regras: `recurring` opcional no catálogo | todo | S-021 |
-| S-023 | M3 | Camada de dados: recorrentes e estado da Despensa | todo | S-022 |
-| S-024 | M3 | Tela Despensa / Recorrentes | todo | S-023 |
-| S-025 | M3 | Despensa: tornar recorrente e remover dos recorrentes | todo | S-024 |
+| S-022 | M3 | Regras: `recurring` opcional no catálogo | done | S-021 |
+| S-023 | M3 | Camada de dados: recorrentes e estado da Despensa | done | S-022 |
+| S-024 | M3 | Tela Despensa / Recorrentes | done | S-023 |
+| S-025 | M3 | Despensa: tornar recorrente e remover dos recorrentes | done | S-024 |
 | S-026 | M4 | Regras: `members` (perfil de membro) | todo | S-021 |
 | S-027 | M4 | Camada de dados: perfis de membro e nomes | todo | S-026 |
 | S-028 | M4 | Tela Modo mercado | todo | S-021 |
