@@ -1,17 +1,19 @@
 import { useState, type FormEvent } from 'react'
 import { AlreadyInFamily, InviteNotFound, joinFamilyByCode } from '@/data/families'
+import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { strings } from '@/strings/pt-BR'
 
 /** Join an existing family by typing the invite code; the family snapshot switches the screen. */
 export function JoinForm() {
   const [code, setCode] = useState('')
+  const online = useOnlineStatus()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const t = strings.family.join
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
-    if (!code.trim()) return
+    if (!code.trim() || !online) return
     setBusy(true)
     setError(null)
     try {
@@ -39,6 +41,7 @@ export function JoinForm() {
           onChange={(e) => setCode(e.target.value)}
         />
       </label>
+      {!online && <p className="text-red-700">{t.offlineWarning}</p>}
       {error && (
         <p role="alert" className="text-red-700">
           {error}
@@ -46,7 +49,7 @@ export function JoinForm() {
       )}
       <button
         type="submit"
-        disabled={busy || !code.trim()}
+        disabled={busy || !online || !code.trim()}
         className="min-h-12 w-full rounded border border-green-700 px-4 text-base font-medium text-green-800 disabled:opacity-50"
       >
         {busy ? t.submitting : t.submit}

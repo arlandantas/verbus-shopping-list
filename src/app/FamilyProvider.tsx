@@ -8,6 +8,7 @@ export type FamilyState =
   | { status: 'loading'; family: null }
   | { status: 'none'; family: null }
   | { status: 'ready'; family: Family }
+  | { status: 'error'; family: null; retry: () => void }
 
 const LOADING: FamilyState = { status: 'loading', family: null }
 const FamilyContext = createContext<FamilyState>(LOADING)
@@ -18,6 +19,8 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   const uid = user?.uid
   const [familyId, setFamilyId] = useState<string | null | undefined>(undefined)
   const [family, setFamily] = useState<Family | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     if (!uid) return
@@ -26,12 +29,18 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!familyId) return
-    return watchFamily(familyId, setFamily)
-  }, [familyId])
+    return watchFamily(familyId, setFamily, () => setFailed(true))
+  }, [familyId, attempt])
+
+  const retry = () => {
+    setFailed(false)
+    setAttempt((n) => n + 1)
+  }
 
   let state: FamilyState = LOADING
   if (familyId === null) state = { status: 'none', family: null }
   else if (familyId && family?.id === familyId) state = { status: 'ready', family }
+  else if (familyId && failed) state = { status: 'error', family: null, retry }
   return <FamilyContext.Provider value={state}>{children}</FamilyContext.Provider>
 }
 

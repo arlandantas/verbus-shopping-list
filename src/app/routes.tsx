@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import { useLocation } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
@@ -13,7 +13,7 @@ import { strings } from '@/strings/pt-BR'
 /** Signed out on an invite link: remember it, go log in (S-012). */
 function InviteLoginRedirect(): ReactNode {
   const { pathname } = useLocation()
-  saveReturnTo(pathname)
+  useEffect(() => saveReturnTo(pathname), [pathname])
   return <Navigate to="/entrar" replace />
 }
 
@@ -24,8 +24,22 @@ function AfterLogin({ fallback }: { fallback: string }): ReactNode {
 
 /** Signed-in routes, guarded by family membership: no family -> only /familia. */
 function FamilyRoutes(): ReactNode {
-  const { status } = useFamily()
+  const family = useFamily()
+  const { status } = family
   if (status === 'loading') return <p className="p-4">{strings.loading}</p>
+  if (status === 'error')
+    return (
+      <main className="mx-auto flex max-w-sm flex-col gap-4 p-4">
+        <p role="alert">{strings.loadError}</p>
+        <button
+          type="button"
+          onClick={family.retry}
+          className="min-h-12 w-full rounded bg-green-700 px-4 text-base font-medium text-white"
+        >
+          {strings.retry}
+        </button>
+      </main>
+    )
   return (
     <Routes>
       <Route

@@ -2,6 +2,8 @@ export const strings = {
   appTitle: 'Lista de Compras',
   offline: 'Sem conexão',
   loading: 'Carregando…',
+  loadError: 'Não foi possível carregar sua família. Verifique a conexão.',
+  retry: 'Tentar novamente',
   login: {
     email: 'E-mail',
     password: 'Senha',
@@ -25,6 +27,7 @@ export const strings = {
       submit: 'Entrar com código',
       submitting: 'Entrando…',
       notFound: 'Convite não encontrado',
+      offlineWarning: 'Você está offline. Conecte-se à internet para entrar na família.',
       error: 'Não foi possível entrar na família. Tente novamente.',
     },
     invite: {
@@ -41,6 +44,7 @@ export const strings = {
     confirm: 'Entrar na família',
     confirming: 'Entrando…',
     notFound: 'Convite não encontrado',
+    offlineWarning: 'Você está offline. Conecte-se à internet para entrar na família.',
     alreadyInFamily: 'Você já pertence a uma família. Convite não aplicado.',
     error: 'Não foi possível entrar na família. Tente novamente.',
     back: 'Voltar',

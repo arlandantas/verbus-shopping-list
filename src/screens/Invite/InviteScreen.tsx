@@ -8,6 +8,7 @@ import {
   getInvitePreview,
   joinFamilyByCode,
 } from '@/data/families'
+import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { strings } from '@/strings/pt-BR'
 
 type Preview =
@@ -27,6 +28,7 @@ export function InviteScreen() {
   const { code = '' } = useParams()
   const family = useFamily()
   const navigate = useNavigate()
+  const online = useOnlineStatus()
   const [preview, setPreview] = useState<Preview>({ state: 'loading' })
   const [joined, setJoined] = useState(joinPending)
   const [busy, setBusy] = useState(false)
@@ -56,6 +58,7 @@ export function InviteScreen() {
   }, [joined, family.status, navigate])
 
   async function confirm() {
+    if (!online) return
     setBusy(true)
     setJoinError(null)
     joinPending = true // before the write: the optimistic profile update flips family.status first
@@ -88,6 +91,7 @@ export function InviteScreen() {
     body = (
       <>
         <h1 className="min-h-12 text-xl">{strings.invite.title(preview.familyName)}</h1>
+        {!online && <p className="text-red-700">{strings.invite.offlineWarning}</p>}
         {joinError && (
           <p role="alert" className="text-red-700">
             {joinError}
@@ -95,7 +99,7 @@ export function InviteScreen() {
         )}
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || !online}
           onClick={() => void confirm()}
           className={`${button} bg-green-700 text-white disabled:opacity-50`}
         >

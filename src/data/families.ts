@@ -103,9 +103,14 @@ const WATCH_RETRIES = 5
 
 /**
  * Live family doc. A listener opened before a pending join/create is accepted server-side is
- * denied (not a member yet) and dies, so errors resubscribe with a short backoff.
+ * denied (not a member yet) and dies, so errors resubscribe with a short backoff;
+ * when retries run out `onError` fires so the caller can surface an error state.
  */
-export function watchFamily(id: string, cb: (family: Family | null) => void): Unsubscribe {
+export function watchFamily(
+  id: string,
+  cb: (family: Family | null) => void,
+  onError?: () => void,
+): Unsubscribe {
   const ref = doc(db, 'families', id).withConverter(familyConverter)
   let stopped = false
   let attempts = 0
@@ -121,7 +126,11 @@ export function watchFamily(id: string, cb: (family: Family | null) => void): Un
         cb(snap.exists() ? snap.data({ serverTimestamps: 'estimate' }) : null)
       },
       () => {
-        if (stopped || attempts >= WATCH_RETRIES) return
+        if (stopped) return
+        if (attempts >= WATCH_RETRIES) {
+          onError?.() // retries exhausted: let the UI leave `loading`
+          return
+        }
         attempts += 1
         timer = setTimeout(start, 300 * attempts)
       },

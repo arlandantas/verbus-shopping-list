@@ -5,6 +5,7 @@ import type { Family, UserProfile } from '@/data/converters'
 
 let emitUser: (u: UserProfile | null) => void = () => undefined
 let emitFamily: (f: Family | null) => void = () => undefined
+let failFamily: () => void = () => undefined
 const watchFamily = vi.fn()
 
 vi.mock('@/app/AuthProvider', () => ({
@@ -17,16 +18,22 @@ vi.mock('@/data/users', () => ({
   },
 }))
 vi.mock('@/data/families', () => ({
-  watchFamily: (id: string, cb: (f: Family | null) => void) => {
+  watchFamily: (id: string, cb: (f: Family | null) => void, onError?: () => void) => {
     watchFamily(id)
     emitFamily = cb
+    failFamily = onError ?? (() => undefined)
     return () => undefined
   },
 }))
 
 function Probe() {
-  const { status, family } = useFamily()
-  return <p>{`${status}:${family?.name ?? '-'}`}</p>
+  const state = useFamily()
+  return (
+    <>
+      <p>{`${state.status}:${state.family?.name ?? '-'}`}</p>
+      {state.status === 'error' && <button onClick={state.retry}>retry</button>}
+    </>
+  )
 }
 
 const profile = (familyId: string | null): UserProfile => ({
@@ -60,5 +67,21 @@ describe('FamilyProvider', () => {
       }),
     )
     expect(screen.getByText('ready:Casa')).toBeInTheDocument()
+  })
+
+  it('leaves loading with an error state when the family watch gives up, and retry resubscribes', () => {
+    watchFamily.mockClear()
+    render(
+      <FamilyProvider>
+        <Probe />
+      </FamilyProvider>,
+    )
+    act(() => emitUser(profile('f2')))
+    expect(watchFamily).toHaveBeenCalledTimes(1)
+    act(() => failFamily())
+    expect(screen.getByText('error:-')).toBeInTheDocument()
+    act(() => screen.getByText('retry').click())
+    expect(watchFamily).toHaveBeenCalledTimes(2)
+    expect(screen.getByText('loading:-')).toBeInTheDocument()
   })
 })
