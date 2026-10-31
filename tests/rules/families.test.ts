@@ -175,10 +175,10 @@ describe('S-007 AC6: deletes and unknown paths', () => {
     await assertFails(deleteDoc(doc(asUser(env, 'carol'), 'families/F1')))
   })
 
-  it('denies updating a family and writing items (out of scope)', async () => {
+  it('denies updating a family and writing to unknown subcollections', async () => {
     const db = asUser(env, 'alice')
     await assertFails(updateDoc(doc(db, 'families/F1'), { name: 'x' }))
-    await assertFails(setDoc(doc(db, 'families/F1/items/z'), { name: 'z' }))
+    await assertFails(setDoc(doc(db, 'families/F1/foo/z'), { name: 'z' }))
   })
 
   it('denies paths outside the model', async () => {

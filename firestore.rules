@@ -87,6 +87,48 @@ service cloud.firestore {
         && isMemberAfter(data.familyId);
     }
 
+    // Items shape (ADR-0008). UNITS must equal src/domain/units.ts.
+    function validItemShape(d) {
+      return d.keys().hasOnly(['name', 'nameKey', 'quantity', 'unit', 'note', 'categoryId',
+          'recurring', 'status', 'markedBy', 'markedAt', 'priceCents', 'createdBy', 'createdAt'])
+        && d.keys().hasAll(['name', 'nameKey', 'quantity', 'unit', 'note', 'categoryId',
+          'recurring', 'status', 'markedBy', 'markedAt', 'priceCents', 'createdBy', 'createdAt'])
+        && d.name is string && d.name.size() >= 1 && d.name.size() <= 80
+        && d.nameKey is string && d.nameKey.size() >= 1 && d.nameKey.size() <= 80
+        && d.nameKey.matches('^[a-z0-9]+( [a-z0-9]+)*$')
+        && d.quantity is number && d.quantity > 0 && d.quantity <= 9999
+        && d.unit in ['un', 'kg', 'g', 'l', 'ml', 'pct', 'cx', 'dz']
+        && (d.note == null || (d.note is string && d.note.size() <= 120))
+        && (d.categoryId == null
+          || (d.categoryId is string && d.categoryId.size() >= 1 && d.categoryId.size() <= 40))
+        && d.recurring is bool
+        && d.status in ['pending', 'bought']
+        && (d.markedBy == null || d.markedBy is string)
+        && (d.markedAt == null || d.markedAt is timestamp)
+        && (d.priceCents == null
+          || (d.priceCents is int && d.priceCents >= 0 && d.priceCents <= 10000000))
+        && d.createdBy is string;
+    }
+
+    function validItemCreate(d) {
+      return validItemShape(d)
+        && d.status == 'pending'
+        && d.markedBy == null && d.markedAt == null && d.priceCents == null
+        && d.createdBy == request.auth.uid
+        && d.createdAt == request.time;
+    }
+
+    function validItemUpdate(before, after) {
+      return validItemShape(after)
+        && after.createdBy == before.createdBy
+        && after.createdAt == before.createdAt
+        && (!after.diff(before).affectedKeys().hasAny(['status', 'markedBy', 'markedAt'])
+          || (after.status == 'bought'
+            && after.markedBy == request.auth.uid
+            && after.markedAt == request.time)
+          || (after.status == 'pending' && after.markedBy == null && after.markedAt == null));
+    }
+
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && validUser(request.resource.data)
@@ -105,10 +147,12 @@ service cloud.firestore {
       allow update: if validJoin(familyId);
       allow delete: if false;
 
-      // Item shape validation arrives in M2; for now members may only read.
-      match /{sub=**} {
+      match /items/{itemId} {
         allow read: if isMember(familyId);
-        allow write: if false;
+        allow create: if isMember(familyId) && validItemCreate(request.resource.data);
+        allow update: if isMember(familyId)
+          && validItemUpdate(resource.data, request.resource.data);
+        allow delete: if isMember(familyId);
       }
     }
 
