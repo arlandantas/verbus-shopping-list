@@ -3,7 +3,7 @@ import {
   assertSucceeds,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { doc, getDoc, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, writeBatch } from 'firebase/firestore'
 import { asUser, seed, setupEnv } from './support'
 
 let env: RulesTestEnvironment
@@ -55,12 +55,7 @@ function join(
   const db = asUser(env, uid)
   const b = writeBatch(db)
   b.update(doc(db, `families/${familyId}`), { members, joinCode: 'ABCD2345', ...fam })
-  b.set(doc(db, `users/${uid}`), {
-    displayName: 'Carol',
-    email: 'c@x.com',
-    familyId: userFamily,
-    createdAt: serverTimestamp(),
-  })
+  b.update(doc(db, `users/${uid}`), { familyId: userFamily })
   return b.commit()
 }
 
@@ -127,14 +122,7 @@ describe('S-008 AC4: joining is denied when abusive', () => {
 
   it('denies pointing the profile at a family that was not joined', async () => {
     const db = asUser(env, 'carol')
-    await assertFails(
-      setDoc(doc(db, 'users/carol'), {
-        displayName: 'Carol',
-        email: 'c@x.com',
-        familyId: 'F1',
-        createdAt: serverTimestamp(),
-      }),
-    )
+    await assertFails(updateDoc(doc(db, 'users/carol'), { familyId: 'F1' }))
   })
 })
 

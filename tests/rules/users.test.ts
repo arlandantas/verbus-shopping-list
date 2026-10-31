@@ -69,6 +69,27 @@ describe('S-007 AC2: users shape', () => {
   })
 })
 
+describe('users.createdAt is pinned', () => {
+  it('denies a client-chosen createdAt on create', async () => {
+    const db = asUser(env, 'alice')
+    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), createdAt: new Date(0) }))
+  })
+
+  it('allows an update that leaves createdAt unchanged', async () => {
+    const db = asUser(env, 'alice')
+    await assertSucceeds(setDoc(doc(db, 'users/alice'), profile()))
+    const { createdAt } = (await getDoc(doc(db, 'users/alice'))).data()!
+    await assertSucceeds(updateDoc(doc(db, 'users/alice'), { displayName: 'Ali', createdAt }))
+  })
+
+  it('denies changing createdAt on update', async () => {
+    const db = asUser(env, 'alice')
+    await assertSucceeds(setDoc(doc(db, 'users/alice'), profile()))
+    await assertFails(updateDoc(doc(db, 'users/alice'), { createdAt: new Date(0) }))
+    await assertFails(updateDoc(doc(db, 'users/alice'), { createdAt: serverTimestamp() }))
+  })
+})
+
 describe('S-007 AC5: users.familyId requires membership', () => {
   const fam = () => ({
     name: 'Casa',
