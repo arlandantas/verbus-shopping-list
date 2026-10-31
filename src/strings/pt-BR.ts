@@ -1,4 +1,31 @@
 export const strings = {
   appTitle: 'Lista de Compras',
   offline: 'Sem conexão',
+  loading: 'Carregando…',
+  login: {
+    email: 'E-mail',
+    password: 'Senha',
+    signIn: 'Entrar',
+    signUp: 'Criar conta',
+    google: 'Entrar com Google',
+    signOut: 'Sair',
+  },
+  family: {
+    title: 'Família',
+  },
+  authErrors: {
+    'auth/invalid-credential': 'E-mail ou senha incorretos.',
+    'auth/wrong-password': 'E-mail ou senha incorretos.',
+    'auth/user-not-found': 'E-mail ou senha incorretos.',
+    'auth/invalid-email': 'E-mail inválido.',
+    'auth/missing-password': 'Informe a senha.',
+    'auth/email-already-in-use': 'Este e-mail já está cadastrado.',
+    'auth/weak-password': 'A senha é muito fraca. Use ao menos 6 caracteres.',
+    'auth/too-many-requests': 'Muitas tentativas. Tente novamente em instantes.',
+    'auth/network-request-failed': 'Sem conexão. Verifique sua internet.',
+    'auth/popup-closed-by-user': 'Login com Google cancelado.',
+    'auth/cancelled-popup-request': 'Login com Google cancelado.',
+    'auth/popup-blocked': 'O navegador bloqueou a janela de login.',
+    unknown: 'Não foi possível entrar. Tente novamente.',
+  },
 } as const
