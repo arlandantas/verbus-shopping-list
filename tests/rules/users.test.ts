@@ -74,6 +74,7 @@ describe('S-007 AC5: users.familyId requires membership', () => {
     name: 'Casa',
     members: ['alice'],
     ownerId: 'alice',
+    inviteCode: 'ABCD2345',
     createdAt: serverTimestamp(),
   })
 
@@ -81,6 +82,11 @@ describe('S-007 AC5: users.familyId requires membership', () => {
     const db = asUser(env, 'alice')
     const b = writeBatch(db)
     b.set(doc(db, 'families/F1'), fam())
+    b.set(doc(db, 'invites/ABCD2345'), {
+      familyId: 'F1',
+      createdBy: 'alice',
+      createdAt: serverTimestamp(),
+    })
     b.set(doc(db, 'users/alice'), { ...profile(), familyId: 'F1' })
     await assertSucceeds(b.commit())
   })

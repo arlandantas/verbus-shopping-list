@@ -3,7 +3,15 @@ import {
   assertSucceeds,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import {
+  deleteDoc,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore'
 import { anon, asUser, seed, setupEnv } from './support'
 
 let env: RulesTestEnvironment
@@ -28,38 +36,61 @@ const fam = (over: Record<string, unknown> = {}) => ({
   name: 'Nova',
   members: ['carol'],
   ownerId: 'carol',
+  inviteCode: 'ABCD2345',
   createdAt: serverTimestamp(),
   ...over,
 })
 
+/** Creates family `id` plus its invite in one batch, as the client does (ADR-0003). */
+function createFamily(uid: string, id: string, data: Record<string, unknown>, code = 'ABCD2345') {
+  const db = asUser(env, uid)
+  const b = writeBatch(db)
+  b.set(doc(db, `families/${id}`), data)
+  b.set(doc(db, `invites/${code}`), { familyId: id, createdBy: uid, createdAt: serverTimestamp() })
+  return b.commit()
+}
+
 describe('S-007 AC3: creating families', () => {
   it('allows a valid create with the creator as sole member', async () => {
-    await assertSucceeds(setDoc(doc(asUser(env, 'carol'), 'families/F3'), fam()))
-    await assertSucceeds(
-      setDoc(doc(asUser(env, 'carol'), 'families/F4'), fam({ inviteCode: 'ABCD2345' })),
-    )
+    await assertSucceeds(createFamily('carol', 'F3', fam()))
+    await assertSucceeds(createFamily('carol', 'F4', fam({ inviteCode: 'WXYZ6789' }), 'WXYZ6789'))
+  })
+
+  it('S-008: requires an inviteCode matching an invite created in the same batch', async () => {
+    const db = asUser(env, 'carol')
+    const noCode: Record<string, unknown> = fam()
+    delete noCode.inviteCode
+    await assertFails(createFamily('carol', 'F3', noCode))
+    await assertFails(setDoc(doc(db, 'families/F3'), fam())) // invite missing
+    await assertFails(createFamily('carol', 'F3', fam({ inviteCode: 'short' })))
+    await assertFails(createFamily('carol', 'F3', fam({ inviteCode: 'ABCD0345' }), 'ABCD0345'))
+    // invite pointing at another family
+    const b = writeBatch(db)
+    b.set(doc(db, 'families/F3'), fam())
+    b.set(doc(db, 'invites/ABCD2345'), {
+      familyId: 'F1',
+      createdBy: 'carol',
+      createdAt: serverTimestamp(),
+    })
+    await assertFails(b.commit())
   })
 
   it('denies members with another uid or extra uids', async () => {
-    const db = asUser(env, 'carol')
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ members: ['dave'] })))
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ members: ['carol', 'dave'] })))
+    await assertFails(createFamily('carol', 'F3', fam({ members: ['dave'] })))
+    await assertFails(createFamily('carol', 'F3', fam({ members: ['carol', 'dave'] })))
   })
 
   it('denies a foreign ownerId, bad name, extra key and anonymous create', async () => {
-    const db = asUser(env, 'carol')
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ ownerId: 'dave' })))
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ name: '' })))
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ name: 'x'.repeat(61) })))
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ name: 5 })))
-    await assertFails(setDoc(doc(db, 'families/F3'), fam({ extra: 1 })))
+    await assertFails(createFamily('carol', 'F3', fam({ ownerId: 'dave' })))
+    await assertFails(createFamily('carol', 'F3', fam({ name: '' })))
+    await assertFails(createFamily('carol', 'F3', fam({ name: 'x'.repeat(61) })))
+    await assertFails(createFamily('carol', 'F3', fam({ name: 5 })))
+    await assertFails(createFamily('carol', 'F3', fam({ extra: 1 })))
     await assertFails(setDoc(doc(anon(env), 'families/F3'), fam()))
   })
 
   it('accepts a 60-char name', async () => {
-    await assertSucceeds(
-      setDoc(doc(asUser(env, 'carol'), 'families/F3'), fam({ name: 'x'.repeat(60) })),
-    )
+    await assertSucceeds(createFamily('carol', 'F3', fam({ name: 'x'.repeat(60) })))
   })
 })
 
