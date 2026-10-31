@@ -23,7 +23,7 @@ function Section({
   title: string
   items: Item[]
   onToggle: (item: Item) => void
-  names: Record<string, string>
+  names: Record<string, string> | null
   uid: string | undefined
 }) {
   if (items.length === 0) return null

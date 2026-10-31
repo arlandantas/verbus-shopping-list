@@ -37,6 +37,7 @@ export function PantryRow({
       </button>
       <button
         type="button"
+        aria-label={strings.pantry.removeRecurringFor(entry.name)}
         onClick={() => onRemove(row)}
         className="min-h-12 px-3 text-sm text-gray-700 underline"
       >

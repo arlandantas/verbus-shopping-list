@@ -88,6 +88,8 @@ export const strings = {
     othersTitle: 'Outros itens já usados',
     makeRecurring: 'Tornar recorrente',
     removeRecurring: 'Remover dos recorrentes',
+    makeRecurringFor: (name: string) => `Tornar recorrente: ${name}`,
+    removeRecurringFor: (name: string) => `Remover dos recorrentes: ${name}`,
     empty:
       'Nenhum item recorrente. Abra um item da lista e marque "Recorrente mensal" para ele aparecer aqui.',
   },

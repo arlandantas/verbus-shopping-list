@@ -59,7 +59,7 @@ describe('S-024 PantryScreen', () => {
   it('AC2: atHome row adds the catalog quantity/unit/category as recurring', () => {
     catalog = [entry('Feijão')]
     renderIt()
-    const btn = screen.getByRole('button', { name: /Feijão/ })
+    const btn = screen.getByRole('button', { name: /^Feijão/ })
     expect(btn).toHaveAttribute('aria-pressed', 'false')
     expect(btn).toHaveTextContent(strings.pantry.atHome)
     fireEvent.click(btn)
@@ -76,7 +76,7 @@ describe('S-024 PantryScreen', () => {
     catalog = [entry('Feijão')]
     items = [item('Feijão', 'pending', 'p9')]
     renderIt()
-    const btn = screen.getByRole('button', { name: /Feijão/ })
+    const btn = screen.getByRole('button', { name: /^Feijão/ })
     expect(btn).toHaveAttribute('aria-pressed', 'true')
     expect(btn).toHaveTextContent(strings.pantry.missing)
     fireEvent.click(btn)
@@ -87,7 +87,7 @@ describe('S-024 PantryScreen', () => {
     catalog = [entry('Feijão')]
     items = [item('Feijão', 'bought')]
     renderIt()
-    const btn = screen.getByRole('button', { name: /Feijão/ })
+    const btn = screen.getByRole('button', { name: /^Feijão/ })
     expect(btn).toBeDisabled()
     expect(btn).toHaveTextContent(strings.pantry.inCart)
   })
@@ -101,7 +101,7 @@ describe('S-025 PantryScreen', () => {
     const list = screen.getByRole('list', { name: strings.pantry.othersTitle })
     expect(list).toHaveTextContent('Sal')
     expect(list).not.toHaveTextContent('Feijão')
-    fireEvent.click(screen.getByRole('button', { name: strings.pantry.makeRecurring }))
+    fireEvent.click(screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') }))
     expect(h.setRecurring).toHaveBeenCalledWith('f1', 'sal', true, items)
   })
 
@@ -109,7 +109,9 @@ describe('S-025 PantryScreen', () => {
     catalog = [entry('Feijão')]
     items = [item('Feijão', 'pending', 'p1')]
     renderIt()
-    fireEvent.click(screen.getByRole('button', { name: strings.pantry.removeRecurring }))
+    fireEvent.click(
+      screen.getByRole('button', { name: strings.pantry.removeRecurringFor('Feijão') }),
+    )
     expect(h.setRecurring).toHaveBeenCalledWith('f1', 'feijão', false, items)
   })
 })

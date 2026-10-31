@@ -24,6 +24,7 @@ export function CatalogPicker({
             <span>{entry.name}</span>
             <button
               type="button"
+              aria-label={strings.pantry.makeRecurringFor(entry.name)}
               onClick={() => onPromote(entry)}
               className="min-h-12 px-2 text-sm underline"
             >

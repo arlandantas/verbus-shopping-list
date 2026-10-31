@@ -17,6 +17,10 @@ describe('S-029 AC1: MarkedBy', () => {
     render(<MarkedBy status="bought" markedBy="u9" names={names} uid="u2" />)
     expect(screen.getByText('por alguém')).toBeInTheDocument()
   })
+  it('S-029 AC1: renders nothing while member names are loading', () => {
+    const { container } = render(<MarkedBy status="bought" markedBy="u1" names={null} uid="u2" />)
+    expect(container).toBeEmptyDOMElement()
+  })
   it('renders nothing for a pending item', () => {
     const { container } = render(
       <MarkedBy status="pending" markedBy={null} names={names} uid="u1" />,

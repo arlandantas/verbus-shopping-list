@@ -12,7 +12,7 @@ export function ItemRow({
 }: {
   item: Item
   onToggle: (item: Item) => void
-  names: Record<string, string>
+  names: Record<string, string> | null
   uid: string | undefined
 }) {
   const bought = item.status === 'bought'

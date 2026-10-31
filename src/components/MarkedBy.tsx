@@ -9,10 +9,11 @@ export function MarkedBy({
 }: {
   status: 'pending' | 'bought'
   markedBy: string | null
-  names: Record<string, string>
+  names: Record<string, string> | null
   uid: string | undefined
 }) {
   if (status !== 'bought') return null
+  if (!names) return null // names still loading: avoid flashing "por alguém"
   const text =
     markedBy && markedBy === uid
       ? strings.markedBy.you
