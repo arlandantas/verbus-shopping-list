@@ -21,7 +21,11 @@ This file follows the AGENTS.md convention and is the single entry point for any
 | any test file | `docs/rules/testing.md` |
 
 ## Commands
-(filled by the M0 story — keep this list ≤10 lines)
+- `pnpm install` — install deps (CI: `--frozen-lockfile`)
+- `pnpm dev` — Vite dev server
+- `pnpm build` — typecheck + production build
+- `pnpm typecheck` — `tsc --noEmit` (strict)
+- `pnpm test` — Vitest (unit project)
 
 ## Size limits (split before exceeding)
 AGENTS.md ≤80 lines · spec ≤120 · story ≤60 · ADR ≤40 · STATE ≤40 · source file ≤300.
