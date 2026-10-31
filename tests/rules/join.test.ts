@@ -55,6 +55,8 @@ beforeEach(async () => {
       createdBy: 'm0',
       createdAt: new Date(),
     },
+    'users/alice': { displayName: 'A', email: 'a@x.com', familyId: 'F1', createdAt: new Date() },
+    'users/bob': { displayName: 'B', email: 'b@x.com', familyId: 'F2', createdAt: new Date() },
     'users/carol': {
       displayName: 'Carol',
       email: 'c@x.com',
@@ -143,6 +145,23 @@ describe('S-008 AC4: joining is denied when abusive', () => {
   it('denies pointing the profile at a family that was not joined', async () => {
     const db = asUser(env, 'carol')
     await assertFails(updateDoc(doc(db, 'users/carol'), { familyId: 'F1' }))
+  })
+})
+
+describe('S-014 AC3: joining requires the profile null -> family in the same batch', () => {
+  it('denies joining without updating the profile', async () => {
+    const db = asUser(env, 'carol')
+    await assertFails(
+      updateDoc(doc(db, 'families/F1'), { members: ['alice', 'carol'], joinCode: 'ABCD2345' }),
+    )
+  })
+
+  it('denies a user who already has a family joining another', async () => {
+    await assertFails(join('bob', 'F1', ['alice', 'bob']))
+  })
+
+  it('denies joining when the profile does not exist', async () => {
+    await assertFails(join('erin', 'F1', ['alice', 'erin']))
   })
 })
 

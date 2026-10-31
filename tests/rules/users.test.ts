@@ -100,6 +100,7 @@ describe('S-007 AC5: users.familyId requires membership', () => {
   })
 
   it('allows setting familyId in a batch that creates the family', async () => {
+    await seed(env, { 'users/alice': { ...profile(), createdAt: new Date() } })
     const db = asUser(env, 'alice')
     const b = writeBatch(db)
     b.set(doc(db, 'families/F1'), fam())
@@ -109,7 +110,7 @@ describe('S-007 AC5: users.familyId requires membership', () => {
       createdBy: 'alice',
       createdAt: serverTimestamp(),
     })
-    b.set(doc(db, 'users/alice'), { ...profile(), familyId: 'F1' })
+    b.update(doc(db, 'users/alice'), { familyId: 'F1' })
     await assertSucceeds(b.commit())
   })
 
@@ -124,5 +125,42 @@ describe('S-007 AC5: users.familyId requires membership', () => {
   it('denies setting familyId to a nonexistent family', async () => {
     const db = asUser(env, 'alice')
     await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), familyId: 'nope' }))
+  })
+})
+
+describe('S-014 AC1: familyId only moves from null to a family', () => {
+  const stored = (familyId: string | null) => ({
+    'users/alice': { ...profile(), familyId, createdAt: new Date() },
+    'families/F1': { name: 'Casa', members: ['alice'], ownerId: 'alice', createdAt: new Date() },
+    'families/F2': { name: 'Outra', members: ['alice'], ownerId: 'alice', createdAt: new Date() },
+  })
+
+  it('allows null -> family where the user is a member', async () => {
+    await seed(env, stored(null))
+    await assertSucceeds(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { familyId: 'F1' }))
+  })
+
+  it('denies F1 -> F2, even when a member of both', async () => {
+    await seed(env, stored('F1'))
+    await assertFails(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { familyId: 'F2' }))
+  })
+
+  it('denies F1 -> null', async () => {
+    await seed(env, stored('F1'))
+    await assertFails(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { familyId: null }))
+  })
+
+  it('allows other fields to change while familyId stays', async () => {
+    await seed(env, stored('F1'))
+    await assertSucceeds(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { displayName: 'Z' }))
+  })
+
+  it('denies creating a profile that already carries a familyId', async () => {
+    await seed(env, stored(null))
+    await env.clearFirestore()
+    await seed(env, { 'families/F1': stored(null)['families/F1'] })
+    await assertFails(
+      setDoc(doc(asUser(env, 'alice'), 'users/alice'), { ...profile(), familyId: 'F1' }),
+    )
   })
 })

@@ -21,6 +21,16 @@ service cloud.firestore {
         && request.auth.uid in getAfter(/databases/$(database)/documents/families/$(familyId)).data.members;
     }
 
+    function userRef(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    // One family per user (S-014): profile goes null -> familyId, in the same batch.
+    function profileJoins(familyId) {
+      return get(userRef(request.auth.uid)).data.familyId == null
+        && getAfter(userRef(request.auth.uid)).data.familyId == familyId;
+    }
+
     function validUser(data) {
       return data.keys().hasOnly(['displayName', 'email', 'familyId', 'createdAt'])
         && data.keys().hasAll(['displayName', 'email', 'familyId', 'createdAt'])
@@ -47,7 +57,8 @@ service cloud.firestore {
         && validCode(data.inviteCode)
         && getAfter(/databases/$(database)/documents/invites/$(data.inviteCode)).data.familyId == familyId
         && getAfter(/databases/$(database)/documents/invites/$(data.inviteCode)).data.createdBy == request.auth.uid
-        && data.createdAt == request.time;
+        && data.createdAt == request.time
+        && profileJoins(familyId);
     }
 
     function validJoin(familyId) {
@@ -59,7 +70,8 @@ service cloud.firestore {
         && after.members == before.members.concat([request.auth.uid])
         && after.members.size() <= 10
         && validCode(after.joinCode)
-        && get(/databases/$(database)/documents/invites/$(after.joinCode)).data.familyId == familyId;
+        && get(/databases/$(database)/documents/invites/$(after.joinCode)).data.familyId == familyId
+        && profileJoins(familyId);
     }
 
     function validInvite(data, code) {
@@ -78,9 +90,12 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && validUser(request.resource.data)
+        && request.resource.data.familyId == null
         && request.resource.data.createdAt == request.time;
       allow update: if isOwner(uid) && validUser(request.resource.data)
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && request.resource.data.createdAt == resource.data.createdAt
+        && (resource.data.familyId == null
+          || request.resource.data.familyId == resource.data.familyId);
       allow delete: if false;
     }
 

@@ -29,6 +29,8 @@ beforeEach(async () => {
     'families/F1/items/x': { name: 'leite' },
     'families/F2': { name: 'Outra', members: ['bob'], ownerId: 'bob', createdAt: new Date() },
     'families/F2/items/y': { name: 'pao' },
+    'users/alice': { displayName: 'A', email: 'a@x.com', familyId: 'F1', createdAt: new Date() },
+    'users/carol': { displayName: 'C', email: 'c@x.com', familyId: null, createdAt: new Date() },
   })
 })
 
@@ -48,6 +50,7 @@ function createFamily(
   data: Record<string, unknown>,
   code = 'ABCD2345',
   familyName: unknown = data.name,
+  profile: boolean = true,
 ) {
   const db = asUser(env, uid)
   const b = writeBatch(db)
@@ -58,13 +61,13 @@ function createFamily(
     createdBy: uid,
     createdAt: serverTimestamp(),
   })
+  if (profile) b.update(doc(db, `users/${uid}`), { familyId: id })
   return b.commit()
 }
 
 describe('S-007 AC3: creating families', () => {
   it('allows a valid create with the creator as sole member', async () => {
-    await assertSucceeds(createFamily('carol', 'F3', fam()))
-    await assertSucceeds(createFamily('carol', 'F4', fam({ inviteCode: 'WXYZ6789' }), 'WXYZ6789'))
+    await assertSucceeds(createFamily('carol', 'F3', fam({ inviteCode: 'WXYZ6789' }), 'WXYZ6789'))
   })
 
   it('S-008: requires an inviteCode matching an invite created in the same batch', async () => {
@@ -109,6 +112,35 @@ describe('S-007 AC3: creating families', () => {
 
   it('accepts a 60-char name', async () => {
     await assertSucceeds(createFamily('carol', 'F3', fam({ name: 'x'.repeat(60) })))
+  })
+})
+
+describe('S-014 AC2: creating a family updates the profile in the same batch', () => {
+  it('denies creating without updating the profile', async () => {
+    await assertFails(createFamily('carol', 'F3', fam(), 'ABCD2345', 'Nova', false))
+  })
+
+  it('denies a profile pointing at a different family than the one created', async () => {
+    const db = asUser(env, 'carol')
+    const b = writeBatch(db)
+    b.set(doc(db, 'families/F3'), fam())
+    b.set(doc(db, 'invites/ABCD2345'), {
+      familyId: 'F3',
+      familyName: 'Nova',
+      createdBy: 'carol',
+      createdAt: serverTimestamp(),
+    })
+    b.update(doc(db, 'users/carol'), { familyId: 'F1' })
+    await assertFails(b.commit())
+  })
+
+  it('denies a user who already has a family creating another', async () => {
+    const data = fam({ members: ['alice'], ownerId: 'alice' })
+    await assertFails(createFamily('alice', 'F3', data))
+  })
+
+  it('denies creating when the user profile does not exist', async () => {
+    await assertFails(createFamily('erin', 'F3', fam({ members: ['erin'], ownerId: 'erin' })))
   })
 })
 
