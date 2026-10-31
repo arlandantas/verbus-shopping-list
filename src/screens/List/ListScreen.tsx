@@ -45,10 +45,10 @@ export function ListScreen() {
 
   const onAdd = (text: string) => {
     const parsed = parseItemText(text)
-    if (parsed) void addItem(familyId, parsed)
+    if (parsed) addItem(familyId, parsed)
   }
   const onPick = (entry: CatalogEntry, typed: ParsedItem | null) => {
-    void addItem(familyId, {
+    addItem(familyId, {
       name: entry.name,
       quantity: typed?.quantity ?? entry.quantity,
       unit: typed?.unit ?? entry.unit,

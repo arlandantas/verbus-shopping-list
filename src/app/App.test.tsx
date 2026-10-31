@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
+import { reportWriteError } from '@/data/writeErrors'
 import { App } from '@/app/App'
 import { strings } from '@/strings/pt-BR'
 
@@ -28,5 +29,12 @@ describe('App', () => {
   it('S-001 AC3: renders the title from pt-BR strings', async () => {
     render(<App />)
     expect(await screen.findByRole('heading', { name: strings.appTitle })).toBeInTheDocument()
+  })
+
+  it('ADR-0004: registers the write-error handler at the root (pt-BR alert)', async () => {
+    render(<App />)
+    await screen.findByRole('heading', { name: strings.appTitle })
+    act(() => reportWriteError(new Error('permission-denied')))
+    expect(screen.getByRole('alert')).toHaveTextContent(strings.writeError)
   })
 })

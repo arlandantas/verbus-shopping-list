@@ -24,6 +24,11 @@ describe('S-020 AC1: suggest', () => {
     expect(r.map((e) => e.name)).toEqual(['Feijão preto', 'feijão', 'caldo de feijão'])
   })
 
+  it('matches multi-word queries mid-name ("de fei" -> caldo de feijão)', () => {
+    const r = suggest(entries, 'de fei', new Set())
+    expect(r.map((e) => e.name)).toEqual(['caldo de feijão'])
+  })
+
   it('returns [] for queries shorter than 2 characters', () => {
     expect(suggest(entries, 'f', new Set())).toEqual([])
     expect(suggest(entries, ' a ', new Set())).toEqual([])

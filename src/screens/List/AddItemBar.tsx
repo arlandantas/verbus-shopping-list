@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import type { CatalogEntry } from '@/data/converters'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { suggest } from '@/domain/suggest'
@@ -18,6 +18,8 @@ interface Props {
 export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick }: Props) {
   const [text, setText] = useState('')
   const [dismissed, setDismissed] = useState(false)
+  const [active, setActive] = useState(-1)
+  const listId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const blank = text.trim() === ''
 
@@ -30,6 +32,7 @@ export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick 
   const reset = () => {
     setText('')
     setDismissed(false)
+    setActive(-1)
     inputRef.current?.focus()
   }
 
@@ -47,24 +50,38 @@ export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick 
     reset()
   }
 
+  const open = suggestions.length > 0
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') setDismissed(true)
+    if (e.key === 'Escape') {
+      setDismissed(true)
+      setActive(-1)
+    } else if (open && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      e.preventDefault()
+      const n = suggestions.length
+      setActive((a) => (e.key === 'ArrowDown' ? (a + 1) % n : (a <= 0 ? n : a) - 1))
+    } else if (open && e.key === 'Enter' && active >= 0 && active < suggestions.length) {
+      e.preventDefault()
+      pick(suggestions[active])
+    }
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="sticky top-0 z-10 flex gap-2 bg-white p-4 shadow-sm"
-      onKeyDown={onKeyDown}
-    >
+    <form onSubmit={submit} className="sticky top-0 z-10 flex gap-2 bg-white p-4 shadow-sm">
       <input
         ref={inputRef}
+        role="combobox"
+        aria-expanded={open}
+        aria-controls={open ? listId : undefined}
+        aria-autocomplete="list"
+        aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
+        onKeyDown={onKeyDown}
         aria-label={strings.list.addLabel}
         placeholder={strings.list.addPlaceholder}
         value={text}
         onChange={(e) => {
           setText(e.target.value)
           setDismissed(false)
+          setActive(-1)
         }}
         enterKeyHint="done"
         autoComplete="off"
@@ -77,7 +94,7 @@ export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick 
       >
         {strings.list.add}
       </button>
-      <Suggestions entries={suggestions} onPick={pick} />
+      <Suggestions id={listId} entries={suggestions} active={active} onPick={pick} />
     </form>
   )
 }

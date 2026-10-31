@@ -67,3 +67,16 @@ test('S-020 AC5: works offline; disappears on clear and on Esc', async ({ page, 
   await field(page).press('Escape')
   await expect(page.getByRole('listbox')).toHaveCount(0)
 })
+
+test('ADR-0009: arrow keys + Enter pick a suggestion; Escape closes the list', async ({ page }) => {
+  await seedFeijao(page)
+  await field(page).fill('fei')
+  await expect(field(page)).toHaveAttribute('aria-expanded', 'true')
+  await field(page).press('ArrowDown')
+  await expect(option(page, 'feijão · 2 kg')).toHaveAttribute('aria-selected', 'true')
+  await field(page).press('Enter')
+  await expect(row(page, 'feijão')).toContainText('2 kg')
+  await field(page).fill('fei')
+  await field(page).press('Escape')
+  await expect(field(page)).toHaveAttribute('aria-expanded', 'false')
+})

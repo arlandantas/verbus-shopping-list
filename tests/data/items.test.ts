@@ -1,4 +1,12 @@
-import { doc, getDoc, getDocs, collection, waitForPendingWrites } from 'firebase/firestore'
+import {
+  collection,
+  disableNetwork,
+  doc,
+  enableNetwork,
+  getDoc,
+  getDocs,
+  waitForPendingWrites,
+} from 'firebase/firestore'
 import { db } from '@/data/firebase'
 import type { CatalogEntry, Item } from '@/data/converters'
 import { createFamily } from '@/data/families'
@@ -99,12 +107,20 @@ describe('S-018 AC2: watchItems', () => {
   })
 })
 
+const current = {
+  name: 'Arroz',
+  nameKey: 'arroz',
+  quantity: 1,
+  unit: 'un' as const,
+  categoryId: null,
+}
+
 describe('S-018 AC3: updateItemDetails', () => {
   it('updates only given fields and syncs the catalog when quantity/unit/category change', async () => {
     const { familyId } = await setup()
     const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
     await flush()
-    await updateItemDetails(familyId, id, { quantity: 5, unit: 'kg' })
+    updateItemDetails(familyId, id, { quantity: 5, unit: 'kg' }, current)
     await flush()
     expect(await itemDoc(familyId, id)).toMatchObject({ name: 'Arroz', quantity: 5, unit: 'kg' })
     expect(await catDoc(familyId, 'arroz')).toMatchObject({
@@ -119,10 +135,43 @@ describe('S-018 AC3: updateItemDetails', () => {
     const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
     await flush()
     const before = await catDoc(familyId, 'arroz')
-    await updateItemDetails(familyId, id, { note: 'integral' })
+    updateItemDetails(familyId, id, { note: 'integral' }, current)
     await flush()
     expect((await itemDoc(familyId, id))?.note).toBe('integral')
     expect(await catDoc(familyId, 'arroz')).toEqual(before)
+  })
+})
+
+describe('ADR-0004: updateItemDetails is synchronous and never reads', () => {
+  it('returns void at once and still commits item + catalog while offline', async () => {
+    const { familyId } = await setup()
+    const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
+    await flush()
+    await disableNetwork(db)
+    const unhandled = vi.fn()
+    process.on('unhandledRejection', unhandled)
+    const result = updateItemDetails(familyId, id, { quantity: 3 }, current)
+    expect(result).toBeUndefined()
+    await new Promise((r) => setTimeout(r, 100))
+    process.off('unhandledRejection', unhandled)
+    expect(unhandled).not.toHaveBeenCalled()
+    await enableNetwork(db)
+    await flush()
+    expect(await itemDoc(familyId, id)).toMatchObject({ quantity: 3 })
+    expect(await catDoc(familyId, 'arroz')).toMatchObject({ quantity: 3, unit: 'un' })
+  })
+
+  it('uses the new name for the catalog entry when the name changes', async () => {
+    const { familyId } = await setup()
+    const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
+    await flush()
+    updateItemDetails(familyId, id, { name: 'Arroz integral', quantity: 2 }, current)
+    await flush()
+    expect(await catDoc(familyId, 'arroz integral')).toMatchObject({
+      name: 'Arroz integral',
+      quantity: 2,
+      unit: 'un',
+    })
   })
 })
 

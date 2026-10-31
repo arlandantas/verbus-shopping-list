@@ -14,7 +14,7 @@ export function suggest(
   for (const entry of entries) {
     if (pendingKeys.has(entry.nameKey)) continue
     if (entry.nameKey.startsWith(q)) ranked.push({ entry, rank: 0 })
-    else if (entry.nameKey.split(' ').some((w) => w.startsWith(q))) ranked.push({ entry, rank: 1 })
+    else if (` ${entry.nameKey}`.includes(` ${q}`)) ranked.push({ entry, rank: 1 })
   }
   ranked.sort(
     (a, b) => a.rank - b.rank || b.entry.lastUsedAt.getTime() - a.entry.lastUsedAt.getTime(),

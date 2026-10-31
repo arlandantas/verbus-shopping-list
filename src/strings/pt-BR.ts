@@ -2,6 +2,8 @@ export const strings = {
   appTitle: 'Lista de Compras',
   offline: 'Sem conexão',
   loading: 'Carregando…',
+  writeError: 'Não foi possível sincronizar a alteração. Verifique a conexão e tente novamente.',
+  dismiss: 'Fechar aviso',
   loadError: 'Não foi possível carregar sua família. Verifique a conexão.',
   retry: 'Tentar novamente',
   login: {

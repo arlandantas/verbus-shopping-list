@@ -24,7 +24,7 @@ export function ItemScreen() {
     )
 
   const onSave = (patch: ItemPatch) => {
-    if (Object.keys(patch).length > 0) void updateItemDetails(familyId, id, patch)
+    if (Object.keys(patch).length > 0) updateItemDetails(familyId, id, patch, item)
     navigate('/')
   }
   const onDelete = () => {

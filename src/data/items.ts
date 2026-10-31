@@ -2,8 +2,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
-  getDocFromCache,
   onSnapshot,
   serverTimestamp,
   updateDoc,
@@ -98,22 +96,16 @@ export function watchItems(
   )
 }
 
-async function readCurrent(familyId: string, id: string): Promise<Item | null> {
-  const ref = doc(itemsCol(familyId), id).withConverter(itemConverter)
-  try {
-    return (await getDocFromCache(ref)).data({ serverTimestamps: 'estimate' }) ?? null
-  } catch {
-    const snap = await getDoc(ref)
-    return snap.exists() ? snap.data({ serverTimestamps: 'estimate' }) : null
-  }
-}
+/** What the caller already knows about the item; lets the catalog follow without any read. */
+export type ItemCurrent = Pick<Item, 'name' | 'nameKey' | 'quantity' | 'unit' | 'categoryId'>
 
 /** Updates only the given fields; catalog follows (same batch) when quantity/unit/category change. */
-export async function updateItemDetails(
+export function updateItemDetails(
   familyId: string,
   id: string,
   patch: ItemPatch,
-): Promise<void> {
+  current: ItemCurrent,
+): void {
   const fields: Record<string, unknown> = {}
   for (const [k, v] of Object.entries(patch)) if (v !== undefined) fields[k] = v
   if (typeof fields.name === 'string') {
@@ -125,19 +117,16 @@ export async function updateItemDetails(
   const batch = writeBatch(db)
   batch.update(doc(itemsCol(familyId), id), fields)
   if (touchesCatalog) {
-    const cur = await readCurrent(familyId, id)
-    if (cur) {
-      const name = (fields.name as string | undefined) ?? cur.name
-      const nameKey = (fields.nameKey as string | undefined) ?? cur.nameKey
-      batch.set(catalogRef(familyId, nameKey), {
-        name,
-        nameKey,
-        quantity: fields.quantity ?? cur.quantity,
-        unit: fields.unit ?? cur.unit,
-        categoryId: 'categoryId' in fields ? fields.categoryId : cur.categoryId,
-        lastUsedAt: serverTimestamp(),
-      })
-    }
+    const name = (fields.name as string | undefined) ?? current.name
+    const nameKey = (fields.nameKey as string | undefined) ?? current.nameKey
+    batch.set(catalogRef(familyId, nameKey), {
+      name,
+      nameKey,
+      quantity: fields.quantity ?? current.quantity,
+      unit: fields.unit ?? current.unit,
+      categoryId: 'categoryId' in fields ? fields.categoryId : current.categoryId,
+      lastUsedAt: serverTimestamp(),
+    })
   }
   fireAndForget(batch.commit())
 }
