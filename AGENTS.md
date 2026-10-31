@@ -38,7 +38,7 @@ This file follows the AGENTS.md convention and is the single entry point for any
 
 ## Size limits (split before exceeding)
 
-AGENTS.md ≤80 lines · spec ≤120 · story ≤60 · ADR ≤40 · STATE ≤40 · source file ≤300.
+AGENTS.md ≤80 lines · spec ≤120 · story ≤60 · ADR ≤40 · STATE ≤40 · source file ≤300 (`firestore.rules` exempt: Firebase takes a single file; keep it sectioned by collection and put shared validators at the top).
 Logs and history live in git, not in docs. Never append to STATE.md; rewrite it.
 
 ## Manager loop (the orchestrating agent)

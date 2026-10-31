@@ -36,12 +36,12 @@ Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input 
 | S-028 | M4 | Tela Modo mercado | done | S-021 |
 | S-029 | M4 | Quem marcou (mercado e lista) | done | S-027, S-028 |
 | S-030 | M4 | Modo mercado: tempo real, offline e conflito | done | S-029 |
-| S-031 | M5 | Regras: `categories` (padrões fixos e do usuário) | todo | S-026 |
-| S-032 | M5 | Regras: preço só em item comprado | todo | S-031 |
-| S-033 | M5 | Regras: `purchases` e `purchaseLines` | todo | S-032 |
-| S-034 | M5 | Regras: marcador `cycles` | todo | S-033 |
-| S-035 | M5 | Domínio: ciclo (mês) e preço em reais | todo | S-017 |
-| S-036 | M5 | Domínio: categorias padrão, agrupamento e soma por categoria | todo | S-017 |
+| S-031 | M5 | Regras: `categories` (padrões fixos e do usuário) | done | S-026 |
+| S-032 | M5 | Regras: preço só em item comprado | done | S-031 |
+| S-033 | M5 | Regras: `purchases` e `purchaseLines` | done | S-032 |
+| S-034 | M5 | Regras: marcador `cycles` | done | S-033 |
+| S-035 | M5 | Domínio: ciclo (mês) e preço em reais | done | S-017 |
+| S-036 | M5 | Domínio: categorias padrão, agrupamento e soma por categoria | done | S-017 |
 | S-037 | M5 | Camada de dados: categorias (semente e CRUD) | todo | S-031, S-036 |
 | S-038 | M5 | Camada de dados: preço do item e desmarcar limpa o preço | todo | S-032 |
 | S-039 | M5 | Camada de dados: `checkout` (finalizar compra) | todo | S-033, S-035, S-037 |
