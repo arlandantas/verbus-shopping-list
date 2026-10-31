@@ -188,6 +188,51 @@ service cloud.firestore {
           || (after.status == 'pending' && after.markedBy == null && after.markedAt == null));
     }
 
+    function validCycle(v) {
+      return v is string && v.matches('^[0-9]{4}-(0[1-9]|1[0-2])$');
+    }
+
+    function validMarket(v) {
+      return v == null || (v is string && v.size() >= 1 && v.size() <= 60);
+    }
+
+    function validPriceCents(v, max) {
+      return v == null || (v is int && v >= 0 && v <= max);
+    }
+
+    // ADR-0012: create-only purchase (one trip to the market).
+    function validPurchase(d) {
+      return d.keys().hasOnly(['cycle', 'market', 'itemCount', 'totalCents', 'createdBy', 'purchasedAt'])
+        && d.keys().hasAll(['cycle', 'market', 'itemCount', 'totalCents', 'createdBy', 'purchasedAt'])
+        && validCycle(d.cycle)
+        && validMarket(d.market)
+        && d.itemCount is int && d.itemCount >= 1 && d.itemCount <= 200
+        && validPriceCents(d.totalCents, 2000000000)
+        && d.createdBy == request.auth.uid
+        && d.purchasedAt == request.time;
+    }
+
+    // ADR-0012: create-only history line, doc id = archived item id.
+    function validPurchaseLine(d) {
+      return d.keys().hasOnly(['purchaseId', 'cycle', 'name', 'nameKey', 'quantity', 'unit',
+          'categoryId', 'categoryName', 'priceCents', 'market', 'markedBy', 'purchasedAt'])
+        && d.keys().hasAll(['purchaseId', 'cycle', 'name', 'nameKey', 'quantity', 'unit',
+          'categoryId', 'categoryName', 'priceCents', 'market', 'markedBy', 'purchasedAt'])
+        && d.purchaseId is string
+        && validCycle(d.cycle)
+        && validName(d.name)
+        && validNameKey(d.nameKey)
+        && validQuantity(d.quantity)
+        && validUnit(d.unit)
+        && validCategoryId(d.categoryId)
+        && (d.categoryName == null
+          || (d.categoryName is string && d.categoryName.size() >= 1 && d.categoryName.size() <= 40))
+        && validPriceCents(d.priceCents, 10000000)
+        && validMarket(d.market)
+        && (d.markedBy == null || d.markedBy is string)
+        && d.purchasedAt == request.time;
+    }
+
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && validUser(request.resource.data)
@@ -212,6 +257,18 @@ service cloud.firestore {
         allow update: if isMember(familyId)
           && validItemUpdate(resource.data, request.resource.data);
         allow delete: if isMember(familyId);
+      }
+
+      match /purchases/{purchaseId} {
+        allow read: if isMember(familyId);
+        allow create: if isMember(familyId) && validPurchase(request.resource.data);
+        allow update, delete: if false;
+      }
+
+      match /purchaseLines/{itemId} {
+        allow read: if isMember(familyId);
+        allow create: if isMember(familyId) && validPurchaseLine(request.resource.data);
+        allow update, delete: if false;
       }
 
       // Member profile (ADR-0011): readable by the family, writable only by its owner uid.

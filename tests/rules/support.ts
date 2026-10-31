@@ -28,3 +28,37 @@ export async function seed(
     for (const [path, data] of Object.entries(docs)) await setDoc(doc(db, path), data)
   })
 }
+
+/** Valid `purchases` doc (ADR-0012); `purchasedAt` is the server time sentinel. */
+export const newPurchase = async (over: Record<string, unknown> = {}) => {
+  const { serverTimestamp } = await import('firebase/firestore')
+  return {
+    cycle: '2026-10',
+    market: 'Mercado Bom',
+    itemCount: 1,
+    totalCents: 1290,
+    createdBy: 'alice',
+    purchasedAt: serverTimestamp(),
+    ...over,
+  }
+}
+
+/** Valid `purchaseLines` doc (ADR-0012). */
+export const newPurchaseLine = async (over: Record<string, unknown> = {}) => {
+  const { serverTimestamp } = await import('firebase/firestore')
+  return {
+    purchaseId: 'P1',
+    cycle: '2026-10',
+    name: 'Leite',
+    nameKey: 'leite',
+    quantity: 1,
+    unit: 'un',
+    categoryId: null,
+    categoryName: null,
+    priceCents: 1290,
+    market: 'Mercado Bom',
+    markedBy: 'alice',
+    purchasedAt: serverTimestamp(),
+    ...over,
+  }
+}
