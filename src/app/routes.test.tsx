@@ -19,7 +19,7 @@ vi.mock('@/app/AuthProvider', () => ({ useAuth: () => ({ status: 'signedOut', us
 vi.mock('@/data/auth', () => ({}))
 vi.mock('@/data/families', () => ({}))
 vi.mock('@/screens/Family/FamilyScreen', () => ({ FamilyScreen: () => null }))
-vi.mock('@/screens/Home/HomeScreen', () => ({ HomeScreen: () => null }))
+vi.mock('@/screens/List/ListScreen', () => ({ ListScreen: () => null }))
 vi.mock('@/screens/Login/LoginScreen', () => ({ LoginScreen: () => null }))
 vi.mock('@/screens/Invite/InviteScreen', () => ({ InviteScreen: () => null }))
 vi.mock('@/app/FamilyProvider', () => ({ FamilyProvider: () => null, useFamily: vi.fn() }))

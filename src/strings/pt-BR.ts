@@ -49,8 +49,17 @@ export const strings = {
     error: 'Não foi possível entrar na família. Tente novamente.',
     back: 'Voltar',
   },
-  home: {
-    placeholder: 'A lista de compras chega em breve.',
+  list: {
+    addLabel: 'Novo item',
+    addPlaceholder: 'Ex.: 3 kg feijão',
+    add: 'Adicionar',
+    empty: 'Sua lista está vazia. Adicione o primeiro item acima.',
+    pendingTitle: 'Pendentes',
+    boughtTitle: 'Comprados',
+    pendingSync: 'pendente de sincronização',
+    markBought: (name: string) => `Marcar ${name} como comprado`,
+    markPending: (name: string) => `Devolver ${name} para pendentes`,
+    writeError: 'Não foi possível salvar a alteração. Tente novamente.',
   },
   authErrors: {
     'auth/invalid-credential': 'E-mail ou senha incorretos.',

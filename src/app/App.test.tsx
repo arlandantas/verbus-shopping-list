@@ -17,6 +17,11 @@ vi.mock('@/data/auth', () => ({
 
 vi.mock('@/data/users', () => ({ watchUser: () => () => undefined }))
 vi.mock('@/data/families', () => ({ watchFamily: () => () => undefined, createFamily: vi.fn() }))
+vi.mock('@/data/items', () => ({
+  watchItems: () => () => undefined,
+  addItem: vi.fn(),
+  setItemStatus: vi.fn(),
+}))
 
 describe('App', () => {
   it('S-001 AC3: renders the title from pt-BR strings', async () => {
