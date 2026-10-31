@@ -1,4 +1,5 @@
 import type { FirestoreDataConverter } from 'firebase/firestore'
+import type { Unit } from '@/domain/units'
 
 export interface UserProfile {
   displayName: string
@@ -49,6 +50,81 @@ export const familyConverter: FirestoreDataConverter<Family> = {
       ownerId: d.ownerId,
       inviteCode: d.inviteCode,
       createdAt: d.createdAt.toDate(),
+    }
+  },
+}
+
+export type ItemStatus = 'pending' | 'bought'
+
+export interface Item {
+  id: string
+  name: string
+  nameKey: string
+  quantity: number
+  unit: Unit
+  note: string | null
+  categoryId: string | null
+  recurring: boolean
+  status: ItemStatus
+  markedBy: string | null
+  markedAt: Date | null
+  priceCents: number | null
+  createdBy: string
+  createdAt: Date
+  hasPendingWrites: boolean
+}
+
+export interface CatalogEntry {
+  name: string
+  nameKey: string
+  quantity: number
+  unit: Unit
+  categoryId: string | null
+  lastUsedAt: Date
+}
+
+const toDate = (v: { toDate(): Date } | null | undefined): Date | null => (v ? v.toDate() : null)
+
+export const itemConverter: FirestoreDataConverter<Item> = {
+  // Writes build explicit payloads (items.ts); `id`/`hasPendingWrites` are read-only.
+  toFirestore: () => {
+    throw new Error('itemConverter is read-only')
+  },
+  fromFirestore(snap, options) {
+    const d = snap.data(options)
+    return {
+      id: snap.id,
+      name: d.name,
+      nameKey: d.nameKey,
+      quantity: d.quantity,
+      unit: d.unit,
+      note: d.note ?? null,
+      categoryId: d.categoryId ?? null,
+      recurring: d.recurring === true,
+      status: d.status,
+      markedBy: d.markedBy ?? null,
+      markedAt: toDate(d.markedAt),
+      priceCents: d.priceCents ?? null,
+      createdBy: d.createdBy,
+      createdAt: toDate(d.createdAt) ?? new Date(),
+      hasPendingWrites: snap.metadata.hasPendingWrites,
+    }
+  },
+}
+
+export const catalogConverter: FirestoreDataConverter<CatalogEntry> = {
+  toFirestore: () => {
+    throw new Error('catalogConverter is read-only')
+  },
+  fromFirestore(snap, options) {
+    const d = snap.data(options)
+    return {
+      name: d.name,
+      nameKey: d.nameKey,
+      quantity: d.quantity,
+      unit: d.unit,
+      categoryId: d.categoryId ?? null,
+      lastUsedAt: toDate(d.lastUsedAt) ?? new Date(),
     }
   },
 }
