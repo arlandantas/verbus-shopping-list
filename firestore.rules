@@ -125,7 +125,8 @@ service cloud.firestore {
         && (d.markedBy == null || d.markedBy is string)
         && (d.markedAt == null || d.markedAt is timestamp)
         && (d.priceCents == null
-          || (d.priceCents is int && d.priceCents >= 0 && d.priceCents <= 10000000))
+          || (d.status == 'bought'
+            && d.priceCents is int && d.priceCents >= 0 && d.priceCents <= 10000000))
         && d.createdBy is string;
     }
 
