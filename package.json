@@ -16,7 +16,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:rules": "firebase emulators:exec --only firestore \"vitest run --project rules\"",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules",
+    "test:e2e": "firebase emulators:exec --only auth,firestore \"playwright test\""
   },
   "dependencies": {
     "firebase": "13.1.0",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@firebase/rules-unit-testing": "6.0.0",
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "7.0.1",
