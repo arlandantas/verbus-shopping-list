@@ -19,6 +19,7 @@ vi.mock('@/data/auth', () => ({
 vi.mock('@/data/users', () => ({ watchUser: () => () => undefined }))
 vi.mock('@/data/families', () => ({ watchFamily: () => () => undefined, createFamily: vi.fn() }))
 vi.mock('@/data/catalog', () => ({ watchCatalog: () => () => undefined }))
+vi.mock('@/data/members', () => ({ ensureMemberProfile: vi.fn() }))
 vi.mock('@/data/items', () => ({
   watchItems: () => () => undefined,
   addItem: vi.fn(),

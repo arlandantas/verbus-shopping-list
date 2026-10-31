@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useAuth } from '@/app/AuthProvider'
 import type { Family } from '@/data/converters'
 import { watchFamily } from '@/data/families'
+import { ensureMemberProfile } from '@/data/members'
 import { watchUser } from '@/data/users'
 
 export type FamilyState =
@@ -18,19 +19,29 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
   const [familyId, setFamilyId] = useState<string | null | undefined>(undefined)
+  const [displayName, setDisplayName] = useState('')
   const [family, setFamily] = useState<Family | null>(null)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     if (!uid) return
-    return watchUser(uid, (profile) => setFamilyId(profile ? profile.familyId : undefined))
+    return watchUser(uid, (profile) => {
+      setFamilyId(profile ? profile.familyId : undefined)
+      setDisplayName(profile?.displayName ?? '')
+    })
   }, [uid])
 
   useEffect(() => {
     if (!familyId) return
     return watchFamily(familyId, setFamily, () => setFailed(true))
   }, [familyId, attempt])
+
+  const readyFamilyId = familyId && family?.id === familyId ? familyId : undefined
+  useEffect(() => {
+    if (uid && readyFamilyId && displayName)
+      void ensureMemberProfile(readyFamilyId, uid, displayName)
+  }, [uid, readyFamilyId, displayName])
 
   const retry = () => {
     setFailed(false)

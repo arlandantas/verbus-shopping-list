@@ -7,6 +7,7 @@ let emitUser: (u: UserProfile | null) => void = () => undefined
 let emitFamily: (f: Family | null) => void = () => undefined
 let failFamily: () => void = () => undefined
 const watchFamily = vi.fn()
+const ensureMemberProfile = vi.fn()
 
 vi.mock('@/app/AuthProvider', () => ({
   useAuth: () => ({ status: 'signedIn', user: { uid: 'u1', displayName: 'A', email: 'a@b.co' } }),
@@ -16,6 +17,9 @@ vi.mock('@/data/users', () => ({
     emitUser = cb
     return () => undefined
   },
+}))
+vi.mock('@/data/members', () => ({
+  ensureMemberProfile: (...args: unknown[]) => ensureMemberProfile(...args),
 }))
 vi.mock('@/data/families', () => ({
   watchFamily: (id: string, cb: (f: Family | null) => void, onError?: () => void) => {
@@ -83,5 +87,27 @@ describe('FamilyProvider', () => {
     act(() => screen.getByText('retry').click())
     expect(watchFamily).toHaveBeenCalledTimes(2)
     expect(screen.getByText('loading:-')).toBeInTheDocument()
+  })
+
+  it('S-027 AC4: calls ensureMemberProfile once the family is ready', () => {
+    ensureMemberProfile.mockClear()
+    render(
+      <FamilyProvider>
+        <Probe />
+      </FamilyProvider>,
+    )
+    act(() => emitUser({ ...profile('f3'), displayName: 'Ana' }))
+    expect(ensureMemberProfile).not.toHaveBeenCalled()
+    act(() =>
+      emitFamily({
+        id: 'f3',
+        name: 'Casa',
+        members: ['u1'],
+        ownerId: 'u1',
+        inviteCode: 'ABCD2345',
+        createdAt: new Date(),
+      }),
+    )
+    expect(ensureMemberProfile).toHaveBeenCalledWith('f3', 'u1', 'Ana')
   })
 })

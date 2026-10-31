@@ -54,6 +54,15 @@ export const familyConverter: FirestoreDataConverter<Family> = {
   },
 }
 
+export interface MemberProfile {
+  displayName: string
+}
+
+export const memberConverter: FirestoreDataConverter<MemberProfile> = {
+  toFirestore: (m) => ({ displayName: m.displayName }),
+  fromFirestore: (snap, options) => ({ displayName: snap.data(options).displayName }),
+}
+
 export type ItemStatus = 'pending' | 'bought'
 
 export interface Item {
