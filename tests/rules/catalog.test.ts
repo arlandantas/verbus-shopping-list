@@ -13,21 +13,12 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore'
-import { anon, asUser, seed, setupEnv } from './support'
+import { anon, asUser, setupEnv } from './support'
+import { entry, seedCatalogFamilies } from './catalogSupport'
 
 let env: RulesTestEnvironment
 
 const UNITS = ['un', 'kg', 'g', 'l', 'ml', 'pct', 'cx', 'dz']
-
-const entry = (over: Record<string, unknown> = {}) => ({
-  name: 'Leite',
-  nameKey: 'leite',
-  quantity: 1,
-  unit: 'un',
-  categoryId: null,
-  lastUsedAt: serverTimestamp(),
-  ...over,
-})
 
 const newItem = (over: Record<string, unknown> = {}) => ({
   name: 'Leite',
@@ -53,21 +44,7 @@ afterAll(async () => {
   await env.cleanup()
 })
 beforeEach(async () => {
-  await env.clearFirestore()
-  await seed(env, {
-    'families/F1': {
-      name: 'Casa',
-      members: ['alice', 'dave'],
-      ownerId: 'alice',
-      createdAt: new Date(),
-    },
-    'families/F1/catalog/leite': { ...entry(), lastUsedAt: new Date() },
-    'families/F2': { name: 'Outra', members: ['bob'], ownerId: 'bob', createdAt: new Date() },
-    'families/F2/catalog/arroz': {
-      ...entry({ name: 'Arroz', nameKey: 'arroz' }),
-      lastUsedAt: new Date(),
-    },
-  })
+  await seedCatalogFamilies(env)
 })
 
 const alice = () => asUser(env, 'alice')
@@ -215,96 +192,5 @@ describe('S-016 AC5: add batch (item + catalog)', () => {
 
   it('fails the whole batch when the item is invalid but the catalog is valid', async () => {
     await assertFails(addBatch(entry(), newItem({ status: 'bought' })))
-  })
-})
-
-describe('S-022 AC1: recurring is optional', () => {
-  it('creates without recurring and with recurring true/false', async () => {
-    await assertSucceeds(setDoc(cat(alice(), 'cafe'), entry({ name: 'Café', nameKey: 'cafe' })))
-    await assertSucceeds(
-      setDoc(cat(alice(), 'pao'), entry({ name: 'Pão', nameKey: 'pao', recurring: true })),
-    )
-    await assertSucceeds(
-      setDoc(cat(alice(), 'sal'), entry({ name: 'Sal', nameKey: 'sal', recurring: false })),
-    )
-  })
-})
-
-describe('S-022 AC2: merge writes validate the resulting doc', () => {
-  it('allows merging only recurring + lastUsedAt over an existing entry', async () => {
-    await assertSucceeds(
-      setDoc(cat(alice()), { recurring: true, lastUsedAt: serverTimestamp() }, { merge: true }),
-    )
-    const snap = await getDoc(cat(alice()))
-    expect(snap.data()?.recurring).toBe(true)
-    expect(snap.data()?.name).toBe('Leite')
-  })
-
-  it('keeps recurring when a later merge omits it', async () => {
-    await assertSucceeds(
-      setDoc(cat(alice()), { recurring: true, lastUsedAt: serverTimestamp() }, { merge: true }),
-    )
-    await assertSucceeds(
-      setDoc(cat(alice()), { quantity: 2, lastUsedAt: serverTimestamp() }, { merge: true }),
-    )
-    expect((await getDoc(cat(alice()))).data()?.recurring).toBe(true)
-  })
-
-  it('denies the same partial merge over a missing entry', async () => {
-    await assertFails(
-      setDoc(
-        cat(alice(), 'novo'),
-        { recurring: true, lastUsedAt: serverTimestamp() },
-        { merge: true },
-      ),
-    )
-  })
-
-  it('denies a merge that makes the merged doc invalid', async () => {
-    await assertFails(
-      setDoc(cat(alice()), { unit: 'lt', lastUsedAt: serverTimestamp() }, { merge: true }),
-    )
-    await assertFails(
-      setDoc(cat(alice()), { extra: 1, lastUsedAt: serverTimestamp() }, { merge: true }),
-    )
-  })
-})
-
-describe('S-022 AC3: recurring must be a bool; no extra keys', () => {
-  it.each([['sim'], [1], [null]])('denies recurring = %j', async (v) => {
-    await assertFails(setDoc(cat(alice(), 'cafe'), entry({ nameKey: 'cafe', recurring: v })))
-    await assertFails(
-      setDoc(cat(alice()), { recurring: v, lastUsedAt: serverTimestamp() }, { merge: true }),
-    )
-  })
-
-  it('denies extra / forged keys', async () => {
-    await assertFails(setDoc(cat(alice(), 'cafe'), entry({ nameKey: 'cafe', extra: true })))
-    await assertFails(
-      setDoc(cat(alice(), 'cafe'), entry({ nameKey: 'cafe', recurring: true, cycle: 1 })),
-    )
-  })
-})
-
-describe('S-022 AC4: timestamp, membership and delete', () => {
-  it('denies lastUsedAt different from request.time', async () => {
-    await assertFails(
-      setDoc(cat(alice()), { recurring: true, lastUsedAt: new Date() }, { merge: true }),
-    )
-    await assertFails(setDoc(cat(alice()), { recurring: true }, { merge: true }))
-  })
-
-  it('denies non-members, anonymous and other families', async () => {
-    const patch = { recurring: true, lastUsedAt: serverTimestamp() }
-    await assertFails(setDoc(cat(asUser(env, 'bob')), patch, { merge: true }))
-    await assertFails(setDoc(cat(anon(env)), patch, { merge: true }))
-    await assertFails(setDoc(doc(alice(), 'families/F2/catalog/arroz'), patch, { merge: true }))
-    await assertFails(
-      setDoc(cat(asUser(env, 'bob'), 'cafe'), entry({ nameKey: 'cafe', recurring: true })),
-    )
-  })
-
-  it('denies delete', async () => {
-    await assertFails(deleteDoc(cat(alice())))
   })
 })

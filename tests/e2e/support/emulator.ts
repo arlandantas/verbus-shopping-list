@@ -1,3 +1,5 @@
+import { expect } from '@playwright/test'
+
 const PROJECT = 'demo-verbus'
 const AUTH = 'http://127.0.0.1:9099'
 const FIRESTORE = 'http://127.0.0.1:8080'
@@ -33,4 +35,22 @@ export async function deleteAllItems(): Promise<void> {
       if (!res.ok) throw new Error(`DELETE ${p} failed: ${res.status}`)
     }
   }
+}
+
+/** Resolves once the emulator holds `count` item documents, i.e. the client writes reached the server. */
+export async function waitForItemCount(count: number): Promise<void> {
+  const base = `${FIRESTORE}/v1/projects/${PROJECT}/databases/(default)/documents`
+  const headers = { Authorization: 'Bearer owner' }
+  await expect
+    .poll(async () => {
+      const fams = (await (await fetch(`${base}/families`, { headers })).json()) as DocList
+      let total = 0
+      for (const fam of fams.documents ?? []) {
+        const path = fam.name.split('/documents/')[1]!
+        const items = (await (await fetch(`${base}/${path}/items`, { headers })).json()) as DocList
+        total += items.documents?.length ?? 0
+      }
+      return total
+    })
+    .toBe(count)
 }

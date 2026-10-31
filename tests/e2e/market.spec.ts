@@ -1,6 +1,7 @@
-import { devices, expect, test, type Browser, type Page } from '@playwright/test'
+import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
 import { clearEmulators } from './support/emulator'
+import { twoMembers } from './support/members'
 
 test.use({ ...devices['Pixel 7'] })
 test.beforeEach(async () => {
@@ -80,56 +81,12 @@ test('S-028 AC5: counter follows the marks; all checked shows the complete messa
   await expect(page.getByText(strings.market.allDone)).toBeVisible()
 })
 
-const AUTH_KEY = 'http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake'
-async function newMember(browser: Browser, email: string, displayName: string): Promise<Page> {
-  const res = await fetch(AUTH_KEY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: 'secret123', displayName, returnSecureToken: true }),
-  })
-  if (!res.ok) throw new Error(`signUp failed: ${res.status}`)
-  const context = await browser.newContext({
-    ...devices['Pixel 7'],
-    baseURL: 'http://127.0.0.1:4173',
-  })
-  const page = await context.newPage()
-  await page.goto('/')
-  await page.getByLabel(strings.login.email).fill(email)
-  await page.getByLabel(strings.login.password).fill('secret123')
-  await page.getByRole('button', { name: strings.login.signIn, exact: true }).click()
-  return page
-}
-
-async function twoMembers(browser: Browser) {
-  const ana = await newMember(browser, 'ana@example.com', 'Ana')
-  await expect(ana).toHaveURL(/\/familia$/)
-  await ana.getByLabel(strings.family.nameLabel).fill('Casa')
-  await ana.getByRole('button', { name: strings.family.create }).click()
-  const code = (await ana.getByTestId('invite-code').textContent()) ?? ''
-  await ana.getByRole('button', { name: strings.family.continue }).click()
-  const field = ana.getByLabel(strings.list.addLabel)
-  await field.fill('leite')
-  await field.press('Enter')
-  await expect(ana.getByRole('listitem').filter({ hasText: 'leite' })).toBeVisible()
-  await ana.waitForTimeout(1500) // let the item write reach the emulator
-  const beto = await newMember(browser, 'beto@example.com', 'Beto')
-  await expect(beto).toHaveURL(/\/familia$/)
-  await beto.getByLabel(strings.family.join.codeLabel).fill(code)
-  await beto.getByRole('button', { name: strings.family.join.submit }).click()
-  await expect(beto.getByRole('heading', { name: 'Casa' })).toBeVisible()
-  await beto.goto('/')
-  await expect(beto.getByLabel(strings.list.addLabel)).toBeVisible()
-  return { ana, beto }
-}
-
 test('S-029 AC2: Beto sees "por Ana" in market and list; Ana sees "por você"', async ({
   browser,
 }) => {
-  const { ana, beto } = await twoMembers(browser)
-  await ana.getByRole('link', { name: strings.market.enter }).click()
+  const { ana, beto } = await twoMembers(browser, ['leite'])
   await ana.getByRole('button', { name: /leite/ }).click()
   await expect(ana.getByText(strings.markedBy.you)).toBeVisible()
-  await beto.getByRole('link', { name: strings.market.enter }).click()
   await expect(beto.getByText(strings.markedBy.by('Ana'))).toBeVisible()
   await beto.getByRole('link', { name: strings.market.exit }).click()
   await expect(beto.getByText(strings.markedBy.by('Ana'))).toBeVisible()
@@ -138,12 +95,10 @@ test('S-029 AC2: Beto sees "por Ana" in market and list; Ana sees "por você"', 
 })
 
 test('S-029 AC3: undoing removes the "por ..." label', async ({ browser }) => {
-  const { ana, beto } = await twoMembers(browser)
-  await ana.getByRole('link', { name: strings.market.enter }).click()
+  const { ana, beto } = await twoMembers(browser, ['leite'])
   const leite = ana.getByRole('button', { name: /leite/ })
   await leite.click()
   await expect(ana.getByText(strings.markedBy.you)).toBeVisible()
-  await beto.getByRole('link', { name: strings.market.enter }).click()
   await expect(beto.getByText(strings.markedBy.by('Ana'))).toBeVisible()
   await leite.click()
   await expect(ana.getByText(/^por /)).toHaveCount(0)

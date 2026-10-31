@@ -1,6 +1,7 @@
-import { devices, expect, test, type Browser, type Page } from '@playwright/test'
+import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
 import { clearEmulators } from './support/emulator'
+import { twoMembers } from './support/members'
 
 test.use({ ...devices['Pixel 7'] })
 test.beforeEach(async () => {
@@ -165,36 +166,18 @@ test('S-025 AC2: Remover dos recorrentes drops it; pending item stays with recur
 })
 
 test('S-025 AC3: a recurring made by one member shows in the other member Despensa', async ({
-  page,
   browser,
 }) => {
-  await signUpWithFamily(page)
-  await page.goto('/familia')
-  const code = (await page.getByTestId('invite-code').textContent()) ?? ''
-  await page.goto('/')
-  await field(page).fill('3 kg feijão')
-  await field(page).press('Enter')
-  await expect(listRow(page, 'feijão')).toBeVisible()
+  const { ana, beto } = await twoMembers(browser, ['feijão'])
+  await beto.goto('/despensa')
+  await expect(recurringList(beto).getByRole('listitem')).toHaveCount(0)
 
-  const ctx = await (browser as Browser).newContext({
-    ...devices['Pixel 7'],
-    baseURL: 'http://127.0.0.1:4173',
-  })
-  const b = await ctx.newPage()
-  await b.goto('/')
-  await b.getByLabel(strings.login.email).fill('beto@example.com')
-  await b.getByLabel(strings.login.password).fill('secret123')
-  await b.getByRole('button', { name: strings.login.signUp }).click()
-  await b.getByLabel(strings.family.join.codeLabel).fill(code)
-  await b.getByRole('button', { name: strings.family.join.submit }).click()
-  await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
-  await b.goto('/despensa')
-  await expect(recurringList(b).getByRole('listitem')).toHaveCount(0)
-
-  await openPantry(page)
-  await makeRecurring(page)
-  await expect(recurringList(b).getByRole('listitem').filter({ hasText: 'feijão' })).toBeVisible()
-  await ctx.close()
+  await ana.goto('/')
+  await openPantry(ana)
+  await makeRecurring(ana)
+  await expect(
+    recurringList(beto).getByRole('listitem').filter({ hasText: 'feijão' }),
+  ).toBeVisible()
 })
 
 test('S-025 AC4: offline make/remove recurring reflects at once and persists after reconnect', async ({

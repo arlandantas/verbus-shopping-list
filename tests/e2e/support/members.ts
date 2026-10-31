@@ -1,9 +1,14 @@
 import { devices, expect, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../../src/strings/pt-BR'
+import { waitForItemCount } from './emulator'
 
 const AUTH_KEY = 'http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake'
 
-async function newMember(browser: Browser, email: string, displayName: string): Promise<Page> {
+export async function newMember(
+  browser: Browser,
+  email: string,
+  displayName: string,
+): Promise<Page> {
   const res = await fetch(AUTH_KEY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -36,7 +41,7 @@ export async function twoMembers(browser: Browser, items: string[]) {
     await field.press('Enter')
     await expect(ana.getByRole('listitem').filter({ hasText: name })).toBeVisible()
   }
-  await ana.waitForTimeout(1500) // let the item writes reach the emulator
+  await waitForItemCount(items.length) // item writes reached the emulator
   const beto = await newMember(browser, 'beto@example.com', 'Beto')
   await expect(beto).toHaveURL(/\/familia$/)
   await beto.getByLabel(strings.family.join.codeLabel).fill(code)
