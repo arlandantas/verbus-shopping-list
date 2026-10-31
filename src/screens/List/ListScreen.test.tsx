@@ -1,6 +1,8 @@
+import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import type { CatalogEntry } from '@/data/converters'
+import { strings } from '@/strings/pt-BR'
 import { ListScreen } from './ListScreen'
 
 const addItem = vi.hoisted(() => vi.fn())
@@ -61,5 +63,15 @@ describe('S-023 AC6: ListScreen passes catalog recurring', () => {
     renderIt()
     fireEvent.click(screen.getByText('pick'))
     expect(addItem.mock.calls[0]![1]).toMatchObject({ recurring: true })
+  })
+})
+
+describe('S-024 AC1: ListScreen links to Despensa', () => {
+  it('header has a Despensa link to /despensa', () => {
+    renderIt()
+    expect(screen.getByRole('link', { name: strings.pantry.link })).toHaveAttribute(
+      'href',
+      '/despensa',
+    )
   })
 })

@@ -66,9 +66,14 @@ export function ListScreen() {
     <main className="mx-auto max-w-md">
       <header className="flex min-h-12 items-center justify-between px-4 pt-2">
         <h1 className="text-xl">{family.name}</h1>
-        <Link to="/familia" className="flex min-h-12 items-center underline">
-          {strings.family.title}
-        </Link>
+        <nav className="flex gap-4">
+          <Link to="/despensa" className="flex min-h-12 items-center underline">
+            {strings.pantry.link}
+          </Link>
+          <Link to="/familia" className="flex min-h-12 items-center underline">
+            {strings.family.title}
+          </Link>
+        </nav>
       </header>
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
       {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}

@@ -64,6 +64,16 @@ export const strings = {
     writeError: 'Não foi possível salvar a alteração. Tente novamente.',
     suggestionsLabel: 'Sugestões',
   },
+  pantry: {
+    title: 'Despensa',
+    link: 'Despensa',
+    back: 'Voltar à lista',
+    atHome: 'Tenho em casa',
+    missing: 'Falta',
+    inCart: 'No carrinho',
+    empty:
+      'Nenhum item recorrente. Abra um item da lista e marque "Recorrente mensal" para ele aparecer aqui.',
+  },
   item: {
     title: 'Detalhe do item',
     quantity: 'Quantidade',
