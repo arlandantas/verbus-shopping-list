@@ -9,7 +9,7 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   test: {
-    // rules/data projects are added by later stories (ADR-0006)
+    // data project is added by a later story (ADR-0006)
     projects: [
       {
         extends: true,
@@ -18,6 +18,15 @@ export default defineConfig({
           environment: 'jsdom',
           globals: true,
           include: ['src/**/*.test.{ts,tsx}', 'tests/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'rules',
+          environment: 'node',
+          globals: true,
+          include: ['tests/rules/**/*.test.ts'],
         },
       },
     ],

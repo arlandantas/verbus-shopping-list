@@ -28,7 +28,8 @@ This file follows the AGENTS.md convention and is the single entry point for any
 - `pnpm dev` — Vite dev server
 - `pnpm build` — typecheck + production build
 - `pnpm typecheck` — `tsc --noEmit` (strict)
-- `pnpm test` — Vitest (unit project)
+- `pnpm test` — Vitest (unit project, no emulator)
+- `pnpm test:rules` — Firestore emulator + Vitest rules project (needs JDK 21)
 - `pnpm lint` — ESLint (flat config) · `pnpm format` / `pnpm format:check` — Prettier
 - `pnpm check` — lint + typecheck + test
 

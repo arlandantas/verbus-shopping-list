@@ -11,18 +11,21 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm lint && pnpm typecheck && pnpm test"
+    "test:rules": "firebase emulators:exec --only firestore \"vitest run --project rules\"",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules"
   },
   "dependencies": {
+    "firebase": "13.1.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@firebase/rules-unit-testing": "6.0.0",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "7.0.1",
@@ -33,6 +36,7 @@
     "@vitejs/plugin-react": "6.1.2",
     "eslint": "10.14.0",
     "eslint-plugin-react-hooks": "7.1.1",
+    "firebase-tools": "15.34.2",
     "globals": "17.13.0",
     "jsdom": "30.1.3",
     "prettier": "3.9.10",

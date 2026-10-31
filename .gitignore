@@ -10,6 +10,7 @@ ui-debug.log
 .env
 .env.*
 !.env.example
+!.env.development
 *.local
 .DS_Store
 .claude/settings.local.json
