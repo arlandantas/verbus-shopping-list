@@ -1,0 +1,40 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useAuth } from '@/app/AuthProvider'
+import type { Family } from '@/data/converters'
+import { watchFamily } from '@/data/families'
+import { watchUser } from '@/data/users'
+
+export type FamilyState =
+  | { status: 'loading'; family: null }
+  | { status: 'none'; family: null }
+  | { status: 'ready'; family: Family }
+
+const LOADING: FamilyState = { status: 'loading', family: null }
+const FamilyContext = createContext<FamilyState>(LOADING)
+
+/** Resolves the signed-in user's family from users/{uid}.familyId. Mount only when signed in, keyed by uid so state resets per user. */
+export function FamilyProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
+  const uid = user?.uid
+  const [familyId, setFamilyId] = useState<string | null | undefined>(undefined)
+  const [family, setFamily] = useState<Family | null>(null)
+
+  useEffect(() => {
+    if (!uid) return
+    return watchUser(uid, (profile) => setFamilyId(profile ? profile.familyId : undefined))
+  }, [uid])
+
+  useEffect(() => {
+    if (!familyId) return
+    return watchFamily(familyId, setFamily)
+  }, [familyId])
+
+  let state: FamilyState = LOADING
+  if (familyId === null) state = { status: 'none', family: null }
+  else if (familyId && family?.id === familyId) state = { status: 'ready', family }
+  return <FamilyContext.Provider value={state}>{children}</FamilyContext.Provider>
+}
+
+export function useFamily(): FamilyState {
+  return useContext(FamilyContext)
+}

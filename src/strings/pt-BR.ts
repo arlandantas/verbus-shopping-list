@@ -12,6 +12,24 @@ export const strings = {
   },
   family: {
     title: 'Família',
+    nameLabel: 'Nome da família',
+    create: 'Criar família',
+    creating: 'Criando…',
+    createError: 'Não foi possível criar a família. Tente novamente.',
+    offlineWarning: 'Você está offline. Conecte-se à internet para criar a família.',
+    members: (n: number) => (n === 1 ? '1 membro' : `${n} membros`),
+    continue: 'Continuar',
+    invite: {
+      title: 'Convite',
+      code: 'Código',
+      link: 'Link',
+      share: 'Compartilhar convite',
+      shareText: (name: string) => `Entre na família ${name} no Lista de Compras`,
+      copied: 'Link copiado!',
+    },
+  },
+  home: {
+    placeholder: 'A lista de compras chega em breve.',
   },
   authErrors: {
     'auth/invalid-credential': 'E-mail ou senha incorretos.',

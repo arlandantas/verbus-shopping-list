@@ -15,6 +15,9 @@ vi.mock('@/data/auth', () => ({
   signOut: vi.fn(),
 }))
 
+vi.mock('@/data/users', () => ({ watchUser: () => () => undefined }))
+vi.mock('@/data/families', () => ({ watchFamily: () => () => undefined, createFamily: vi.fn() }))
+
 describe('App', () => {
   it('S-001 AC3: renders the title from pt-BR strings', async () => {
     render(<App />)
