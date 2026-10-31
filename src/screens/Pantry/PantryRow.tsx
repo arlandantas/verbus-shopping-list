@@ -10,9 +10,11 @@ const labels = {
 export function PantryRow({
   row,
   onToggle,
+  onRemove,
 }: {
   row: PantryEntry
   onToggle: (row: PantryEntry) => void
+  onRemove: (row: PantryEntry) => void
 }) {
   const { entry, state } = row
   const tone =
@@ -22,16 +24,23 @@ export function PantryRow({
         ? 'bg-gray-100 text-gray-700'
         : 'text-gray-900'
   return (
-    <li className="border-b border-gray-200">
+    <li className="flex items-stretch border-b border-gray-200">
       <button
         type="button"
         aria-pressed={state === 'missing'}
         disabled={state === 'inCart'}
         onClick={() => onToggle(row)}
-        className={`flex min-h-12 w-full items-center justify-between gap-3 px-4 py-2 text-left text-base ${tone}`}
+        className={`flex min-h-12 flex-1 items-center justify-between gap-3 px-4 py-2 text-left text-base ${tone}`}
       >
         <span>{entry.name}</span>
         <span className="text-sm font-medium">{labels[state]}</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onRemove(row)}
+        className="min-h-12 px-3 text-sm text-gray-700 underline"
+      >
+        {strings.pantry.removeRecurring}
       </button>
     </li>
   )

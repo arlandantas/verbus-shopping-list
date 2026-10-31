@@ -71,6 +71,10 @@ export const strings = {
     atHome: 'Tenho em casa',
     missing: 'Falta',
     inCart: 'No carrinho',
+    listLabel: 'Recorrentes',
+    othersTitle: 'Outros itens já usados',
+    makeRecurring: 'Tornar recorrente',
+    removeRecurring: 'Remover dos recorrentes',
     empty:
       'Nenhum item recorrente. Abra um item da lista e marque "Recorrente mensal" para ele aparecer aqui.',
   },

@@ -1,4 +1,4 @@
-import { devices, expect, test, type Page } from '@playwright/test'
+import { devices, expect, test, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
 import { clearEmulators } from './support/emulator'
 
@@ -60,7 +60,7 @@ test('S-024 AC2: tapping "Tenho em casa" marks Falta and adds a pending item', a
   await recurringAtHome(page)
   const row = pantryRow(page, 'feijão')
   await expect(row).toContainText(strings.pantry.atHome)
-  await row.getByRole('button').click()
+  await row.getByRole('button').first().click()
   await expect(row).toContainText(strings.pantry.missing)
   await page.getByRole('link', { name: strings.pantry.back }).click()
   await expect(listRow(page, 'feijão')).toContainText('3 kg')
@@ -74,9 +74,9 @@ test('S-024 AC3: tapping Falta again returns to Tenho em casa and removes the pe
 }) => {
   await recurringAtHome(page)
   const row = pantryRow(page, 'feijão')
-  await row.getByRole('button').click()
+  await row.getByRole('button').first().click()
   await expect(row).toContainText(strings.pantry.missing)
-  await row.getByRole('button').click()
+  await row.getByRole('button').first().click()
   await expect(row).toContainText(strings.pantry.atHome)
   await page.getByRole('link', { name: strings.pantry.back }).click()
   await expect(page.getByRole('listitem')).toHaveCount(0)
@@ -89,7 +89,7 @@ test('S-024 AC4: bought recurring shows No carrinho and is not tappable', async 
   await openPantry(page)
   const row = pantryRow(page, 'feijão')
   await expect(row).toContainText(strings.pantry.inCart)
-  await expect(row.getByRole('button')).toBeDisabled()
+  await expect(row.getByRole('button').first()).toBeDisabled()
 })
 
 test('S-024 AC5: offline Falta reflects at once and persists after reconnect', async ({
@@ -99,7 +99,7 @@ test('S-024 AC5: offline Falta reflects at once and persists after reconnect', a
   await recurringAtHome(page)
   const row = pantryRow(page, 'feijão')
   await context.setOffline(true)
-  await row.getByRole('button').click()
+  await row.getByRole('button').first().click()
   await expect(row).toContainText(strings.pantry.missing)
   await context.setOffline(false)
   await page.reload()
@@ -111,4 +111,115 @@ test('S-024 AC6: empty Despensa explains how to mark an item as recurring', asyn
   await openPantry(page)
   await expect(page.getByText(strings.pantry.empty)).toBeVisible()
   await expect(page.getByRole('listitem')).toHaveCount(0)
+})
+
+const others = (page: Page) => page.getByRole('list', { name: strings.pantry.othersTitle })
+const recurringList = (page: Page) => page.getByRole('list', { name: strings.pantry.listLabel })
+
+/** Adds an unmarked "3 kg feijão" (catalog entry, not recurring) and opens the Despensa. */
+async function usedNotRecurring(page: Page) {
+  await signUpWithFamily(page)
+  await field(page).fill('3 kg feijão')
+  await field(page).press('Enter')
+  await expect(listRow(page, 'feijão')).toBeVisible()
+  await openPantry(page)
+}
+
+async function makeRecurring(page: Page) {
+  await page.getByText(strings.pantry.othersTitle).click()
+  await others(page)
+    .getByRole('listitem')
+    .filter({ hasText: 'feijão' })
+    .getByRole('button', { name: strings.pantry.makeRecurring })
+    .click()
+}
+
+test('S-025 AC1: "Outros itens já usados" lists non-recurring names; Tornar recorrente moves one', async ({
+  page,
+}) => {
+  await usedNotRecurring(page)
+  await expect(recurringList(page).getByRole('listitem')).toHaveCount(0)
+  await expect(others(page)).toBeHidden()
+  await makeRecurring(page)
+  await expect(
+    recurringList(page).getByRole('listitem').filter({ hasText: 'feijão' }),
+  ).toBeVisible()
+  await expect(others(page).getByRole('listitem')).toHaveCount(0)
+})
+
+test('S-025 AC2: Remover dos recorrentes drops it; pending item stays with recurring off', async ({
+  page,
+}) => {
+  await usedNotRecurring(page)
+  await makeRecurring(page)
+  await recurringList(page)
+    .getByRole('listitem')
+    .filter({ hasText: 'feijão' })
+    .getByRole('button', { name: strings.pantry.removeRecurring })
+    .click()
+  await expect(recurringList(page).getByRole('listitem')).toHaveCount(0)
+  await page.getByRole('link', { name: strings.pantry.back }).click()
+  await expect(listRow(page, 'feijão')).toBeVisible()
+  await page.getByRole('link', { name: 'feijão' }).click()
+  await expect(page.getByLabel(strings.item.recurring)).not.toBeChecked()
+})
+
+test('S-025 AC3: a recurring made by one member shows in the other member Despensa', async ({
+  page,
+  browser,
+}) => {
+  await signUpWithFamily(page)
+  await page.goto('/familia')
+  const code = (await page.getByTestId('invite-code').textContent()) ?? ''
+  await page.goto('/')
+  await field(page).fill('3 kg feijão')
+  await field(page).press('Enter')
+  await expect(listRow(page, 'feijão')).toBeVisible()
+
+  const ctx = await (browser as Browser).newContext({
+    ...devices['Pixel 7'],
+    baseURL: 'http://127.0.0.1:4173',
+  })
+  const b = await ctx.newPage()
+  await b.goto('/')
+  await b.getByLabel(strings.login.email).fill('beto@example.com')
+  await b.getByLabel(strings.login.password).fill('secret123')
+  await b.getByRole('button', { name: strings.login.signUp }).click()
+  await b.getByLabel(strings.family.join.codeLabel).fill(code)
+  await b.getByRole('button', { name: strings.family.join.submit }).click()
+  await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
+  await b.goto('/despensa')
+  await expect(recurringList(b).getByRole('listitem')).toHaveCount(0)
+
+  await openPantry(page)
+  await makeRecurring(page)
+  await expect(recurringList(b).getByRole('listitem').filter({ hasText: 'feijão' })).toBeVisible()
+  await ctx.close()
+})
+
+test('S-025 AC4: offline make/remove recurring reflects at once and persists after reconnect', async ({
+  page,
+  context,
+}) => {
+  await usedNotRecurring(page)
+  await context.setOffline(true)
+  await makeRecurring(page)
+  await expect(
+    recurringList(page).getByRole('listitem').filter({ hasText: 'feijão' }),
+  ).toBeVisible()
+  await context.setOffline(false)
+  await page.reload()
+  await expect(
+    recurringList(page).getByRole('listitem').filter({ hasText: 'feijão' }),
+  ).toBeVisible()
+  await context.setOffline(true)
+  await recurringList(page)
+    .getByRole('listitem')
+    .filter({ hasText: 'feijão' })
+    .getByRole('button', { name: strings.pantry.removeRecurring })
+    .click()
+  await expect(recurringList(page).getByRole('listitem')).toHaveCount(0)
+  await context.setOffline(false)
+  await page.reload()
+  await expect(recurringList(page).getByRole('listitem')).toHaveCount(0)
 })
