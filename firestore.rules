@@ -155,11 +155,15 @@ service cloud.firestore {
     }
 
     // Defaults only appear in the batch that creates the family (family absent before it).
-    function validCategoryCreate(d, familyId) {
+    // User categories cannot take a default id (ADR-0014).
+    function validCategoryCreate(d, familyId, categoryId) {
       return isMemberAfter(familyId)
         && validCategory(d)
-        && (d.isDefault == false
-          || !exists(/databases/$(database)/documents/families/$(familyId)));
+        && ((d.isDefault == false
+            && !(categoryId in ['mercearia', 'hortifruti', 'carnes', 'laticinios', 'limpeza',
+              'higiene']))
+          || (d.isDefault == true
+            && !exists(/databases/$(database)/documents/families/$(familyId))));
     }
 
     function validMemberProfile(d) {
@@ -298,7 +302,7 @@ service cloud.firestore {
 
       match /categories/{categoryId} {
         allow read: if isMember(familyId);
-        allow create: if validCategoryCreate(request.resource.data, familyId);
+        allow create: if validCategoryCreate(request.resource.data, familyId, categoryId);
         allow update: if isMember(familyId)
           && resource.data.isDefault == false
           && validCategory(request.resource.data)

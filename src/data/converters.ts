@@ -63,6 +63,23 @@ export const memberConverter: FirestoreDataConverter<MemberProfile> = {
   fromFirestore: (snap, options) => ({ displayName: snap.data(options).displayName }),
 }
 
+export interface Category {
+  id: string
+  name: string
+  isDefault: boolean
+  order: number
+}
+
+export const categoryConverter: FirestoreDataConverter<Category> = {
+  toFirestore: () => {
+    throw new Error('categoryConverter is read-only')
+  },
+  fromFirestore(snap, options) {
+    const d = snap.data(options)
+    return { id: snap.id, name: d.name, isDefault: d.isDefault === true, order: d.order }
+  },
+}
+
 export type ItemStatus = 'pending' | 'bought'
 
 export interface Item {

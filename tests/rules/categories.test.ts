@@ -125,6 +125,13 @@ describe('S-031 categories rules', () => {
     await assertFails(setDoc(doc(db, cat('mercearia')), user({ order: 0 })))
   })
 
+  it('S-037 AC1: a user category (isDefault false) with a default id is denied, even when absent', async () => {
+    const db = asUser(env, 'alice')
+    await assertFails(setDoc(doc(db, cat('higiene')), user({ order: 5 })))
+    await assertFails(setDoc(doc(db, cat('mercearia')), user({ order: 0 })))
+    await assertSucceeds(setDoc(doc(db, cat('higiene2')), user({ order: 5 })))
+  })
+
   it('S-031 AC4: update and delete of a default category are denied', async () => {
     const db = asUser(env, 'alice')
     await assertFails(updateDoc(doc(db, cat('mercearia')), { name: 'X' }))
