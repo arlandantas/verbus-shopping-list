@@ -31,6 +31,7 @@ This file follows the AGENTS.md convention and is the single entry point for any
 - `pnpm test` — Vitest (unit project, no emulator)
 - `pnpm test:rules` — Firestore emulator + Vitest rules project (needs JDK 21)
 - `pnpm test:e2e` — emulators + Playwright (Pixel 7, Chromium; first run: `pnpm exec playwright install chromium`)
+- `node scripts/gen-icons.mjs` — regenerate placeholder PWA icons (final icons come from the user)
 - `pnpm lint` — ESLint (flat config) · `pnpm format` / `pnpm format:check` — Prettier
 - `pnpm check` — lint + typecheck + test
 
