@@ -1,4 +1,4 @@
-# Roadmap (M0–M4 detalhados em histórias; demais marcos são épicos em backlog/index.md)
+# Roadmap (M0–M5 detalhados em histórias; demais marcos são épicos em backlog/index.md)
 
 | Marco | Escopo | Specs |
 |---|---|---|
@@ -7,6 +7,6 @@
 | M2 | Lista atual, adicionar item, texto livre, autocompletar, detalhe | 20 |
 | M3 | Despensa / recorrentes | 30 |
 | M4 | Modo mercado: tempo real, offline, desfazer | 40 |
-| M5 | Finalizar compra, ciclos, histórico, categorias, preço/mercado | 50, 60 |
+| M5 | Finalizar compra, ciclos, histórico, categorias, preço/mercado (S-031…S-049) | 50, 60, 70 |
 | M6 | Aviso de instalação iOS, polimento PWA | 10, 80 |
 | V0.1 | NFC-e (começando pelo RN) — só após aprovação do usuário | 90 |

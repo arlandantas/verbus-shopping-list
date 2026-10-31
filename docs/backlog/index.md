@@ -2,7 +2,7 @@
 
 Uma linha por história. Status: `todo` · `doing` · `done` · `blocked`.
 Detalhe da história: `stories/S-NNN.md`. Linhas `E-Mx` são épicos: o Arquiteto os detalha em histórias antes de iniciar o marco.
-Ordem = ordem de execução. Tudo até S-030 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
+Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
 
 | ID | Marco | Título | Status | Deps |
 |---|---|---|---|---|
@@ -36,5 +36,23 @@ Ordem = ordem de execução. Tudo até S-030 roda só com emuladores (sem input 
 | S-028 | M4 | Tela Modo mercado | done | S-021 |
 | S-029 | M4 | Quem marcou (mercado e lista) | done | S-027, S-028 |
 | S-030 | M4 | Modo mercado: tempo real, offline e conflito | done | S-029 |
-| E-M5 | M5 | Épico: finalizar compra, ciclos, histórico, categorias, preço/mercado | todo | S-025, S-030 |
+| S-031 | M5 | Regras: `categories` (padrões fixos e do usuário) | todo | S-026 |
+| S-032 | M5 | Regras: preço só em item comprado | todo | S-031 |
+| S-033 | M5 | Regras: `purchases` e `purchaseLines` | todo | S-032 |
+| S-034 | M5 | Regras: marcador `cycles` | todo | S-033 |
+| S-035 | M5 | Domínio: ciclo (mês) e preço em reais | todo | S-017 |
+| S-036 | M5 | Domínio: categorias padrão, agrupamento e soma por categoria | todo | S-017 |
+| S-037 | M5 | Camada de dados: categorias (semente e CRUD) | todo | S-031, S-036 |
+| S-038 | M5 | Camada de dados: preço do item e desmarcar limpa o preço | todo | S-032 |
+| S-039 | M5 | Camada de dados: `checkout` (finalizar compra) | todo | S-033, S-035, S-037 |
+| S-040 | M5 | Camada de dados: leitura do histórico e mercados usados | todo | S-039 |
+| S-041 | M5 | Camada de dados: abrir o ciclo e devolver recorrentes | todo | S-034, S-035 |
+| S-042 | M5 | Tela Categorias (criar, renomear, excluir) | todo | S-037 |
+| S-043 | M5 | Categoria no detalhe do item e no autocompletar | todo | S-037 |
+| S-044 | M5 | Agrupar por categoria na Lista e no Modo mercado | todo | S-037 |
+| S-045 | M5 | Preço no detalhe do item comprado | todo | S-038, S-043, S-035 |
+| S-046 | M5 | Tela Finalizar compra | todo | S-040, S-044, S-045 |
+| S-047 | M5 | Tela Histórico (meses e mês somente leitura) | todo | S-040, S-036 |
+| S-048 | M5 | Histórico: readicionar item à lista atual | todo | S-047 |
+| S-049 | M5 | Virada do mês: aviso e E2E dos recorrentes | todo | S-041, S-046 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |

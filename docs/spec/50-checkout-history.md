@@ -1,5 +1,7 @@
 # 50 — Fechamento da compra e histórico
 
+> Modelo: compras e linhas create-only (ADR-0012); ciclo = mês civil local, recorrentes voltam na 1ª abertura do mês via marcador `cycles` (ADR-0013). Histórias S-039…S-049.
+
 ## Fechamento
 1. Usuário toca em "Finalizar compra".
 2. Itens comprados são arquivados no histórico do mês. Itens não comprados permanecem pendentes.
@@ -14,4 +16,4 @@
 - Histórico
 
 ## Dados
-- `cycles` e `purchases` em `70-data-model.md`.
+- `purchases`, `purchaseLines` e `cycles` em `70-data-model.md` (ADR-0012/0013).

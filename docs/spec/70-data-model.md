@@ -1,6 +1,6 @@
 # 70 — Modelo de dados sugerido (Firestore)
 
-Sugestão inicial. Refinado pela ADR-0003 (nomes de campos em inglês, `invites`, regras de entrada).
+Sugestão inicial. Refinado pelas ADRs (campos em inglês, chaves exatas nas ADRs): 0003/0007 (`users`, `families`, `invites`), 0008 + 0015 (`items`, sem `cycle`; preço só se comprado), 0009/0010 (`catalog`), 0011 (`members`), 0012 (`purchases` + `purchaseLines`), 0013 (`cycles` = marcador de abertura do mês), 0014 (`categories`).
 
 - **users:** id, nome, e-mail, familyId.
 - **families:** id, nome, membros (lista de ids), código de convite.

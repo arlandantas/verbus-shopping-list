@@ -15,3 +15,7 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0009](0009-catalog-autocomplete-and-cycles.md) | Catálogo para autocompletar, ciclos e categorias no M2 | aceito |
 | [0010](0010-pantry-recurring-in-catalog.md) | Despensa: recorrência no catálogo (emenda a 0009) | aceito |
 | [0011](0011-member-profiles-and-market-mode.md) | Perfis de membro ("quem marcou") e modo mercado | aceito |
+| [0012](0012-checkout-purchases-and-lines.md) | Finalizar compra: `purchases` + `purchaseLines` (emenda spec 70 / 0009) | aceito |
+| [0013](0013-cycles-and-recurring-return.md) | Ciclo mensal e volta dos recorrentes (fecha ponto da 0010) | aceito |
+| [0014](0014-categories-defaults-and-grouping.md) | Categorias: padrões, CRUD e agrupamento (emenda spec 70 / 0009) | aceito |
+| [0015](0015-price-only-when-bought.md) | Preço só em item comprado; mercado opcional (emenda a 0008) | aceito |

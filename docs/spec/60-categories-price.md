@@ -1,5 +1,7 @@
 # 60 — Categorias, preço e mercado (V0)
 
+> Padrões fixos semeados ao criar a família; o usuário gerencia só as próprias (ADR-0014). `priceCents` só em item comprado; desmarcar limpa (ADR-0015). Histórias S-031…S-047.
+
 ## Categorias
 1. Padrão: mercearia, hortifruti (frutas e verduras), carnes, laticínios, limpeza e higiene pessoal.
 2. Usuário cria, renomeia e exclui as próprias categorias.
