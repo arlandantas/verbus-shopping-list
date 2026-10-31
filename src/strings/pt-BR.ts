@@ -60,6 +60,7 @@ export const strings = {
     markBought: (name: string) => `Marcar ${name} como comprado`,
     markPending: (name: string) => `Devolver ${name} para pendentes`,
     writeError: 'Não foi possível salvar a alteração. Tente novamente.',
+    suggestionsLabel: 'Sugestões',
   },
   authErrors: {
     'auth/invalid-credential': 'E-mail ou senha incorretos.',

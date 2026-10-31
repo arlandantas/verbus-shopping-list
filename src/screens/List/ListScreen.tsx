@@ -1,11 +1,13 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
-import type { Item } from '@/data/converters'
+import type { CatalogEntry, Item } from '@/data/converters'
 import { addItem, setItemStatus } from '@/data/items'
-import { parseItemText } from '@/domain/itemText'
+import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { strings } from '@/strings/pt-BR'
 import { AddItemBar } from './AddItemBar'
 import { ItemRow } from './ItemRow'
+import { useCatalog } from './useCatalog'
 import { useItems } from './useItems'
 
 function Section({
@@ -34,11 +36,24 @@ export function ListScreen() {
   const { family } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
+  const catalog = useCatalog(familyId)
+  const pendingKeys = useMemo(
+    () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
+    [items],
+  )
   if (!family) return null
 
   const onAdd = (text: string) => {
     const parsed = parseItemText(text)
     if (parsed) void addItem(familyId, parsed)
+  }
+  const onPick = (entry: CatalogEntry, typed: ParsedItem | null) => {
+    void addItem(familyId, {
+      name: entry.name,
+      quantity: typed?.quantity ?? entry.quantity,
+      unit: typed?.unit ?? entry.unit,
+      categoryId: entry.categoryId,
+    })
   }
   const onToggle = (item: Item) =>
     setItemStatus(familyId, item.id, item.status === 'bought' ? 'pending' : 'bought')
@@ -51,7 +66,7 @@ export function ListScreen() {
           {strings.family.title}
         </Link>
       </header>
-      <AddItemBar onAdd={onAdd} />
+      <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
       {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}
       <Section
         title={strings.list.pendingTitle}
