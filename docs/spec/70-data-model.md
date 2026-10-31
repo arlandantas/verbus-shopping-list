@@ -1,6 +1,6 @@
 # 70 — Modelo de dados sugerido (Firestore)
 
-Sugestão inicial; o Arquiteto pode refinar via ADR.
+Sugestão inicial. Refinado pela ADR-0003 (nomes de campos em inglês, `invites`, regras de entrada).
 
 - **users:** id, nome, e-mail, familyId.
 - **families:** id, nome, membros (lista de ids), código de convite.
