@@ -5,6 +5,7 @@ Language: specs/docs in pt-BR; code, identifiers, commits in English; UI strings
 This file follows the AGENTS.md convention and is the single entry point for any coding agent.
 
 ## Map (read only what your task needs; never read whole dirs)
+
 - `docs/STATE.md` — current focus and next step (overwritten, ≤40 lines)
 - `docs/backlog/index.md` — one line per story. `docs/backlog/stories/S-NNN.md` — one story
 - `docs/spec/` — one file per feature (≤120 lines). `docs/spec/README.md` lists them
@@ -14,24 +15,30 @@ This file follows the AGENTS.md convention and is the single entry point for any
 - `docs/roadmap.md` — milestones. `docs/templates/` — story and ADR templates
 
 ## Topic rules
-| When you touch | Read |
-|---|---|
+
+| When you touch                                  | Read                      |
+| ----------------------------------------------- | ------------------------- |
 | `firestore.rules`, data layer, `tests/rules/**` | `docs/rules/firestore.md` |
-| `src/**`, `public/**`, `index.html` | `docs/rules/frontend.md` |
-| any test file | `docs/rules/testing.md` |
+| `src/**`, `public/**`, `index.html`             | `docs/rules/frontend.md`  |
+| any test file                                   | `docs/rules/testing.md`   |
 
 ## Commands
+
 - `pnpm install` — install deps (CI: `--frozen-lockfile`)
 - `pnpm dev` — Vite dev server
 - `pnpm build` — typecheck + production build
 - `pnpm typecheck` — `tsc --noEmit` (strict)
 - `pnpm test` — Vitest (unit project)
+- `pnpm lint` — ESLint (flat config) · `pnpm format` / `pnpm format:check` — Prettier
+- `pnpm check` — lint + typecheck + test
 
 ## Size limits (split before exceeding)
+
 AGENTS.md ≤80 lines · spec ≤120 · story ≤60 · ADR ≤40 · STATE ≤40 · source file ≤300.
 Logs and history live in git, not in docs. Never append to STATE.md; rewrite it.
 
 ## Manager loop (the orchestrating agent)
+
 1. Read STATE.md, then the next `todo` line in backlog/index.md.
 2. Delegate to the `builder` role with: story id + the spec/ADR paths the story lists. Nothing else.
 3. Delegate the diff to the `reviewer` role. Max 2 builder↔reviewer rounds, then ask the user.
@@ -40,13 +47,16 @@ Logs and history live in git, not in docs. Never append to STATE.md; rewrite it.
    (credentials, Firebase project, real devices, real NFC-e samples, scope changes).
 
 ## Roles (`docs/agents/`)
+
 Tiers, not vendors: architect = high-reasoning (rare) · builder, reviewer = standard · researcher = fast/cheap.
 Role output ≤150 words: result, files touched, open issues. No file dumps.
 
 ## Git
+
 Atomic commits: one coherent idea each (a story, or a docs/config theme), no micro-commits.
 Conventional style in English: `feat: ...`, `docs: ...`, `chore: ...`; stories use `S-NNN: ...`.
 
 ## Non-negotiables
+
 Firestore rules deny by default; only family members access family data. Cloud is source of truth.
 Mobile-first, one-hand market mode, optimistic UI. Never store CPF from invoices. Never commit secrets.

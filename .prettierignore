@@ -1,0 +1,8 @@
+dist
+coverage
+playwright-report
+test-results
+.firebase
+pnpm-lock.yaml
+docs
+*.md
