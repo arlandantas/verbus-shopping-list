@@ -1,8 +1,66 @@
 rules_version = '2';
 
-// Deny by default. Real rules for users/families arrive in S-007/S-008.
+// Deny by default (ADR-0003). Joining a family and invites arrive in S-008.
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isMember(familyId) {
+      return isSignedIn()
+        && request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.members;
+    }
+
+    function isMemberAfter(familyId) {
+      return isSignedIn()
+        && request.auth.uid in getAfter(/databases/$(database)/documents/families/$(familyId)).data.members;
+    }
+
+    function validUser(data) {
+      return data.keys().hasOnly(['displayName', 'email', 'familyId', 'createdAt'])
+        && data.keys().hasAll(['displayName', 'email', 'familyId', 'createdAt'])
+        && data.displayName is string
+        && data.email is string
+        && data.createdAt is timestamp
+        && (data.familyId == null
+          || (data.familyId is string && isMemberAfter(data.familyId)));
+    }
+
+    function validFamilyCreate(data) {
+      return data.keys().hasOnly(['name', 'members', 'ownerId', 'inviteCode', 'createdAt'])
+        && data.keys().hasAll(['name', 'members', 'ownerId', 'createdAt'])
+        && data.name is string
+        && data.name.size() >= 1 && data.name.size() <= 60
+        && data.members is list
+        && data.members == [request.auth.uid]
+        && data.ownerId == request.auth.uid
+        && (!('inviteCode' in data) || (data.inviteCode is string && data.inviteCode.size() == 8))
+        && data.createdAt == request.time;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validUser(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /families/{familyId} {
+      allow read: if isSignedIn() && request.auth.uid in resource.data.members;
+      allow create: if isSignedIn() && validFamilyCreate(request.resource.data);
+      allow update, delete: if false;
+
+      // Item shape validation arrives in M2; for now members may only read.
+      match /{sub=**} {
+        allow read: if isMember(familyId);
+        allow write: if false;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
