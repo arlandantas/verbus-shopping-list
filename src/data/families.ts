@@ -59,6 +59,7 @@ export async function createFamily(
   })
   batch.set(doc(db, 'invites', inviteCode), {
     familyId: familyRef.id,
+    familyName: name,
     createdBy: uid,
     createdAt: serverTimestamp(),
   })

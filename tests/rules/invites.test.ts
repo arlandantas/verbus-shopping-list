@@ -29,12 +29,18 @@ beforeEach(async () => {
   await seed(env, {
     'families/F1': { name: 'Casa', members: ['alice'], ownerId: 'alice', createdAt: new Date() },
     'families/F2': { name: 'Outra', members: ['bob'], ownerId: 'bob', createdAt: new Date() },
-    'invites/ABCD2345': { familyId: 'F1', createdBy: 'alice', createdAt: new Date() },
+    'invites/ABCD2345': {
+      familyId: 'F1',
+      familyName: 'Casa',
+      createdBy: 'alice',
+      createdAt: new Date(),
+    },
   })
 })
 
 const invite = (over: Record<string, unknown> = {}) => ({
   familyId: 'F1',
+  familyName: 'Casa',
   createdBy: 'alice',
   createdAt: serverTimestamp(),
   ...over,
@@ -75,6 +81,17 @@ describe('S-008 AC2: creating invites', () => {
     await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ extra: 1 })))
     await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ familyId: 7 })))
     await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ createdAt: new Date(0) })))
+  })
+
+  it('ADR-0007: requires familyName equal to the family name, 1-60 chars', async () => {
+    const db = asUser(env, 'alice')
+    const missing: Record<string, unknown> = invite()
+    delete missing.familyName
+    await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), missing))
+    await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ familyName: 'Errada' })))
+    await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ familyName: '' })))
+    await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ familyName: 5 })))
+    await assertFails(setDoc(doc(db, 'invites/WXYZ6789'), invite({ familyName: 'x'.repeat(61) })))
   })
 
   it('denies codes outside the 8-char alphabet', async () => {

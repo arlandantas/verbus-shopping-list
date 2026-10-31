@@ -50,6 +50,7 @@ describe('S-009 AC3: createFamily', () => {
     })
     expect((await getDoc(doc(db, 'invites', inviteCode))).data()).toMatchObject({
       familyId,
+      familyName: 'Casa',
       createdBy: user.uid,
     })
     expect((await profileOf(user.uid))?.familyId).toBe(familyId)

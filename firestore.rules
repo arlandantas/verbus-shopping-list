@@ -63,10 +63,13 @@ service cloud.firestore {
     }
 
     function validInvite(data, code) {
-      return data.keys().hasOnly(['familyId', 'createdBy', 'createdAt'])
-        && data.keys().hasAll(['familyId', 'createdBy', 'createdAt'])
+      return data.keys().hasOnly(['familyId', 'familyName', 'createdBy', 'createdAt'])
+        && data.keys().hasAll(['familyId', 'familyName', 'createdBy', 'createdAt'])
         && validCode(code)
         && data.familyId is string
+        && data.familyName is string
+        && data.familyName.size() >= 1 && data.familyName.size() <= 60
+        && data.familyName == getAfter(/databases/$(database)/documents/families/$(data.familyId)).data.name
         && data.createdBy == request.auth.uid
         && data.createdAt == request.time
         && isMemberAfter(data.familyId);

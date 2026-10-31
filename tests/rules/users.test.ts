@@ -105,6 +105,7 @@ describe('S-007 AC5: users.familyId requires membership', () => {
     b.set(doc(db, 'families/F1'), fam())
     b.set(doc(db, 'invites/ABCD2345'), {
       familyId: 'F1',
+      familyName: 'Casa',
       createdBy: 'alice',
       createdAt: serverTimestamp(),
     })

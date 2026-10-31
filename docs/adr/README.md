@@ -10,3 +10,4 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0004](0004-offline-and-sync.md) | Estratégia offline e sincronização | aceito |
 | [0005](0005-source-layout.md) | Organização de `src/` e `tests/` | aceito |
 | [0006](0006-emulator-and-ci.md) | Emuladores, scripts de teste e CI | aceito |
+| [0007](0007-invite-carries-family-name.md) | Convite carrega o nome da família (emenda a 0003) | aceito |

@@ -42,11 +42,22 @@ const fam = (over: Record<string, unknown> = {}) => ({
 })
 
 /** Creates family `id` plus its invite in one batch, as the client does (ADR-0003). */
-function createFamily(uid: string, id: string, data: Record<string, unknown>, code = 'ABCD2345') {
+function createFamily(
+  uid: string,
+  id: string,
+  data: Record<string, unknown>,
+  code = 'ABCD2345',
+  familyName: unknown = data.name,
+) {
   const db = asUser(env, uid)
   const b = writeBatch(db)
   b.set(doc(db, `families/${id}`), data)
-  b.set(doc(db, `invites/${code}`), { familyId: id, createdBy: uid, createdAt: serverTimestamp() })
+  b.set(doc(db, `invites/${code}`), {
+    familyId: id,
+    familyName,
+    createdBy: uid,
+    createdAt: serverTimestamp(),
+  })
   return b.commit()
 }
 
@@ -69,10 +80,17 @@ describe('S-007 AC3: creating families', () => {
     b.set(doc(db, 'families/F3'), fam())
     b.set(doc(db, 'invites/ABCD2345'), {
       familyId: 'F1',
+      familyName: 'Nova',
       createdBy: 'carol',
       createdAt: serverTimestamp(),
     })
     await assertFails(b.commit())
+  })
+
+  it('ADR-0007: denies an invite whose familyName mismatches or is missing', async () => {
+    await assertFails(createFamily('carol', 'F3', fam(), 'ABCD2345', 'Outro nome'))
+    await assertFails(createFamily('carol', 'F3', fam(), 'ABCD2345', null))
+    await assertFails(createFamily('carol', 'F3', fam(), 'ABCD2345', ''))
   })
 
   it('denies members with another uid or extra uids', async () => {
