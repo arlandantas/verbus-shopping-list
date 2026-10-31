@@ -233,6 +233,16 @@ service cloud.firestore {
         && d.purchasedAt == request.time;
     }
 
+    // ADR-0013: create-only month marker; doc id = cycle (YYYY-MM).
+    function validCycleMarker(d, id) {
+      return d.keys().hasOnly(['openedBy', 'openedAt', 'recurringAdded'])
+        && d.keys().hasAll(['openedBy', 'openedAt', 'recurringAdded'])
+        && validCycle(id)
+        && d.openedBy == request.auth.uid
+        && d.openedAt == request.time
+        && d.recurringAdded is int && d.recurringAdded >= 0 && d.recurringAdded <= 400;
+    }
+
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && validUser(request.resource.data)
@@ -257,6 +267,12 @@ service cloud.firestore {
         allow update: if isMember(familyId)
           && validItemUpdate(resource.data, request.resource.data);
         allow delete: if isMember(familyId);
+      }
+
+      match /cycles/{cycleId} {
+        allow read: if isMember(familyId);
+        allow create: if isMember(familyId) && validCycleMarker(request.resource.data, cycleId);
+        allow update, delete: if false;
       }
 
       match /purchases/{purchaseId} {

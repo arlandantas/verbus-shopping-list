@@ -62,3 +62,9 @@ export const newPurchaseLine = async (over: Record<string, unknown> = {}) => {
     ...over,
   }
 }
+
+/** Valid `cycles` marker (ADR-0013); `openedAt` is the server time sentinel. */
+export const newCycle = async (over: Record<string, unknown> = {}) => {
+  const { serverTimestamp } = await import('firebase/firestore')
+  return { openedBy: 'alice', openedAt: serverTimestamp(), recurringAdded: 3, ...over }
+}
