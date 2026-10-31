@@ -1,4 +1,4 @@
-# Roadmap (M0–M2 detalhados em histórias; demais marcos são épicos em backlog/index.md)
+# Roadmap (M0–M4 detalhados em histórias; demais marcos são épicos em backlog/index.md)
 
 | Marco | Escopo | Specs |
 |---|---|---|

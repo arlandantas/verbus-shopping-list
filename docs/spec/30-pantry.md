@@ -7,3 +7,4 @@
 
 ## Notas
 - Recorrentes voltam como pendentes no início do próximo mês ou ao iniciar novo ciclo (ver `50-checkout-history.md`).
+- Recorrência mora no catálogo; estado da Despensa (falta / tenho / no carrinho) é derivado da lista, sem campo novo (ADR-0010).

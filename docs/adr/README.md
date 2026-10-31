@@ -13,3 +13,5 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0007](0007-invite-carries-family-name.md) | Convite carrega o nome da família (emenda a 0003) | aceito |
 | [0008](0008-items-model-and-rules.md) | Modelo e regras de `items` (emenda spec 70 / 0003) | aceito |
 | [0009](0009-catalog-autocomplete-and-cycles.md) | Catálogo para autocompletar, ciclos e categorias no M2 | aceito |
+| [0010](0010-pantry-recurring-in-catalog.md) | Despensa: recorrência no catálogo (emenda a 0009) | aceito |
+| [0011](0011-member-profiles-and-market-mode.md) | Perfis de membro ("quem marcou") e modo mercado | aceito |

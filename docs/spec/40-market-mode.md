@@ -12,3 +12,5 @@
 - Preço é opcional e fora do fluxo rápido (ver `60-categories-price.md`).
 - Conflitos: atualização por campo, a última marcação vence.
 - Atualização otimista, resposta imediata ao toque.
+- Agrupamento por categoria chega no E-M5; no M4 a ordem é pendentes, depois comprados (ADR-0011).
+- "Quem marcou" usa `families/{F}/members/{uid}`; a marcação é a mesma da Lista (ADR-0011).
