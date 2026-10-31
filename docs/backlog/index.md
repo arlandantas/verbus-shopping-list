@@ -9,9 +9,9 @@ Ordem = ordem de execução. Tudo até S-012 roda só com emuladores (sem input 
 | S-001 | M0 | Esqueleto Vite + React + TS + Vitest | done | — |
 | S-002 | M0 | ESLint, Prettier e Tailwind | done | S-001 |
 | S-003 | M0 | Emuladores Firebase, init do SDK e harness de regras | done | S-001 |
-| S-004 | M0 | Harness E2E com Playwright e emuladores | todo | S-003 |
-| S-005 | M0 | PWA: manifest, service worker e indicador offline | todo | S-004 |
-| S-006 | M0 | CI no GitHub Actions (input: remoto GitHub, não bloqueante) | todo | S-002, S-005 |
+| S-004 | M0 | Harness E2E com Playwright e emuladores | done | S-003 |
+| S-005 | M0 | PWA: manifest, service worker e indicador offline | done | S-004 |
+| S-006 | M0 | CI no GitHub Actions (input: remoto GitHub, não bloqueante) | done | S-002, S-005 |
 | S-007 | M1 | Regras: `users` e `families` (criar e ler) | todo | S-003 |
 | S-008 | M1 | Regras: convites e entrar na família | todo | S-007 |
 | S-009 | M1 | Camada de dados: perfil, família e convite | todo | S-008 |
