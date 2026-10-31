@@ -143,6 +143,13 @@ service cloud.firestore {
         && d.lastUsedAt == request.time;
     }
 
+    function validMemberProfile(d) {
+      return d.keys().hasOnly(['displayName'])
+        && d.keys().hasAll(['displayName'])
+        && d.displayName is string
+        && d.displayName.size() >= 1 && d.displayName.size() <= 60;
+    }
+
     function validItemCreate(d) {
       return validItemShape(d)
         && d.status == 'pending'
@@ -186,6 +193,14 @@ service cloud.firestore {
         allow update: if isMember(familyId)
           && validItemUpdate(resource.data, request.resource.data);
         allow delete: if isMember(familyId);
+      }
+
+      // Member profile (ADR-0011): readable by the family, writable only by its owner uid.
+      match /members/{uid} {
+        allow read: if isMember(familyId);
+        allow create, update: if isMember(familyId) && isOwner(uid)
+          && validMemberProfile(request.resource.data);
+        allow delete: if false;
       }
 
       match /catalog/{nameKey} {
