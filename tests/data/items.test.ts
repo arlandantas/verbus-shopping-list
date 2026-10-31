@@ -1,7 +1,15 @@
 import { collection, disableNetwork, enableNetwork, getDocs } from 'firebase/firestore'
 import { db } from '@/data/firebase'
 import type { CatalogEntry, Item } from '@/data/converters'
-import { addItem, deleteItem, setItemStatus, updateItemDetails, watchItems } from '@/data/items'
+import {
+  addItem,
+  deleteItem,
+  setItemPrice,
+  setItemStatus,
+  toggleItemStatus,
+  updateItemDetails,
+  watchItems,
+} from '@/data/items'
 import { watchCatalog } from '@/data/catalog'
 import { clearFirestore, logout } from './support'
 import { catDoc, current, flush, itemDoc, next, setup } from './itemsSupport'
@@ -178,5 +186,41 @@ describe('S-018 AC6: cross-family denial', () => {
       watchItems(familyId, () => {}, resolve)
     })
     expect(err.code).toBe('permission-denied')
+  })
+})
+
+describe('S-038 AC1: setItemPrice', () => {
+  it('writes only priceCents on a bought item; null clears it', async () => {
+    const { familyId } = await setup()
+    const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
+    await flush()
+    setItemStatus(familyId, id, 'bought')
+    await flush()
+    const before = await itemDoc(familyId, id)
+    setItemPrice(familyId, id, 1290)
+    await flush()
+    expect(await itemDoc(familyId, id)).toEqual({ ...before, priceCents: 1290 })
+    setItemPrice(familyId, id, null)
+    await flush()
+    expect(await itemDoc(familyId, id)).toEqual({ ...before, priceCents: null })
+  })
+})
+
+describe('S-038 AC2: unmarking clears the price', () => {
+  it('bought item with price -> toggleItemStatus -> pending with null price', async () => {
+    const { familyId } = await setup()
+    const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
+    await flush()
+    setItemStatus(familyId, id, 'bought')
+    setItemPrice(familyId, id, 1290)
+    await flush()
+    toggleItemStatus(familyId, { id, status: 'bought' })
+    await flush()
+    expect(await itemDoc(familyId, id)).toMatchObject({
+      status: 'pending',
+      markedBy: null,
+      markedAt: null,
+      priceCents: null,
+    })
   })
 })

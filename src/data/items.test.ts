@@ -1,5 +1,5 @@
 import type { Item } from './converters'
-import { toggleItemStatus } from './items'
+import { setItemStatus, toggleItemStatus } from './items'
 
 const fs = vi.hoisted(() => ({
   updateDoc: vi.fn(() => Promise.resolve()),
@@ -36,6 +36,17 @@ describe('S-028 AC1: toggleItemStatus', () => {
       status: 'pending',
       markedBy: null,
       markedAt: null,
+      priceCents: null,
     })
+  })
+})
+
+describe('S-038 AC3: setItemStatus bought', () => {
+  beforeEach(() => fs.updateDoc.mockClear())
+
+  it('does not include priceCents in the update', () => {
+    setItemStatus('f1', 'i1', 'bought')
+    const payload = (fs.updateDoc.mock.calls[0] as unknown[])[1] as Record<string, unknown>
+    expect(payload).not.toHaveProperty('priceCents')
   })
 })

@@ -160,6 +160,7 @@ export function setRecurring(
   fireAndForget(batch.commit())
 }
 
+/** Marking leaves the price alone; unmarking clears it in the same update (ADR-0015). */
 export function setItemStatus(familyId: string, id: string, status: ItemStatus): void {
   const bought = status === 'bought'
   fireAndForget(
@@ -167,8 +168,14 @@ export function setItemStatus(familyId: string, id: string, status: ItemStatus):
       status,
       markedBy: bought ? currentUid() : null,
       markedAt: bought ? serverTimestamp() : null,
+      ...(bought ? {} : { priceCents: null }),
     }),
   )
+}
+
+/** Only `priceCents`; rules accept it solely on bought items (ADR-0015). */
+export function setItemPrice(familyId: string, id: string, cents: number | null): void {
+  fireAndForget(updateDoc(doc(itemsCol(familyId), id), { priceCents: cents }))
 }
 
 /** The single status flip shared by List and Mercado (ADR-0011): writes the inverse status. */
