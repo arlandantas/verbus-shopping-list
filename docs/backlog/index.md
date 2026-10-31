@@ -31,10 +31,10 @@ Ordem = ordem de execução. Tudo até S-030 roda só com emuladores (sem input 
 | S-023 | M3 | Camada de dados: recorrentes e estado da Despensa | done | S-022 |
 | S-024 | M3 | Tela Despensa / Recorrentes | done | S-023 |
 | S-025 | M3 | Despensa: tornar recorrente e remover dos recorrentes | done | S-024 |
-| S-026 | M4 | Regras: `members` (perfil de membro) | todo | S-021 |
-| S-027 | M4 | Camada de dados: perfis de membro e nomes | todo | S-026 |
-| S-028 | M4 | Tela Modo mercado | todo | S-021 |
-| S-029 | M4 | Quem marcou (mercado e lista) | todo | S-027, S-028 |
-| S-030 | M4 | Modo mercado: tempo real, offline e conflito | todo | S-029 |
+| S-026 | M4 | Regras: `members` (perfil de membro) | done | S-021 |
+| S-027 | M4 | Camada de dados: perfis de membro e nomes | done | S-026 |
+| S-028 | M4 | Tela Modo mercado | done | S-021 |
+| S-029 | M4 | Quem marcou (mercado e lista) | done | S-027, S-028 |
+| S-030 | M4 | Modo mercado: tempo real, offline e conflito | done | S-029 |
 | E-M5 | M5 | Épico: finalizar compra, ciclos, histórico, categorias, preço/mercado | todo | S-025, S-030 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |
