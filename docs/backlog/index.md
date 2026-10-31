@@ -6,9 +6,9 @@ Ordem = ordem de execução. Tudo até S-012 roda só com emuladores (sem input 
 
 | ID | Marco | Título | Status | Deps |
 |---|---|---|---|---|
-| S-001 | M0 | Esqueleto Vite + React + TS + Vitest | todo | — |
-| S-002 | M0 | ESLint, Prettier e Tailwind | todo | S-001 |
-| S-003 | M0 | Emuladores Firebase, init do SDK e harness de regras | todo | S-001 |
+| S-001 | M0 | Esqueleto Vite + React + TS + Vitest | done | — |
+| S-002 | M0 | ESLint, Prettier e Tailwind | done | S-001 |
+| S-003 | M0 | Emuladores Firebase, init do SDK e harness de regras | done | S-001 |
 | S-004 | M0 | Harness E2E com Playwright e emuladores | todo | S-003 |
 | S-005 | M0 | PWA: manifest, service worker e indicador offline | todo | S-004 |
 | S-006 | M0 | CI no GitHub Actions (input: remoto GitHub, não bloqueante) | todo | S-002, S-005 |
