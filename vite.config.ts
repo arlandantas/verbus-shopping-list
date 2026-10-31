@@ -38,7 +38,6 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   test: {
-    // data project is added by a later story (ADR-0006)
     projects: [
       {
         extends: true,
@@ -56,6 +55,26 @@ export default defineConfig({
           environment: 'node',
           globals: true,
           include: ['tests/rules/**/*.test.ts'],
+        },
+      },
+      {
+        // Data layer against the Auth + Firestore emulators (real rules). The app's firebase
+        // init (IndexedDB cache, DOM) is swapped for a node-friendly one.
+        extends: true,
+        resolve: {
+          alias: [
+            {
+              find: '@/data/firebase',
+              replacement: fileURLToPath(new URL('./tests/data/support.ts', import.meta.url)),
+            },
+          ],
+        },
+        test: {
+          name: 'data',
+          environment: 'node',
+          globals: true,
+          include: ['tests/data/**/*.test.ts'],
+          fileParallelism: false,
         },
       },
     ],
