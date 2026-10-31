@@ -220,9 +220,7 @@ describe('S-015 AC4: marking bought and reverting', () => {
   })
 
   it('denies setting markedBy/markedAt while staying pending', async () => {
-    await assertFails(
-      updateDoc(item(alice()), { markedBy: 'alice', markedAt: serverTimestamp() }),
-    )
+    await assertFails(updateDoc(item(alice()), { markedBy: 'alice', markedAt: serverTimestamp() }))
     await assertFails(updateDoc(item(alice()), { markedBy: 'alice' }))
   })
 
@@ -240,9 +238,7 @@ describe('S-015 AC4: marking bought and reverting', () => {
 
   it('denies reverting to pending without clearing markers', async () => {
     await assertFails(updateDoc(item(alice(), 'bought'), { status: 'pending' }))
-    await assertFails(
-      updateDoc(item(alice(), 'bought'), { status: 'pending', markedBy: null }),
-    )
+    await assertFails(updateDoc(item(alice(), 'bought'), { status: 'pending', markedBy: null }))
     await assertFails(
       updateDoc(item(alice(), 'bought'), { status: 'pending', markedBy: 'alice', markedAt: null }),
     )
