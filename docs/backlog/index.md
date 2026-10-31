@@ -18,10 +18,10 @@ Ordem = ordem de execução. Tudo até S-021 roda só com emuladores (sem input 
 | S-010 | M1 | Login (Google e e-mail/senha) e sessão | done | S-004, S-009 |
 | S-011 | M1 | Criar família e compartilhar convite | done | S-010 |
 | S-012 | M1 | Entrar na família por código ou link | done | S-011 |
-| S-014 | M1 | Regras: uma família por usuário | todo | S-008 |
-| S-015 | M2 | Regras: `items` | todo | S-014 |
-| S-016 | M2 | Regras: `catalog` (fonte do autocompletar) | todo | S-015 |
-| S-017 | M2 | Domínio: texto livre, `nameKey` e unidades | todo | S-001 |
+| S-014 | M1 | Regras: uma família por usuário | done | S-008 |
+| S-015 | M2 | Regras: `items` | done | S-014 |
+| S-016 | M2 | Regras: `catalog` (fonte do autocompletar) | done | S-015 |
+| S-017 | M2 | Domínio: texto livre, `nameKey` e unidades | done | S-001 |
 | S-018 | M2 | Camada de dados: itens e catálogo | todo | S-016, S-017 |
 | S-019 | M2 | Tela Lista atual e adicionar item | todo | S-018, S-012 |
 | S-020 | M2 | Autocompletar a partir do catálogo | todo | S-019 |
