@@ -1,4 +1,4 @@
-# Roadmap (proposto; o Arquiteto refina)
+# Roadmap (M0–M1 detalhados em histórias; demais marcos são épicos em backlog/index.md)
 
 | Marco | Escopo | Specs |
 |---|---|---|
