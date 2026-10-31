@@ -23,7 +23,7 @@ vi.mock('@/data/members', () => ({ ensureMemberProfile: vi.fn() }))
 vi.mock('@/data/items', () => ({
   watchItems: () => () => undefined,
   addItem: vi.fn(),
-  setItemStatus: vi.fn(),
+  toggleItemStatus: vi.fn(),
 }))
 
 describe('App', () => {

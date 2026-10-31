@@ -64,6 +64,14 @@ export const strings = {
     writeError: 'Não foi possível salvar a alteração. Tente novamente.',
     suggestionsLabel: 'Sugestões',
   },
+  market: {
+    enter: 'Ir ao mercado',
+    exit: 'Sair',
+    title: 'Mercado',
+    counter: (done: number, total: number) => `${done} de ${total} no carrinho`,
+    allDone: 'Lista completa! Tudo no carrinho.',
+    empty: 'Nada na lista. Volte e adicione itens.',
+  },
   pantry: {
     title: 'Despensa',
     link: 'Despensa',

@@ -6,11 +6,13 @@ import { strings } from '@/strings/pt-BR'
 import { ListScreen } from './ListScreen'
 
 const addItem = vi.hoisted(() => vi.fn())
-vi.mock('@/data/items', () => ({ addItem, setItemStatus: vi.fn() }))
+const toggleItemStatus = vi.hoisted(() => vi.fn())
+const itemsState = vi.hoisted(() => ({ items: [] as unknown[] }))
+vi.mock('@/data/items', () => ({ addItem, toggleItemStatus }))
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({ family: { id: 'f1', name: 'Casa' } }),
 }))
-vi.mock('./useItems', () => ({ useItems: () => [] }))
+vi.mock('./useItems', () => ({ useItems: () => itemsState.items }))
 
 const catalog: CatalogEntry[] = [
   {
@@ -73,5 +75,23 @@ describe('S-024 AC1: ListScreen links to Despensa', () => {
       'href',
       '/despensa',
     )
+  })
+})
+
+describe('S-028 AC1: ListScreen uses the shared toggleItemStatus', () => {
+  it('checking a row calls toggleItemStatus(familyId, item)', () => {
+    const it = {
+      id: 'i1',
+      name: 'arroz',
+      quantity: 1,
+      unit: 'un',
+      note: null,
+      status: 'pending',
+    }
+    itemsState.items = [it]
+    renderIt()
+    fireEvent.click(screen.getByRole('checkbox', { name: strings.list.markBought('arroz') }))
+    expect(toggleItemStatus).toHaveBeenCalledWith('f1', it)
+    itemsState.items = []
   })
 })

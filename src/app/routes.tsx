@@ -5,6 +5,7 @@ import { useAuth } from '@/app/AuthProvider'
 import { FamilyProvider, useFamily } from '@/app/FamilyProvider'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
 import { ItemScreen } from '@/screens/Item/ItemScreen'
+import { MarketScreen } from '@/screens/Market/MarketScreen'
 import { PantryScreen } from '@/screens/Pantry/PantryScreen'
 import { ListScreen } from '@/screens/List/ListScreen'
 import { LoginScreen } from '@/screens/Login/LoginScreen'
@@ -51,6 +52,7 @@ function FamilyRoutes(): ReactNode {
       <Route path="/convite/:code" element={<InviteScreen />} />
       <Route path="/familia" element={<FamilyScreen />} />
       {status === 'ready' && <Route path="/" element={<ListScreen />} />}
+      {status === 'ready' && <Route path="/mercado" element={<MarketScreen />} />}
       {status === 'ready' && <Route path="/despensa" element={<PantryScreen />} />}
       {status === 'ready' && <Route path="/item/:id" element={<ItemScreen />} />}
       <Route path="*" element={<Navigate to={status === 'ready' ? '/' : '/familia'} replace />} />

@@ -171,6 +171,11 @@ export function setItemStatus(familyId: string, id: string, status: ItemStatus):
   )
 }
 
+/** The single status flip shared by List and Mercado (ADR-0011): writes the inverse status. */
+export function toggleItemStatus(familyId: string, item: Pick<Item, 'id' | 'status'>): void {
+  setItemStatus(familyId, item.id, item.status === 'bought' ? 'pending' : 'bought')
+}
+
 export function deleteItem(familyId: string, id: string): void {
   fireAndForget(deleteDoc(doc(itemsCol(familyId), id)))
 }

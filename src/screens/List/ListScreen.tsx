@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import type { CatalogEntry, Item } from '@/data/converters'
-import { addItem, setItemStatus } from '@/data/items'
+import { addItem, toggleItemStatus } from '@/data/items'
 import { toNameKey } from '@/domain/nameKey'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { strings } from '@/strings/pt-BR'
@@ -59,14 +59,16 @@ export function ListScreen() {
       recurring: entry.recurring,
     })
   }
-  const onToggle = (item: Item) =>
-    setItemStatus(familyId, item.id, item.status === 'bought' ? 'pending' : 'bought')
+  const onToggle = (item: Item) => toggleItemStatus(familyId, item)
 
   return (
     <main className="mx-auto max-w-md">
       <header className="flex min-h-12 items-center justify-between px-4 pt-2">
         <h1 className="text-xl">{family.name}</h1>
         <nav className="flex gap-4">
+          <Link to="/mercado" className="flex min-h-12 items-center underline">
+            {strings.market.enter}
+          </Link>
           <Link to="/despensa" className="flex min-h-12 items-center underline">
             {strings.pantry.link}
           </Link>
