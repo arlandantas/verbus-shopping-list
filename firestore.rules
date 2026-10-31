@@ -143,6 +143,24 @@ service cloud.firestore {
         && d.lastUsedAt == request.time;
     }
 
+    // Category shape (ADR-0014): exact keys, name 1-40, isDefault bool, order int 0-999.
+    function validCategory(d) {
+      return d.keys().hasOnly(['name', 'isDefault', 'order'])
+        && d.keys().hasAll(['name', 'isDefault', 'order'])
+        && d.name is string
+        && d.name.size() >= 1 && d.name.size() <= 40
+        && d.isDefault is bool
+        && d.order is int && d.order >= 0 && d.order <= 999;
+    }
+
+    // Defaults only appear in the batch that creates the family (family absent before it).
+    function validCategoryCreate(d, familyId) {
+      return isMemberAfter(familyId)
+        && validCategory(d)
+        && (d.isDefault == false
+          || !exists(/databases/$(database)/documents/families/$(familyId)));
+    }
+
     function validMemberProfile(d) {
       return d.keys().hasOnly(['displayName'])
         && d.keys().hasAll(['displayName'])
@@ -202,6 +220,16 @@ service cloud.firestore {
         allow create, update: if isMemberAfter(familyId) && isOwner(uid)
           && validMemberProfile(request.resource.data);
         allow delete: if false;
+      }
+
+      match /categories/{categoryId} {
+        allow read: if isMember(familyId);
+        allow create: if validCategoryCreate(request.resource.data, familyId);
+        allow update: if isMember(familyId)
+          && resource.data.isDefault == false
+          && validCategory(request.resource.data)
+          && request.resource.data.isDefault == false;
+        allow delete: if isMember(familyId) && resource.data.isDefault == false;
       }
 
       match /catalog/{nameKey} {
