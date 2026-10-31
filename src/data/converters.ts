@@ -80,6 +80,7 @@ export interface CatalogEntry {
   quantity: number
   unit: Unit
   categoryId: string | null
+  recurring: boolean
   lastUsedAt: Date
 }
 
@@ -124,6 +125,7 @@ export const catalogConverter: FirestoreDataConverter<CatalogEntry> = {
       quantity: d.quantity,
       unit: d.unit,
       categoryId: d.categoryId ?? null,
+      recurring: d.recurring === true,
       lastUsedAt: toDate(d.lastUsedAt) ?? new Date(),
     }
   },

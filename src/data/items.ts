@@ -60,14 +60,20 @@ export function addItem(familyId: string, input: NewItem): string {
     createdBy: uid,
     createdAt: serverTimestamp(),
   })
-  batch.set(catalogRef(familyId, nameKey), {
-    name,
-    nameKey,
-    quantity: input.quantity,
-    unit: input.unit,
-    categoryId,
-    lastUsedAt: serverTimestamp(),
-  })
+  // merge + `recurring` only when given: re-adding by free text must not erase the mark (ADR-0010)
+  batch.set(
+    catalogRef(familyId, nameKey),
+    {
+      name,
+      nameKey,
+      quantity: input.quantity,
+      unit: input.unit,
+      categoryId,
+      ...(input.recurring === undefined ? {} : { recurring: input.recurring }),
+      lastUsedAt: serverTimestamp(),
+    },
+    { merge: true },
+  )
   fireAndForget(batch.commit())
   return ref.id
 }
@@ -113,21 +119,44 @@ export function updateItemDetails(
     fields.name = name
     fields.nameKey = toNameKey(name)
   }
-  const touchesCatalog = ['quantity', 'unit', 'categoryId'].some((k) => k in fields)
+  const touchesCatalog = ['quantity', 'unit', 'categoryId', 'recurring'].some((k) => k in fields)
   const batch = writeBatch(db)
   batch.update(doc(itemsCol(familyId), id), fields)
   if (touchesCatalog) {
     const name = (fields.name as string | undefined) ?? current.name
     const nameKey = (fields.nameKey as string | undefined) ?? current.nameKey
-    batch.set(catalogRef(familyId, nameKey), {
-      name,
-      nameKey,
-      quantity: fields.quantity ?? current.quantity,
-      unit: fields.unit ?? current.unit,
-      categoryId: 'categoryId' in fields ? fields.categoryId : current.categoryId,
-      lastUsedAt: serverTimestamp(),
-    })
+    batch.set(
+      catalogRef(familyId, nameKey),
+      {
+        name,
+        nameKey,
+        quantity: fields.quantity ?? current.quantity,
+        unit: fields.unit ?? current.unit,
+        categoryId: 'categoryId' in fields ? fields.categoryId : current.categoryId,
+        ...('recurring' in fields ? { recurring: fields.recurring } : {}),
+        lastUsedAt: serverTimestamp(),
+      },
+      { merge: true },
+    )
   }
+  fireAndForget(batch.commit())
+}
+
+/** One batch: catalog.recurring plus the mirror on every item with this nameKey (ADR-0010). */
+export function setRecurring(
+  familyId: string,
+  nameKey: string,
+  recurring: boolean,
+  items: Pick<Item, 'id' | 'nameKey'>[],
+): void {
+  const batch = writeBatch(db)
+  batch.set(
+    catalogRef(familyId, nameKey),
+    { recurring, lastUsedAt: serverTimestamp() },
+    { merge: true },
+  )
+  for (const i of items)
+    if (i.nameKey === nameKey) batch.update(doc(itemsCol(familyId), i.id), { recurring })
   fireAndForget(batch.commit())
 }
 

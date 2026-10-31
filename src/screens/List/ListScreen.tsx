@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import type { CatalogEntry, Item } from '@/data/converters'
 import { addItem, setItemStatus } from '@/data/items'
+import { toNameKey } from '@/domain/nameKey'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { strings } from '@/strings/pt-BR'
 import { AddItemBar } from './AddItemBar'
@@ -45,7 +46,9 @@ export function ListScreen() {
 
   const onAdd = (text: string) => {
     const parsed = parseItemText(text)
-    if (parsed) addItem(familyId, parsed)
+    if (!parsed) return
+    const known = catalog.find((e) => e.nameKey === toNameKey(parsed.name))
+    addItem(familyId, known ? { ...parsed, recurring: known.recurring } : parsed)
   }
   const onPick = (entry: CatalogEntry, typed: ParsedItem | null) => {
     addItem(familyId, {
@@ -53,6 +56,7 @@ export function ListScreen() {
       quantity: typed?.quantity ?? entry.quantity,
       unit: typed?.unit ?? entry.unit,
       categoryId: entry.categoryId,
+      recurring: entry.recurring,
     })
   }
   const onToggle = (item: Item) =>

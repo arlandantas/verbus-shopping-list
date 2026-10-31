@@ -8,6 +8,7 @@ const entry = (name: string, nameKey: string, day: number): CatalogEntry => ({
   quantity: 1,
   unit: 'un',
   categoryId: null,
+  recurring: false,
   lastUsedAt: new Date(2026, 9, day),
 })
 

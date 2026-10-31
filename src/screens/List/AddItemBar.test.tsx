@@ -32,6 +32,7 @@ describe('AddItemBar combobox (ADR-0009)', () => {
     quantity: 2,
     unit: 'kg' as const,
     categoryId: null,
+    recurring: false,
     lastUsedAt: new Date(2026, 9, 1),
   })
   const catalog = [entry('feijão', 'feijao'), entry('feijão preto', 'feijao preto')]

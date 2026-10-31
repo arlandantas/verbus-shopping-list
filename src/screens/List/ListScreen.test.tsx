@@ -1,0 +1,65 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
+import type { CatalogEntry } from '@/data/converters'
+import { ListScreen } from './ListScreen'
+
+const addItem = vi.hoisted(() => vi.fn())
+vi.mock('@/data/items', () => ({ addItem, setItemStatus: vi.fn() }))
+vi.mock('@/app/FamilyProvider', () => ({
+  useFamily: () => ({ family: { id: 'f1', name: 'Casa' } }),
+}))
+vi.mock('./useItems', () => ({ useItems: () => [] }))
+
+const catalog: CatalogEntry[] = [
+  {
+    name: 'Arroz',
+    nameKey: 'arroz',
+    quantity: 2,
+    unit: 'kg',
+    categoryId: null,
+    recurring: true,
+    lastUsedAt: new Date(),
+  },
+]
+vi.mock('./useCatalog', () => ({ useCatalog: () => catalog }))
+vi.mock('./AddItemBar', () => ({
+  AddItemBar: (p: {
+    onAdd: (t: string) => void
+    onPick: (e: CatalogEntry, t: null) => void
+    catalog: CatalogEntry[]
+  }) => (
+    <div>
+      <button onClick={() => p.onAdd('arroz')}>free</button>
+      <button onClick={() => p.onAdd('leite')}>free-new</button>
+      <button onClick={() => p.onPick(p.catalog[0]!, null)}>pick</button>
+    </div>
+  ),
+}))
+
+beforeEach(() => addItem.mockReset())
+const renderIt = () =>
+  render(
+    <MemoryRouter>
+      <ListScreen />
+    </MemoryRouter>,
+  )
+
+describe('S-023 AC6: ListScreen passes catalog recurring', () => {
+  it('free text matching a recurring catalog entry passes recurring true', () => {
+    renderIt()
+    fireEvent.click(screen.getByText('free'))
+    expect(addItem.mock.calls[0]![1]).toMatchObject({ recurring: true })
+  })
+
+  it('free text without catalog match leaves recurring undefined', () => {
+    renderIt()
+    fireEvent.click(screen.getByText('free-new'))
+    expect(addItem.mock.calls[0]![1].recurring).toBeUndefined()
+  })
+
+  it('picking a suggestion passes the entry recurring', () => {
+    renderIt()
+    fireEvent.click(screen.getByText('pick'))
+    expect(addItem.mock.calls[0]![1]).toMatchObject({ recurring: true })
+  })
+})
