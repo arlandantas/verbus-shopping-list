@@ -19,6 +19,14 @@ export const strings = {
     offlineWarning: 'Você está offline. Conecte-se à internet para criar a família.',
     members: (n: number) => (n === 1 ? '1 membro' : `${n} membros`),
     continue: 'Continuar',
+    join: {
+      title: 'Já tem um código?',
+      codeLabel: 'Código do convite',
+      submit: 'Entrar com código',
+      submitting: 'Entrando…',
+      notFound: 'Convite não encontrado',
+      error: 'Não foi possível entrar na família. Tente novamente.',
+    },
     invite: {
       title: 'Convite',
       code: 'Código',
@@ -27,6 +35,15 @@ export const strings = {
       shareText: (name: string) => `Entre na família ${name} no Lista de Compras`,
       copied: 'Link copiado!',
     },
+  },
+  invite: {
+    title: (name: string) => `Entrar em ${name}?`,
+    confirm: 'Entrar na família',
+    confirming: 'Entrando…',
+    notFound: 'Convite não encontrado',
+    alreadyInFamily: 'Você já pertence a uma família. Convite não aplicado.',
+    error: 'Não foi possível entrar na família. Tente novamente.',
+    back: 'Voltar',
   },
   home: {
     placeholder: 'A lista de compras chega em breve.',

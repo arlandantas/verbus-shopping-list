@@ -5,6 +5,7 @@ import {
   AlreadyInFamily,
   InviteNotFound,
   createFamily,
+  getInvitePreview,
   joinFamilyByCode,
   watchFamily,
 } from '@/data/families'
@@ -87,6 +88,42 @@ describe('S-009 AC4: joinFamilyByCode', () => {
     await signUp('fabi')
     const { inviteCode } = await createFamily('Casa')
     await expect(joinFamilyByCode(inviteCode)).rejects.toBeInstanceOf(AlreadyInFamily)
+  })
+})
+
+describe('S-012: watchFamily across a join', () => {
+  it('recovers when the listener starts before the join is accepted server-side', async () => {
+    await signUp('kaue')
+    const { familyId, inviteCode } = await createFamily('Casa')
+    await logout()
+    const lia = await signUp('lia')
+    const seen = new Promise<string[]>((resolve) => {
+      const off = watchFamily(familyId, (f) => {
+        if (f?.members.includes(lia.uid)) {
+          off()
+          resolve(f.members)
+        }
+      })
+    })
+    await joinFamilyByCode(inviteCode)
+    expect(await seen).toHaveLength(2)
+  })
+})
+
+describe('S-012: getInvitePreview', () => {
+  it('returns familyId and familyName for a non-member, normalizing the code', async () => {
+    await signUp('hugo')
+    const { familyId, inviteCode } = await createFamily('Casa Hugo')
+    await logout()
+    await signUp('iara')
+    const lower = `${inviteCode.slice(0, 4).toLowerCase()}-${inviteCode.slice(4)}`
+    await expect(getInvitePreview(lower)).resolves.toEqual({ familyId, familyName: 'Casa Hugo' })
+  })
+
+  it('rejects unknown or malformed codes with InviteNotFound', async () => {
+    await signUp('jose')
+    await expect(getInvitePreview('ZZZZ2222')).rejects.toBeInstanceOf(InviteNotFound)
+    await expect(getInvitePreview('0')).rejects.toBeInstanceOf(InviteNotFound)
   })
 })
 

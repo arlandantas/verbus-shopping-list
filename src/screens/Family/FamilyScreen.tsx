@@ -6,6 +6,7 @@ import { createFamily } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { strings } from '@/strings/pt-BR'
 import { InviteCard } from './InviteCard'
+import { JoinForm } from './JoinForm'
 
 const button = 'min-h-12 w-full rounded px-4 text-base font-medium'
 
@@ -80,6 +81,7 @@ export function FamilyScreen() {
             {busy ? t.creating : t.create}
           </button>
         </form>
+        <JoinForm />
       </>
     )
   }

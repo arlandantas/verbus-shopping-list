@@ -68,6 +68,17 @@ export async function createFamily(
   return { familyId: familyRef.id, inviteCode }
 }
 
+/** Public preview of an invite (ADR-0007): readable by any signed-in user, member or not. */
+export async function getInvitePreview(
+  rawCode: string,
+): Promise<{ familyId: string; familyName: string }> {
+  const code = normalizeInviteCode(rawCode)
+  if (!isValidInviteCode(code)) throw new InviteNotFound()
+  const invite = await getDoc(doc(db, 'invites', code))
+  if (!invite.exists()) throw new InviteNotFound()
+  return { familyId: invite.data().familyId, familyName: invite.data().familyName }
+}
+
 /** Reads the invite, then one batch (no transaction, ADR-0004) updates family + profile. */
 export async function joinFamilyByCode(rawCode: string): Promise<{ familyId: string }> {
   const uid = currentUid()
@@ -88,10 +99,38 @@ export async function joinFamilyByCode(rawCode: string): Promise<{ familyId: str
   return { familyId }
 }
 
+const WATCH_RETRIES = 5
+
+/**
+ * Live family doc. A listener opened before a pending join/create is accepted server-side is
+ * denied (not a member yet) and dies, so errors resubscribe with a short backoff.
+ */
 export function watchFamily(id: string, cb: (family: Family | null) => void): Unsubscribe {
-  return onSnapshot(
-    doc(db, 'families', id).withConverter(familyConverter),
-    { includeMetadataChanges: true },
-    (snap) => cb(snap.exists() ? snap.data({ serverTimestamps: 'estimate' }) : null),
-  )
+  const ref = doc(db, 'families', id).withConverter(familyConverter)
+  let stopped = false
+  let attempts = 0
+  let off: Unsubscribe | undefined
+  let timer: ReturnType<typeof setTimeout> | undefined
+
+  const start = () => {
+    off = onSnapshot(
+      ref,
+      { includeMetadataChanges: true },
+      (snap) => {
+        attempts = 0
+        cb(snap.exists() ? snap.data({ serverTimestamps: 'estimate' }) : null)
+      },
+      () => {
+        if (stopped || attempts >= WATCH_RETRIES) return
+        attempts += 1
+        timer = setTimeout(start, 300 * attempts)
+      },
+    )
+  }
+  start()
+  return () => {
+    stopped = true
+    clearTimeout(timer)
+    off?.()
+  }
 }
