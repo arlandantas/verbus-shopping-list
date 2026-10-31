@@ -14,6 +14,18 @@ const memberDoc = async (f: string, uid: string) =>
   (await getDoc(doc(db, 'families', f, 'members', uid))).data()
 
 describe('members data', () => {
+  it('fix: createFamily and joinFamilyByCode publish the member doc in the same batch', async () => {
+    const ana = await loginAs('ana')
+    await ensureUserProfile({ uid: ana.uid, displayName: 'Ana', email: ana.email })
+    const { familyId, inviteCode } = await createFamily('Casa')
+    expect(await memberDoc(familyId, ana.uid)).toEqual({ displayName: 'Ana' })
+    await logout()
+    const bia = await loginAs('bia')
+    await ensureUserProfile({ uid: bia.uid, displayName: 'Bia', email: bia.email })
+    await joinFamilyByCode(inviteCode)
+    expect(await memberDoc(familyId, bia.uid)).toEqual({ displayName: 'Bia' })
+  })
+
   it('S-027 AC1: ensureMemberProfile creates the doc (trimmed) and does not rewrite the same name', async () => {
     const user = await loginAs('ana')
     await ensureUserProfile(user)

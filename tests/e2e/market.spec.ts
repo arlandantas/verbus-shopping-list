@@ -112,10 +112,6 @@ async function twoMembers(browser: Browser) {
   await field.press('Enter')
   await expect(ana.getByRole('listitem').filter({ hasText: 'leite' })).toBeVisible()
   await ana.waitForTimeout(1500) // let the item write reach the emulator
-  // Reload so the member profile is (re)published: on the create-family first load the lazy write can be denied (see report).
-  await ana.reload()
-  await expect(ana.getByRole('listitem').filter({ hasText: 'leite' })).toBeVisible()
-  await ana.waitForTimeout(1500)
   const beto = await newMember(browser, 'beto@example.com', 'Beto')
   await expect(beto).toHaveURL(/\/familia$/)
   await beto.getByLabel(strings.family.join.codeLabel).fill(code)

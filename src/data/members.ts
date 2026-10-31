@@ -1,8 +1,33 @@
-import { collection, doc, getDoc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  setDoc,
+  type Unsubscribe,
+  type WriteBatch,
+} from 'firebase/firestore'
 import { db } from '@/data/firebase'
 import { memberConverter } from './converters'
 
 const MAX_NAME = 60
+
+const cleanName = (displayName: string) => displayName.trim().slice(0, MAX_NAME).trim()
+
+/**
+ * Adds the caller's member profile to the create/join batch. The rules accept it because the
+ * family doc in the same batch already lists the caller (getAfter), which a separate later write
+ * could not rely on while the family write was still pending.
+ */
+export function addMemberProfileToBatch(
+  batch: WriteBatch,
+  familyId: string,
+  uid: string,
+  displayName: string,
+): void {
+  const name = cleanName(displayName)
+  if (name) batch.set(doc(db, 'families', familyId, 'members', uid), { displayName: name })
+}
 
 /**
  * Publishes the caller's name at families/{F}/members/{uid}. Skips the write when the doc already
@@ -14,7 +39,7 @@ export async function ensureMemberProfile(
   uid: string,
   displayName: string,
 ): Promise<boolean> {
-  const name = displayName.trim().slice(0, MAX_NAME).trim()
+  const name = cleanName(displayName)
   if (!name) return false
   const ref = doc(db, 'families', familyId, 'members', uid)
   try {

@@ -198,7 +198,8 @@ service cloud.firestore {
       // Member profile (ADR-0011): readable by the family, writable only by its owner uid.
       match /members/{uid} {
         allow read: if isMember(familyId);
-        allow create, update: if isMember(familyId) && isOwner(uid)
+        // isMemberAfter: also valid inside the create/join batch that adds the caller to members.
+        allow create, update: if isMemberAfter(familyId) && isOwner(uid)
           && validMemberProfile(request.resource.data);
         allow delete: if false;
       }

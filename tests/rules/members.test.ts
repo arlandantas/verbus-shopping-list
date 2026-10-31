@@ -3,7 +3,18 @@ import {
   assertSucceeds,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
+import {
+  arrayUnion,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore'
 import { anon, asUser, seed, setupEnv } from './support'
 
 let env: RulesTestEnvironment
@@ -20,6 +31,18 @@ beforeEach(async () => {
     'families/f1': { name: 'Casa', members: ['alice', 'bob'], ownerId: 'alice' },
     'families/f2': { name: 'Outra', members: ['carol'], ownerId: 'carol' },
     'families/f1/members/bob': { displayName: 'Bob' },
+    'users/carol': {
+      displayName: 'Carol',
+      email: 'c@x.com',
+      familyId: null,
+      createdAt: new Date(),
+    },
+    'invites/ABCD2345': {
+      familyId: 'f1',
+      familyName: 'Casa',
+      createdBy: 'alice',
+      createdAt: new Date(),
+    },
   })
 })
 
@@ -67,5 +90,44 @@ describe('S-026 members rules', () => {
     await assertSucceeds(setDoc(ref, { displayName: 'Alice' }))
     await assertFails(updateDoc(ref, { extra: 1 }))
     await assertFails(deleteDoc(ref))
+  })
+
+  it('member profile in the same batch as join is allowed; for a non-joining uid it is denied', async () => {
+    const carol = asUser(env, 'carol')
+    const join = (profileUid: string) => {
+      const b = writeBatch(carol)
+      b.update(doc(carol, 'families/f1'), { members: arrayUnion('carol'), joinCode: 'ABCD2345' })
+      b.update(doc(carol, 'users/carol'), { familyId: 'f1' })
+      b.set(doc(carol, mine(profileUid)), { displayName: 'Carol' })
+      return b.commit()
+    }
+    await assertFails(join('bob'))
+    await assertSucceeds(join('carol'))
+  })
+
+  it('member profile in the create-family batch is allowed; without joining the family it is denied', async () => {
+    const carol = asUser(env, 'carol')
+    const base = (b: ReturnType<typeof writeBatch>, id: string) => {
+      b.set(doc(carol, `families/${id}`), {
+        name: 'Nova',
+        members: ['carol'],
+        ownerId: 'carol',
+        inviteCode: 'WXYZ6789',
+        createdAt: serverTimestamp(),
+      })
+      b.set(doc(carol, 'invites/WXYZ6789'), {
+        familyId: id,
+        familyName: 'Nova',
+        createdBy: 'carol',
+        createdAt: serverTimestamp(),
+      })
+      b.update(doc(carol, 'users/carol'), { familyId: id })
+    }
+    const ok = writeBatch(carol)
+    base(ok, 'f3')
+    ok.set(doc(carol, mine('carol', 'f3')), { displayName: 'Carol' })
+    await assertSucceeds(ok.commit())
+    // standalone write into a family the caller does not belong to stays denied
+    await assertFails(setDoc(doc(carol, mine('carol', 'f1')), { displayName: 'Carol' }))
   })
 })

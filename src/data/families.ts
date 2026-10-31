@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore'
 import { auth, db } from '@/data/firebase'
 import { generateInviteCode, isValidInviteCode, normalizeInviteCode } from '@/domain/inviteCode'
+import { addMemberProfileToBatch } from './members'
 import { familyConverter, type Family } from './converters'
 
 export class InviteNotFound extends Error {
@@ -49,6 +50,7 @@ export async function createFamily(
   const uid = currentUid()
   const inviteCode = await freshInviteCode()
   const familyRef = doc(collection(db, 'families'))
+  const profile = await getDoc(doc(db, 'users', uid))
   const batch = writeBatch(db)
   batch.set(familyRef, {
     name,
@@ -64,6 +66,7 @@ export async function createFamily(
     createdAt: serverTimestamp(),
   })
   batch.update(doc(db, 'users', uid), { familyId: familyRef.id })
+  addMemberProfileToBatch(batch, familyRef.id, uid, profile.data()?.displayName ?? '')
   await batch.commit()
   return { familyId: familyRef.id, inviteCode }
 }
@@ -95,6 +98,7 @@ export async function joinFamilyByCode(rawCode: string): Promise<{ familyId: str
   const batch = writeBatch(db)
   batch.update(doc(db, 'families', familyId), { members: arrayUnion(uid), joinCode: code })
   batch.update(doc(db, 'users', uid), { familyId })
+  addMemberProfileToBatch(batch, familyId, uid, profile.data()?.displayName ?? '')
   await batch.commit()
   return { familyId }
 }
