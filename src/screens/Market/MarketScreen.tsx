@@ -1,5 +1,7 @@
 import { Link } from 'react-router'
+import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
+import { useMemberNames } from '@/hooks/useMemberNames'
 import { toggleItemStatus } from '@/data/items'
 import { strings } from '@/strings/pt-BR'
 import { useItems } from '@/screens/List/useItems'
@@ -9,6 +11,8 @@ export function MarketScreen() {
   const { family } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
+  const names = useMemberNames(family?.id)
+  const uid = useAuth().user?.uid
   if (!family) return null
   const list = items ?? []
   const done = list.filter((i) => i.status === 'bought').length
@@ -31,7 +35,13 @@ export function MarketScreen() {
       {allDone && <p className="px-4 pb-2 text-lg text-green-800">{strings.market.allDone}</p>}
       <ul>
         {list.map((item) => (
-          <MarketRow key={item.id} item={item} onToggle={(i) => toggleItemStatus(familyId, i)} />
+          <MarketRow
+            key={item.id}
+            item={item}
+            names={names}
+            uid={uid}
+            onToggle={(i) => toggleItemStatus(familyId, i)}
+          />
         ))}
       </ul>
     </main>

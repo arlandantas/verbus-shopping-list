@@ -1,9 +1,20 @@
 import { Link } from 'react-router'
 import type { Item } from '@/data/converters'
 import { formatQuantity } from '@/domain/itemText'
+import { MarkedBy } from '@/components/MarkedBy'
 import { strings } from '@/strings/pt-BR'
 
-export function ItemRow({ item, onToggle }: { item: Item; onToggle: (item: Item) => void }) {
+export function ItemRow({
+  item,
+  onToggle,
+  names,
+  uid,
+}: {
+  item: Item
+  onToggle: (item: Item) => void
+  names: Record<string, string>
+  uid: string | undefined
+}) {
   const bought = item.status === 'bought'
   const label = bought ? strings.list.markPending(item.name) : strings.list.markBought(item.name)
   return (
@@ -22,6 +33,7 @@ export function ItemRow({ item, onToggle }: { item: Item; onToggle: (item: Item)
         {item.name}
         {item.note && <span className="text-sm text-gray-700 no-underline">{item.note}</span>}
       </Link>
+      <MarkedBy status={item.status} markedBy={item.markedBy} names={names} uid={uid} />
       <span className="text-sm text-gray-700">{formatQuantity(item.quantity, item.unit)}</span>
       {item.hasPendingWrites && (
         <span className="text-xs text-amber-800">{strings.list.pendingSync}</span>

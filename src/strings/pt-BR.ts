@@ -64,6 +64,11 @@ export const strings = {
     writeError: 'Não foi possível salvar a alteração. Tente novamente.',
     suggestionsLabel: 'Sugestões',
   },
+  markedBy: {
+    you: 'por você',
+    someone: 'por alguém',
+    by: (name: string) => `por ${name}`,
+  },
   market: {
     enter: 'Ir ao mercado',
     exit: 'Sair',

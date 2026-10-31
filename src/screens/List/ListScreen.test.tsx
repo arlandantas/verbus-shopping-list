@@ -12,6 +12,8 @@ vi.mock('@/data/items', () => ({ addItem, toggleItemStatus }))
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({ family: { id: 'f1', name: 'Casa' } }),
 }))
+vi.mock('@/app/AuthProvider', () => ({ useAuth: () => ({ user: { uid: 'u1' } }) }))
+vi.mock('@/hooks/useMemberNames', () => ({ useMemberNames: () => ({}) }))
 vi.mock('./useItems', () => ({ useItems: () => itemsState.items }))
 
 const catalog: CatalogEntry[] = [
