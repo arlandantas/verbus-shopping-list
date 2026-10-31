@@ -1,5 +1,11 @@
+import { deleteApp, initializeApp } from 'firebase/app'
+import { connectAuthEmulator, getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import {
   collection,
+  connectFirestoreEmulator,
+  getFirestore,
+  serverTimestamp,
+  updateDoc,
   disableNetwork,
   doc,
   enableNetwork,
@@ -288,5 +294,52 @@ describe('S-023 AC4: setRecurring', () => {
     expect(await itemDoc(familyId, b)).toMatchObject({ recurring: false })
     expect(await itemDoc(familyId, c)).toMatchObject({ recurring: true })
     expect(await catDoc(familyId, 'leite')).toMatchObject({ recurring: true })
+  })
+})
+
+describe('S-030 AC5: last write wins per field', () => {
+  it('two clients write bought then pending; final state is the last write, other fields intact', async () => {
+    const { familyId } = await setup()
+    const id = addItem(familyId, { name: 'Arroz', quantity: 3, unit: 'kg' })
+    await flush()
+
+    // Second client: separate app instance, same account, own connection to the emulators.
+    const appB = initializeApp({ apiKey: 'demo-api-key', projectId: 'demo-verbus' }, 'client-b')
+    const authB = getAuth(appB)
+    connectAuthEmulator(authB, 'http://127.0.0.1:9099', { disableWarnings: true })
+    const dbB = getFirestore(appB)
+    connectFirestoreEmulator(dbB, '127.0.0.1', 8080)
+    await signInWithEmailAndPassword(authB, 'ana@example.test', 'test-password-123')
+
+    setItemStatus(familyId, id, 'bought')
+    await flush()
+    expect(await itemDoc(familyId, id)).toMatchObject({ status: 'bought' })
+    await updateDoc(doc(dbB, 'families', familyId, 'items', id), {
+      status: 'pending',
+      markedBy: null,
+      markedAt: null,
+    })
+    expect(await itemDoc(familyId, id)).toMatchObject({
+      status: 'pending',
+      markedBy: null,
+      markedAt: null,
+      name: 'Arroz',
+      quantity: 3,
+      unit: 'kg',
+    })
+    // and the reverse order ends bought
+    await updateDoc(doc(dbB, 'families', familyId, 'items', id), {
+      status: 'bought',
+      markedBy: authB.currentUser!.uid,
+      markedAt: serverTimestamp(),
+    })
+    setItemStatus(familyId, id, 'pending')
+    await flush()
+    expect(await itemDoc(familyId, id)).toMatchObject({
+      status: 'pending',
+      name: 'Arroz',
+      quantity: 3,
+    })
+    await deleteApp(appB)
   })
 })
