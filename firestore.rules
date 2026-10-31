@@ -129,10 +129,11 @@ service cloud.firestore {
         && d.createdBy is string;
     }
 
-    // Catalog entry (ADR-0009): doc id is the nameKey.
+    // Catalog entry (ADR-0009/0010): doc id is the nameKey; recurring optional bool.
     function validCatalogEntry(d, id) {
-      return d.keys().hasOnly(['name', 'nameKey', 'quantity', 'unit', 'categoryId', 'lastUsedAt'])
+      return d.keys().hasOnly(['name', 'nameKey', 'quantity', 'unit', 'categoryId', 'lastUsedAt', 'recurring'])
         && d.keys().hasAll(['name', 'nameKey', 'quantity', 'unit', 'categoryId', 'lastUsedAt'])
+        && (!('recurring' in d) || d.recurring is bool)
         && validName(d.name)
         && validNameKey(id)
         && d.nameKey == id
