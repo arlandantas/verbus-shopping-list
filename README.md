@@ -7,7 +7,7 @@ PWA de lista de compras compartilhada para o núcleo familiar. Cadastro mínimo,
 - Estado atual: [docs/STATE.md](docs/STATE.md)
 - Desenvolvimento agêntico: veja [AGENTS.md](AGENTS.md)
 
-## Teste manual local
+## Teste manual local (roteiro: [docs/manual-test.md](docs/manual-test.md))
 
 Rode `pnpm dev:local` (precisa de JDK 21): sobe os emuladores Auth/Firestore, carrega contas e dados de exemplo e inicia o Vite.
 Na tela de login, o painel "Contas de teste" entra com um toque: Ana e Beto (mesma família, com itens) e Carla (sem família).

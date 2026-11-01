@@ -50,11 +50,11 @@ Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input 
 | S-042 | M5 | Tela Categorias (criar, renomear, excluir) | done | S-037 |
 | S-050 | M5 | Contas de teste locais e login rápido (emulador) | done | S-012 |
 | S-043 | M5 | Categoria no detalhe do item e no autocompletar | done | S-037 |
-| S-044 | M5 | Agrupar por categoria na Lista e no Modo mercado | todo | S-037 |
-| S-045 | M5 | Preço no detalhe do item comprado | todo | S-038, S-043, S-035 |
-| S-046 | M5 | Tela Finalizar compra | todo | S-040, S-044, S-045 |
-| S-047 | M5 | Tela Histórico (meses e mês somente leitura) | todo | S-040, S-036 |
-| S-048 | M5 | Histórico: readicionar item à lista atual | todo | S-047 |
-| S-049 | M5 | Virada do mês: aviso e E2E dos recorrentes | todo | S-041, S-046 |
+| S-044 | M5 | Agrupar por categoria na Lista e no Modo mercado | done | S-037 |
+| S-045 | M5 | Preço no detalhe do item comprado | done | S-038, S-043, S-035 |
+| S-046 | M5 | Tela Finalizar compra | done | S-040, S-044, S-045 |
+| S-047 | M5 | Tela Histórico (meses e mês somente leitura) | done | S-040, S-036 |
+| S-048 | M5 | Histórico: readicionar item à lista atual | done | S-047 |
+| S-049 | M5 | Virada do mês: aviso e E2E dos recorrentes | done | S-041, S-046 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |
 | E-SEC | — | Épico: endurecimento de segurança (só após a 1ª rodada de testes do usuário; ADR-0017, ADR-0016) | todo | — |
