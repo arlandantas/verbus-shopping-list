@@ -34,9 +34,13 @@ describe('S-032 AC1: price on a bought item', () => {
   })
 })
 
-describe('S-032 AC2: price on a pending item', () => {
-  it.each([0, 1290])('denies update of priceCents %s', async (priceCents) => {
-    await assertFails(updateDoc(itemRef(alice()), { priceCents }))
+describe('S-032 AC2 (ADR-0022): price on a pending item', () => {
+  it.each([0, 1290, 10_000_000])('allows update of priceCents %s', async (priceCents) => {
+    await assertSucceeds(updateDoc(itemRef(alice()), { priceCents }))
+  })
+
+  it.each([10_000_001, 12.5, -1, '1290'])('denies out-of-range priceCents %s', async (v) => {
+    await assertFails(updateDoc(itemRef(alice()), { priceCents: v }))
   })
 
   it('denies creating a pending item with a price', async () => {
@@ -48,17 +52,11 @@ describe('S-032 AC2: price on a pending item', () => {
   })
 })
 
-describe('S-032 AC3: reverting a priced item', () => {
+describe('S-032 AC3 (ADR-0022): unmarking keeps the price', () => {
   const revert = { status: 'pending', markedBy: null, markedAt: null }
 
-  it('denies reverting to pending while keeping the price', async () => {
-    await assertFails(updateDoc(itemRef(alice(), 'pricedBought'), revert))
-  })
-
-  it('allows reverting to pending when clearing the price in the same update', async () => {
-    await assertSucceeds(
-      updateDoc(itemRef(alice(), 'pricedBought'), { ...revert, priceCents: null }),
-    )
+  it('allows reverting to pending while keeping the price', async () => {
+    await assertSucceeds(updateDoc(itemRef(alice(), 'pricedBought'), revert))
   })
 
   it('allows marking bought and pricing in one update', async () => {
@@ -68,6 +66,16 @@ describe('S-032 AC3: reverting a priced item', () => {
         markedBy: 'alice',
         markedAt: serverTimestamp(),
         priceCents: 500,
+      }),
+    )
+  })
+
+  it('denies marking bought with another uid as markedBy', async () => {
+    await assertFails(
+      updateDoc(itemRef(alice()), {
+        status: 'bought',
+        markedBy: 'dave',
+        markedAt: serverTimestamp(),
       }),
     )
   })

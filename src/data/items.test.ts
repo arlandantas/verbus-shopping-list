@@ -36,7 +36,6 @@ describe('S-028 AC1: toggleItemStatus', () => {
       status: 'pending',
       markedBy: null,
       markedAt: null,
-      priceCents: null,
     })
   })
 })

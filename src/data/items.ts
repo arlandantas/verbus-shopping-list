@@ -24,7 +24,10 @@ export interface NewItem {
 }
 
 export type ItemPatch = Partial<
-  Pick<Item, 'name' | 'quantity' | 'unit' | 'note' | 'categoryId' | 'recurring'>
+  Pick<
+    Item,
+    'name' | 'quantity' | 'unit' | 'note' | 'categoryId' | 'recurring' | 'priceCents' | 'status'
+  >
 >
 
 function currentUid(): string {
@@ -103,9 +106,14 @@ export function watchItems(
 }
 
 /** What the caller already knows about the item; lets the catalog follow without any read. */
-export type ItemCurrent = Pick<Item, 'name' | 'nameKey' | 'quantity' | 'unit' | 'categoryId'>
+export type ItemCurrent = Pick<Item, 'name' | 'nameKey' | 'quantity' | 'unit' | 'categoryId'> &
+  Partial<Pick<Item, 'recurring'>>
 
-/** Updates only the given fields; catalog follows (same batch) when quantity/unit/category change. */
+/**
+ * Updates only the given fields; catalog follows (same batch). A rename writes the new entry
+ * (with the item's `recurring`) and clears `recurring` on the old one (ADR-0020). `status`
+ * is written only when given, independent of the price (ADR-0022).
+ */
 export function updateItemDetails(
   familyId: string,
   id: string,
@@ -119,25 +127,38 @@ export function updateItemDetails(
     fields.name = name
     fields.nameKey = toNameKey(name)
   }
-  const touchesCatalog = ['quantity', 'unit', 'categoryId', 'recurring'].some((k) => k in fields)
+  if ('status' in fields) {
+    const bought = fields.status === 'bought'
+    fields.markedBy = bought ? currentUid() : null
+    fields.markedAt = bought ? serverTimestamp() : null
+  }
+  const nameKey = (fields.nameKey as string | undefined) ?? current.nameKey
+  const renamed = nameKey !== current.nameKey
+  const touchesCatalog =
+    renamed || ['quantity', 'unit', 'categoryId', 'recurring'].some((k) => k in fields)
   const batch = writeBatch(db)
   batch.update(doc(itemsCol(familyId), id), fields)
   if (touchesCatalog) {
-    const name = (fields.name as string | undefined) ?? current.name
-    const nameKey = (fields.nameKey as string | undefined) ?? current.nameKey
+    const recurring = (fields.recurring as boolean | undefined) ?? current.recurring ?? false
     batch.set(
       catalogRef(familyId, nameKey),
       {
-        name,
+        name: (fields.name as string | undefined) ?? current.name,
         nameKey,
         quantity: fields.quantity ?? current.quantity,
         unit: fields.unit ?? current.unit,
         categoryId: 'categoryId' in fields ? fields.categoryId : current.categoryId,
-        ...('recurring' in fields ? { recurring: fields.recurring } : {}),
+        ...('recurring' in fields || renamed ? { recurring } : {}),
         lastUsedAt: serverTimestamp(),
       },
       { merge: true },
     )
+    if (renamed && current.recurring)
+      batch.set(
+        catalogRef(familyId, current.nameKey),
+        { recurring: false, lastUsedAt: serverTimestamp() },
+        { merge: true },
+      )
   }
   fireAndForget(batch.commit())
 }
@@ -160,7 +181,7 @@ export function setRecurring(
   fireAndForget(batch.commit())
 }
 
-/** Marking leaves the price alone; unmarking clears it in the same update (ADR-0015). */
+/** Only status/markedBy/markedAt; the price is independent of the cart (ADR-0022). */
 export function setItemStatus(familyId: string, id: string, status: ItemStatus): void {
   const bought = status === 'bought'
   fireAndForget(
@@ -168,12 +189,11 @@ export function setItemStatus(familyId: string, id: string, status: ItemStatus):
       status,
       markedBy: bought ? currentUid() : null,
       markedAt: bought ? serverTimestamp() : null,
-      ...(bought ? {} : { priceCents: null }),
     }),
   )
 }
 
-/** Only `priceCents`; rules accept it solely on bought items (ADR-0015). */
+/** Only `priceCents`, valid in any status (ADR-0022). */
 export function setItemPrice(familyId: string, id: string, cents: number | null): void {
   fireAndForget(updateDoc(doc(itemsCol(familyId), id), { priceCents: cents }))
 }

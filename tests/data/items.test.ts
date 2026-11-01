@@ -206,8 +206,8 @@ describe('S-038 AC1: setItemPrice', () => {
   })
 })
 
-describe('S-038 AC2: unmarking clears the price', () => {
-  it('bought item with price -> toggleItemStatus -> pending with null price', async () => {
+describe('S-038 AC2 (ADR-0022): unmarking keeps the price', () => {
+  it('bought item with price -> toggleItemStatus -> pending, price intact (S-056 AC7)', async () => {
     const { familyId } = await setup()
     const id = addItem(familyId, { name: 'Arroz', quantity: 1, unit: 'un' })
     await flush()
@@ -220,7 +220,7 @@ describe('S-038 AC2: unmarking clears the price', () => {
       status: 'pending',
       markedBy: null,
       markedAt: null,
-      priceCents: null,
+      priceCents: 1290,
     })
   })
 })
