@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useAuth } from '@/app/AuthProvider'
 import type { Family } from '@/data/converters'
+import { openCycleIfNeeded } from '@/data/cycles'
 import { watchFamily } from '@/data/families'
 import { ensureMemberProfile } from '@/data/members'
 import { watchUser } from '@/data/users'
+import { reportWriteError } from '@/data/writeErrors'
+import { cycleOf } from '@/domain/cycle'
 
 export type FamilyState =
   | { status: 'loading'; family: null }
@@ -42,6 +45,17 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     if (uid && readyFamilyId && displayName)
       void ensureMemberProfile(readyFamilyId, uid, displayName)
   }, [uid, readyFamilyId, displayName])
+
+  // ADR-0013: first online open of the month returns the recurring items (background, once per family).
+  useEffect(() => {
+    if (!uid || !readyFamilyId) return
+    const open = () => {
+      openCycleIfNeeded(readyFamilyId, cycleOf(new Date())).catch(reportWriteError)
+    }
+    open()
+    window.addEventListener('online', open)
+    return () => window.removeEventListener('online', open)
+  }, [uid, readyFamilyId])
 
   const retry = () => {
     setFailed(false)

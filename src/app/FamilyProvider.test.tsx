@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { act, render, screen } from '@testing-library/react'
+import { cycleOf } from '@/domain/cycle'
 import { FamilyProvider, useFamily } from '@/app/FamilyProvider'
 import type { Family, UserProfile } from '@/data/converters'
 
@@ -8,6 +9,9 @@ let emitFamily: (f: Family | null) => void = () => undefined
 let failFamily: () => void = () => undefined
 const watchFamily = vi.fn()
 const ensureMemberProfile = vi.fn()
+const openCycleIfNeeded = vi.fn<(...args: unknown[]) => Promise<unknown>>(() =>
+  Promise.resolve({ added: 0 }),
+)
 
 vi.mock('@/app/AuthProvider', () => ({
   useAuth: () => ({ status: 'signedIn', user: { uid: 'u1', displayName: 'A', email: 'a@b.co' } }),
@@ -20,6 +24,9 @@ vi.mock('@/data/users', () => ({
 }))
 vi.mock('@/data/members', () => ({
   ensureMemberProfile: (...args: unknown[]) => ensureMemberProfile(...args),
+}))
+vi.mock('@/data/cycles', () => ({
+  openCycleIfNeeded: (...args: unknown[]) => openCycleIfNeeded(...args),
 }))
 vi.mock('@/data/families', () => ({
   watchFamily: (id: string, cb: (f: Family | null) => void, onError?: () => void) => {
@@ -109,5 +116,32 @@ describe('FamilyProvider', () => {
       }),
     )
     expect(ensureMemberProfile).toHaveBeenCalledWith('f3', 'u1', 'Ana')
+  })
+
+  it('S-041 AC4: opens the cycle once ready and again on the online event', () => {
+    openCycleIfNeeded.mockClear()
+    render(
+      <FamilyProvider>
+        <Probe />
+      </FamilyProvider>,
+    )
+    act(() => emitUser(profile('f4')))
+    expect(openCycleIfNeeded).not.toHaveBeenCalled()
+    act(() =>
+      emitFamily({
+        id: 'f4',
+        name: 'Casa',
+        members: ['u1'],
+        ownerId: 'u1',
+        inviteCode: 'ABCD2345',
+        createdAt: new Date(),
+      }),
+    )
+    expect(openCycleIfNeeded).toHaveBeenCalledTimes(1)
+    expect(openCycleIfNeeded).toHaveBeenCalledWith('f4', cycleOf(new Date()))
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(openCycleIfNeeded).toHaveBeenCalledTimes(2)
   })
 })
