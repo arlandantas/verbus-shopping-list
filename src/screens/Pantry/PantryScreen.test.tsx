@@ -59,9 +59,8 @@ describe('S-024 PantryScreen', () => {
   it('AC2: atHome row adds the catalog quantity/unit/category as recurring', () => {
     catalog = [entry('Feijão')]
     renderIt()
-    const btn = screen.getByRole('button', { name: /^Feijão/ })
-    expect(btn).toHaveAttribute('aria-pressed', 'false')
-    expect(btn).toHaveTextContent(strings.pantry.atHome)
+    const btn = screen.getByRole('button', { name: strings.pantry.markMissingFor('Feijão') })
+    expect(screen.getByText(strings.pantry.atHome)).toBeInTheDocument()
     fireEvent.click(btn)
     expect(h.addItem).toHaveBeenCalledWith('f1', {
       name: 'Feijão',
@@ -76,9 +75,8 @@ describe('S-024 PantryScreen', () => {
     catalog = [entry('Feijão')]
     items = [item('Feijão', 'pending', 'p9')]
     renderIt()
-    const btn = screen.getByRole('button', { name: /^Feijão/ })
-    expect(btn).toHaveAttribute('aria-pressed', 'true')
-    expect(btn).toHaveTextContent(strings.pantry.missing)
+    const btn = screen.getByRole('button', { name: strings.pantry.markAtHomeFor('Feijão') })
+    expect(screen.getByText(strings.pantry.missing)).toBeInTheDocument()
     fireEvent.click(btn)
     expect(h.deleteItem).toHaveBeenCalledWith('f1', 'p9')
   })
@@ -87,9 +85,9 @@ describe('S-024 PantryScreen', () => {
     catalog = [entry('Feijão')]
     items = [item('Feijão', 'bought')]
     renderIt()
-    const btn = screen.getByRole('button', { name: /^Feijão/ })
+    const btn = screen.getByRole('button', { name: strings.pantry.inCartFor('Feijão') })
     expect(btn).toBeDisabled()
-    expect(btn).toHaveTextContent(strings.pantry.inCart)
+    expect(screen.getByText(strings.pantry.inCart)).toBeInTheDocument()
   })
 })
 
@@ -113,5 +111,54 @@ describe('S-025 PantryScreen', () => {
       screen.getByRole('button', { name: strings.pantry.removeRecurringFor('Feijão') }),
     )
     expect(h.setRecurring).toHaveBeenCalledWith('f1', 'feijão', false, items)
+  })
+})
+
+describe('S-061 PantryScreen', () => {
+  it('AC1: intro text and "Entenda melhor" button with info icon', () => {
+    renderIt()
+    expect(screen.getByText(strings.pantry.intro)).toBeInTheDocument()
+    const btn = screen.getByRole('button', { name: strings.pantry.learnMore })
+    expect(btn.querySelector('svg')).not.toBeNull()
+  })
+
+  it('AC2: opens the help dialog with full text and closes with Entendi', () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.pantry.learnMore }))
+    const dlg = screen.getByRole('dialog', { name: strings.pantry.helpTitle })
+    for (const p of strings.pantry.help) expect(dlg).toHaveTextContent(p)
+    fireEvent.click(screen.getByRole('button', { name: strings.pantry.helpClose }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('AC3: each state shows its text and the row action names the item', () => {
+    catalog = [entry('Arroz'), entry('Feijão'), entry('Café')]
+    items = [item('Feijão', 'pending', 'p1'), item('Café', 'bought', 'b1')]
+    renderIt()
+    expect(screen.getByText(strings.pantry.atHome)).toBeInTheDocument()
+    expect(screen.getByText(strings.pantry.missing)).toBeInTheDocument()
+    expect(screen.getByText(strings.pantry.inCart)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Marcar Arroz como falta' })).toBeEnabled()
+    const cafe = screen.getByRole('button', { name: strings.pantry.inCartFor('Café') })
+    expect(cafe).toBeDisabled()
+    expect(cafe.closest('li')).toHaveClass('m3-list-item--muted')
+    const feijao = screen.getByRole('button', { name: strings.pantry.markAtHomeFor('Feijão') })
+    expect(feijao.closest('li')).toHaveClass('m3-list-item--primary')
+  })
+
+  it('AC4: other items and remove use M3 list items and icon buttons', () => {
+    catalog = [entry('Feijão'), entry('Sal', false)]
+    renderIt()
+    const remove = screen.getByRole('button', { name: strings.pantry.removeRecurringFor('Feijão') })
+    expect(remove).toHaveClass('m3-icon-btn')
+    expect(remove.closest('li')).toHaveClass('m3-list-item')
+    const add = screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') })
+    expect(add).toHaveClass('m3-icon-btn')
+    expect(add.closest('li')).toHaveClass('m3-list-item')
+  })
+
+  it('AC6: empty state cites "Editar item"', () => {
+    renderIt()
+    expect(screen.getByText(strings.pantry.empty)).toHaveTextContent('Editar item')
   })
 })

@@ -1,4 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { Button } from '@/components/m3/Button'
+import { Dialog } from '@/components/m3/Dialog'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { addItem, deleteItem, setRecurring } from '@/data/items'
@@ -15,6 +17,7 @@ export function PantryScreen() {
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
   const catalog = useCatalog(familyId)
+  const [helpOpen, setHelpOpen] = useState(false)
   const rows = useMemo(() => pantryState(catalog, items ?? []), [catalog, items])
   if (!family) return null
 
@@ -41,6 +44,28 @@ export function PantryScreen() {
   return (
     <main className="mx-auto max-w-md">
       <TopAppBar title={strings.pantry.title} />
+      <div className="px-4 pb-2">
+        <p className="text-sm">{strings.pantry.intro}</p>
+        <Button variant="text" icon="info" onClick={() => setHelpOpen(true)}>
+          {strings.pantry.learnMore}
+        </Button>
+      </div>
+      <Dialog
+        open={helpOpen}
+        title={strings.pantry.helpTitle}
+        onClose={() => setHelpOpen(false)}
+        actions={
+          <Button variant="text" onClick={() => setHelpOpen(false)}>
+            {strings.pantry.helpClose}
+          </Button>
+        }
+      >
+        {strings.pantry.help.map((p) => (
+          <p key={p} className="mb-2">
+            {p}
+          </p>
+        ))}
+      </Dialog>
       {items !== null && rows.length === 0 && <p className="p-4">{strings.pantry.empty}</p>}
       <ul aria-label={strings.pantry.listLabel}>
         {rows.map((row) => (

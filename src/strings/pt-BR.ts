@@ -130,7 +130,21 @@ export const strings = {
     makeRecurringFor: (name: string) => `Tornar recorrente: ${name}`,
     removeRecurringFor: (name: string) => `Remover dos recorrentes: ${name}`,
     empty:
-      'Nenhum item recorrente. Abra um item da lista e marque "Recorrente mensal" para ele aparecer aqui.',
+      'Nenhum item recorrente. Toque em "Editar item" na lista e marque "Recorrente mensal" para ele aparecer aqui.',
+    intro: 'Itens que você compra todo mês. Marque o que está faltando e ele entra na Lista.',
+    learnMore: 'Entenda melhor',
+    helpTitle: 'Como funciona a Despensa',
+    helpClose: 'Entendi',
+    help: [
+      'Recorrente é o item que você compra todo mês, como arroz ou café.',
+      'Para tornar um item recorrente, abra o "Editar item" na lista e marque "Recorrente mensal", ou use "Outros itens já usados" aqui na Despensa.',
+      'Cada item tem um estado: "Falta" (já está pendente na Lista), "Tenho em casa" (não precisa comprar) e "No carrinho" (já foi comprado neste mês).',
+      'No começo de cada mês, os recorrentes voltam sozinhos para a Lista como pendentes.',
+      'Para remover um item dos recorrentes, toque no ícone de lixeira ao lado dele.',
+    ],
+    markMissingFor: (name: string) => `Marcar ${name} como falta`,
+    markAtHomeFor: (name: string) => `Marcar ${name} como tenho em casa`,
+    inCartFor: (name: string) => `${name} já está no carrinho`,
   },
   item: {
     sheetTitle: 'Editar item',
