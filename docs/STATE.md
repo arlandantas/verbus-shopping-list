@@ -1,7 +1,7 @@
 # Estado atual
 
-**Fase:** épico E-UX (redesign Material 3, S-051..S-068) concluído; aguardando a 2ª rodada de testes manuais do usuário.
-**Verificação (2026-11-01):** lint, typecheck, 388 unit e build verdes; E2E completo 94/94 (cópia com portas alternativas); regras 319 e dados 61 (S-067). `pnpm test:rules`/`test:data`/`test:e2e` não rodam com o `dev:local` ocupando as portas padrão.
+**Fase:** E-UX (redesign Material 3, S-051..S-068) e E-UX2 (ajustes da 2ª rodada, S-069..S-074) concluídos; aguardando a 3ª rodada de testes manuais do usuário.
+**Verificação (2026-11-01):** lint, typecheck, 402 unit e E2E completo 100/100 (rodados direto no repo; o `dev:local` é só dev e os agentes podem pará-lo/reiniciá-lo); regras 319 e dados 61 (S-067).
 
 ## Como testar
 `pnpm dev:local` (reinicie se já estiver rodando) + roteiro em `docs/manual-test.md`, que ainda descreve as telas antigas (Home/Mercado) e precisa ser atualizado. Contas Ana, Beto, Carla no login (só emulador).
@@ -17,6 +17,10 @@ Feedback da 2ª rodada de testes. Depois: manual-test.md atualizado, dívidas ab
 - Remoto no GitHub (CI S-006), ícones finais do PWA, nome de marca, teste em iPhone real, escolha da cor final.
 
 ## Dívidas conhecidas
+- `Overlay` sem callback `onClosed`: `signOut` do diálogo de sair usa fallback de 500 ms (FamilyScreen).
+- Guarda de paleta (tests/tooling.test.ts) só cobre gray/green/red/blue/slate/zinc/neutral/white/black; foco da pílula de adicionar só testado por CSS.
+- Conferência visual no navegador embutido da Despensa colapsável (S-074) e das telas largas ainda por fazer (o pane ficou oculto/instável); coberto só por E2E.
+- Sessão antiga restaurada após reset dos emuladores deixa o app em "Carregando…" até limpar o storage do site (login rápido troca de uid).
 - `OfflineBadge` e `WriteErrorNotice` usam o mesmo `bottom` do campo de adicionar item e podem sobrepô-lo.
 - Tokens de cor aproximados à mão: regenerar com Material Theme Builder na cor final.
 - `parseQuantity` mora em `components/ItemForm.tsx` e é importado por `EditLineSheet`: mover para `src/domain`.
