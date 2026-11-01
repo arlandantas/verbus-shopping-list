@@ -8,6 +8,12 @@
 3. Texto livre inteligente: ao digitar "3 kg feijão", o app separa quantidade, unidade e nome.
 4. Autocompletar com itens de listas anteriores, trazendo a última unidade, quantidade (e categoria, ver `60-`) usadas.
 
+## Colar uma lista (ADR-0027)
+1. Colar no campo de adicionar um texto com várias linhas (ou uma linha com `;`/vírgulas, ex.: "arroz, feijão, leite") abre o sheet "Colar lista" em vez de preencher o campo.
+2. O app limpa marcadores (`-`, `•`, `1.`, `[ ]`...), linhas vazias e repetidos, e lê cada linha como o texto livre (quantidade e unidade) e pelo catálogo (categoria, recorrente).
+3. Cada linha tem checkbox; o que já está pendente na lista vem desmarcado com "Já está na lista". Máximo 100 itens por colagem.
+4. "Adicionar (N)" grava tudo de uma vez no grupo ativo, inclusive offline; "Cancelar" não grava nada.
+
 ## Linha do item
 - Checkbox à esquerda; tocar na linha marca/desmarca "no carrinho" (ver `40-market-mode.md`).
 - Nome, quantidade + unidade, observação, valor (se houver, em qualquer status) e "quem marcou" (itens no carrinho ficam riscados).
