@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import type { Category, Item } from '@/data/converters'
 import { setItemPrice, type ItemPatch } from '@/data/items'
-import { PriceInput } from '@/components/PriceInput'
+import { MoneyField } from '@/components/m3/MoneyField'
 import { formatBRL, parsePriceBRL } from '@/domain/price'
 import { UNITS, type Unit } from '@/domain/units'
 import { strings } from '@/strings/pt-BR'
@@ -112,7 +112,14 @@ export function ItemForm({ familyId, item, categories, onSave, onDelete }: Props
           className={input}
         />
       </label>
-      {bought && <PriceInput value={price} onChange={setPrice} />}
+      {bought && (
+        <MoneyField
+          label={strings.item.price}
+          value={price}
+          onChange={setPrice}
+          invalidMessage={strings.item.priceInvalid}
+        />
+      )}
       <label className="flex min-h-12 items-center gap-3">
         <input
           type="checkbox"

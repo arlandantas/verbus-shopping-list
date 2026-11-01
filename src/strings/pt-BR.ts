@@ -140,6 +140,7 @@ export const strings = {
     recurring: 'Recorrente mensal',
     category: 'Categoria',
     price: 'Preço pago',
+    currencyPrefix: 'R$',
     priceInvalid: 'Informe um preço válido, por exemplo 12,90.',
     save: 'Salvar',
     delete: 'Apagar',

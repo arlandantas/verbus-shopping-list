@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { BackButton } from '@/components/BackButton'
 import { TopAppBar } from '@/components/m3/TopAppBar'
-import { PriceInput } from '@/components/PriceInput'
+import { MoneyField } from '@/components/m3/MoneyField'
 import { checkout } from '@/data/checkout'
 import { setItemPrice } from '@/data/items'
 import { usePurchases } from '@/hooks/useHistory'
@@ -69,7 +69,8 @@ export function CheckoutScreen() {
         <ul className="flex flex-col gap-3">
           {bought.map((i) => (
             <li key={i.id}>
-              <PriceInput
+              <MoneyField
+                invalidMessage={strings.item.priceInvalid}
                 label={strings.checkout.priceFor(i.name)}
                 value={text(i.id, i.priceCents)}
                 onChange={(v) => setEdits((e) => ({ ...e, [i.id]: v }))}
