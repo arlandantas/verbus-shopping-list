@@ -36,15 +36,7 @@ describe('S-054 AC1: TextField', () => {
 
 describe('S-054 AC2: MoneyField', () => {
   const setup = (value: string, onChange = vi.fn(), onBlur = vi.fn()) => {
-    render(
-      <MoneyField
-        label="Preço"
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        invalidMessage="Inválido"
-      />,
-    )
+    render(<MoneyField label="Preço" value={value} onChange={onChange} onBlur={onBlur} />)
     return { onChange, onBlur, input: screen.getByLabelText('Preço') }
   }
   it('shows R$ prefix and numeric keypad', () => {
@@ -71,28 +63,34 @@ describe('S-054 AC2: MoneyField', () => {
     fireEvent.change(input, { target: { value: '' } })
     expect(onChange).toHaveBeenCalledWith('')
   })
+  it('S-071: backspace on "12,90" reports "1,29"', () => {
+    const { input, onChange } = setup('12,90')
+    fireEvent.change(input, { target: { value: '12,9' } })
+    expect(onChange).toHaveBeenCalledWith('1,29')
+  })
+  it('S-071: a digit typed in the middle re-masks all digits', () => {
+    const { input, onChange } = setup('12,90')
+    fireEvent.change(input, { target: { value: '12,390' } })
+    expect(onChange).toHaveBeenCalledWith('123,90')
+  })
+  it('S-071: above the ceiling is truncated, never exceeding it', () => {
+    const { input, onChange } = setup('')
+    fireEvent.change(input, { target: { value: '99999999999' } })
+    expect(onChange).toHaveBeenCalledWith('99.999,99')
+  })
+  it('S-071: no error state, field is never invalid', () => {
+    setup('12,90')
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getByLabelText('Preço')).toHaveAttribute('aria-invalid', 'false')
+  })
   it('S-071: initial value is shown as given', () => {
     const { input } = setup('12,90')
     expect(input).toHaveValue('12,90')
   })
-  it.each(['12,90', '12.90', 'R$ 12,90', ''])('accepts %j without error', (v) => {
-    setup(v)
-    expect(screen.queryByRole('alert')).toBeNull()
-  })
-  it.each(['12.90', 'R$ 12,90', '12,9'])('formats %j on blur to 12,90 or 12,90', (v) => {
-    const { input, onChange, onBlur } = setup(v)
+  it('calls onBlur', () => {
+    const { input, onBlur } = setup('12,90')
     fireEvent.blur(input)
-    expect(onChange).toHaveBeenCalledWith(v === '12,9' ? '12,90' : '12,90')
     expect(onBlur).toHaveBeenCalled()
-  })
-  it('keeps empty as is on blur', () => {
-    const { input, onChange } = setup('')
-    fireEvent.blur(input)
-    expect(onChange).not.toHaveBeenCalled()
-  })
-  it('shows error for invalid', () => {
-    setup('abc')
-    expect(screen.getByRole('alert')).toHaveTextContent('Inválido')
   })
 })
 

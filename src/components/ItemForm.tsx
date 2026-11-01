@@ -123,12 +123,7 @@ export function ItemForm({ item, categories, onSave, onCancel, onDelete }: Props
         checked={inCart}
         onChange={(e) => setInCart(e.target.checked)}
       />
-      <MoneyField
-        label={strings.item.price}
-        value={price}
-        onChange={setPrice}
-        invalidMessage={strings.item.priceInvalid}
-      />
+      <MoneyField label={strings.item.price} value={price} onChange={setPrice} />
       <div className="flex items-center gap-2 pt-2">
         <Button
           variant="text"

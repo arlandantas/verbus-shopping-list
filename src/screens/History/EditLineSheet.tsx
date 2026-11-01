@@ -72,12 +72,7 @@ export function EditLineSheet({ line, purchase, onSave, onClose }: Props) {
             </option>
           ))}
         </Select>
-        <MoneyField
-          label={strings.item.price}
-          value={price}
-          onChange={setPrice}
-          invalidMessage={strings.item.priceInvalid}
-        />
+        <MoneyField label={strings.item.price} value={price} onChange={setPrice} />
         <div className="flex items-center justify-end gap-2 pt-2">
           <Button variant="text" onClick={onClose}>
             {strings.item.cancel}

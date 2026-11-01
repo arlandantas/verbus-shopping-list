@@ -84,7 +84,6 @@ export function CheckoutScreen() {
             trailing={
               <div className="checkout__money">
                 <MoneyField
-                  invalidMessage={strings.item.priceInvalid}
                   label={strings.checkout.priceFor(i.name)}
                   value={text(i.id, i.priceCents)}
                   onChange={(v) => setEdits((e) => ({ ...e, [i.id]: v }))}

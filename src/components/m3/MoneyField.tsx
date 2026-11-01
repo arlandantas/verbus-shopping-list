@@ -1,4 +1,4 @@
-import { MAX_PRICE_CENTS, formatBRL, parsePriceBRL } from '@/domain/price'
+import { MAX_PRICE_CENTS, formatBRL } from '@/domain/price'
 import { strings } from '@/strings/pt-BR'
 import { TextField } from './TextField'
 
@@ -7,8 +7,6 @@ interface Props {
   value: string
   onChange: (text: string) => void
   onBlur?: () => void
-  /** Message shown when the text is not a valid price. */
-  invalidMessage: string
   helper?: string
 }
 
@@ -27,8 +25,7 @@ function mask(raw: string): string {
 }
 
 /** Optional BRL field: "R$" prefix, cents mask while typing. Parsing stays in domain/price. */
-export function MoneyField({ label, value, onChange, onBlur, invalidMessage, helper }: Props) {
-  const parsed = parsePriceBRL(value)
+export function MoneyField({ label, value, onChange, onBlur, helper }: Props) {
   return (
     <TextField
       label={label}
@@ -37,15 +34,8 @@ export function MoneyField({ label, value, onChange, onBlur, invalidMessage, hel
       inputMode="numeric"
       prefix={strings.item.currencyPrefix}
       value={value}
-      error={parsed.ok ? undefined : invalidMessage}
       onChange={(e) => onChange(mask(e.target.value))}
-      onBlur={() => {
-        if (parsed.ok && parsed.cents !== null) {
-          const text = plain(parsed.cents)
-          if (text !== value) onChange(text)
-        }
-        onBlur?.()
-      }}
+      onBlur={onBlur}
     />
   )
 }

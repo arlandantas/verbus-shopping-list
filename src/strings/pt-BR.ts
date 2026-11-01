@@ -168,7 +168,6 @@ export const strings = {
     category: 'Categoria',
     price: 'Valor',
     currencyPrefix: 'R$',
-    priceInvalid: 'Informe um preço válido, por exemplo 12,90.',
     save: 'Salvar',
     delete: 'Apagar',
     confirmDelete: (name: string) => `Apagar ${name}?`,
