@@ -135,6 +135,9 @@ export function watchFamily(
       { includeMetadataChanges: true },
       (snap) => {
         attempts = 0
+        // A local-only family (create/join still in flight) is not usable yet: the list's
+        // listeners and writes would reach the server before it knows the membership and be denied.
+        if (snap.exists() && snap.metadata.hasPendingWrites) return
         cb(snap.exists() ? snap.data({ serverTimestamps: 'estimate' }) : null)
       },
       () => {
