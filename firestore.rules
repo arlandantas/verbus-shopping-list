@@ -31,11 +31,18 @@ service cloud.firestore {
         && getAfter(userRef(request.auth.uid)).data.familyId == familyId;
     }
 
+    // S-078: email must be the token email ('' when the token has none); updates may keep a stored value.
+    function tokenEmail() {
+      return ('email' in request.auth.token) ? request.auth.token.email : '';
+    }
+
     function validUser(data) {
       return data.keys().hasOnly(['displayName', 'email', 'familyId', 'createdAt'])
         && data.keys().hasAll(['displayName', 'email', 'familyId', 'createdAt'])
         && data.displayName is string
+        && data.displayName.size() >= 1 && data.displayName.size() <= 60
         && data.email is string
+        && data.email.size() <= 254
         && data.createdAt is timestamp
         && (data.familyId == null
           || (data.familyId is string && isMemberAfter(data.familyId)));
@@ -226,7 +233,7 @@ service cloud.firestore {
     }
 
     // ADR-0012: history line (ADR-0021: quantity/unit/priceCents editable), doc id = archived item id.
-    function validPurchaseLine(d) {
+    function validPurchaseLine(d, familyId) {
       return d.keys().hasOnly(['purchaseId', 'cycle', 'name', 'nameKey', 'quantity', 'unit',
           'categoryId', 'categoryName', 'priceCents', 'market', 'markedBy', 'purchasedAt'])
         && d.keys().hasAll(['purchaseId', 'cycle', 'name', 'nameKey', 'quantity', 'unit',
@@ -242,7 +249,7 @@ service cloud.firestore {
           || (d.categoryName is string && d.categoryName.size() >= 1 && d.categoryName.size() <= 40))
         && validPriceCents(d.priceCents, 10000000)
         && validMarket(d.market)
-        && (d.markedBy == null || d.markedBy is string)
+        && (d.markedBy == null || d.markedBy in get(/databases/$(database)/documents/families/$(familyId)).data.members)
         && d.purchasedAt == request.time;
     }
 
@@ -259,9 +266,12 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && validUser(request.resource.data)
+        && request.resource.data.email == tokenEmail()
         && request.resource.data.familyId == null
         && request.resource.data.createdAt == request.time;
       allow update: if isOwner(uid) && validUser(request.resource.data)
+        && (request.resource.data.email == tokenEmail()
+          || request.resource.data.email == resource.data.email)
         && request.resource.data.createdAt == resource.data.createdAt
         && (resource.data.familyId == null
           || request.resource.data.familyId == resource.data.familyId);
@@ -300,7 +310,7 @@ service cloud.firestore {
 
       match /purchaseLines/{itemId} {
         allow read: if isMember(familyId);
-        allow create: if isMember(familyId) && validPurchaseLine(request.resource.data);
+        allow create: if isMember(familyId) && validPurchaseLine(request.resource.data, familyId);
         // ADR-0021: past lines may be corrected in quantity, unit and price only.
         allow update: if isMember(familyId)
           && request.resource.data.diff(resource.data).affectedKeys()

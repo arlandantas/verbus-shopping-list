@@ -20,7 +20,7 @@ export async function ensureUserProfile(user: AuthUser): Promise<void> {
   const ref = doc(db, 'users', user.uid)
   if ((await getDoc(ref)).exists()) return
   await setDoc(ref, {
-    displayName: user.displayName ?? user.email ?? '',
+    displayName: (user.displayName ?? user.email ?? '').slice(0, 60),
     email: user.email ?? '',
     familyId: null,
     createdAt: serverTimestamp(),

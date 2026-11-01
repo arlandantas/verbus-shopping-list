@@ -20,7 +20,7 @@ beforeEach(async () => {
 
 const profile = () => ({
   displayName: 'Alice',
-  email: 'a@x.com',
+  email: '',
   familyId: null,
   createdAt: serverTimestamp(),
 })
