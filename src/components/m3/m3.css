@@ -178,6 +178,9 @@
   cursor: pointer;
   color: var(--md-sys-color-on-surface);
 }
+.m3-list-item--link {
+  text-decoration: none;
+}
 .m3-list-item--primary {
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);

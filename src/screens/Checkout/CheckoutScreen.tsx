@@ -59,6 +59,7 @@ export function CheckoutScreen() {
         <p className="checkout__summary">{strings.checkout.summary(bought.length)}</p>
         <TextField
           label={strings.checkout.marketLabel}
+          helper={strings.checkout.marketHelper}
           prefix={<Icon name="storefront" />}
           value={market}
           maxLength={60}

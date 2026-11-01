@@ -1,6 +1,9 @@
 import { lazy, Suspense, useState, type FormEvent } from 'react'
+import { Button } from '@/components/m3/Button'
+import { TextField } from '@/components/m3/TextField'
 import { authErrorMessage, signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/data/auth'
 import { strings } from '@/strings/pt-BR'
+import '../auth.css'
 
 // Dev-only quick login (S-050): the literal env check lets the production build drop the panel.
 const loadPanel =
@@ -8,9 +11,6 @@ const loadPanel =
     ? () => import('./TestAccountsPanel').then((m) => ({ default: m.TestAccountsPanel }))
     : null
 const TestAccountsPanel = loadPanel ? lazy(loadPanel) : null
-
-const field = 'min-h-12 w-full rounded border border-gray-400 px-3 text-base'
-const button = 'min-h-12 w-full rounded px-4 text-base font-medium'
 
 export function LoginScreen() {
   const [email, setEmail] = useState('')
@@ -36,56 +36,44 @@ export function LoginScreen() {
   }
 
   return (
-    <main className="mx-auto flex max-w-sm flex-col gap-4 p-4">
-      <h1 className="min-h-12 text-2xl">{strings.appTitle}</h1>
-      <form onSubmit={onSubmit} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1">
-          {strings.login.email}
-          <input
-            type="email"
-            name="email"
-            autoComplete="email"
-            className={field}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          {strings.login.password}
-          <input
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            className={field}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+    <main className="auth-page">
+      <h1 className="auth-title">{strings.appTitle}</h1>
+      <form onSubmit={onSubmit} className="auth-form">
+        <TextField
+          label={strings.login.email}
+          type="email"
+          name="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextField
+          label={strings.login.password}
+          type="password"
+          name="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         {error && (
-          <p role="alert" className="text-red-700">
+          <p role="alert" className="auth-error">
             {error}
           </p>
         )}
-        <button type="submit" disabled={busy} className={`${button} bg-green-700 text-white`}>
+        <Button type="submit" disabled={busy}>
           {strings.login.signIn}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="outlined"
           disabled={busy}
           onClick={() => void run(() => signUpWithEmail(email, password))}
-          className={`${button} border border-green-700 text-green-800`}
         >
           {strings.login.signUp}
-        </button>
+        </Button>
       </form>
-      <button
-        type="button"
-        disabled={busy}
-        onClick={() => void run(signInWithGoogle)}
-        className={`${button} border border-gray-500`}
-      >
+      <Button variant="outlined" disabled={busy} onClick={() => void run(signInWithGoogle)}>
         {strings.login.google}
-      </button>
+      </Button>
       {TestAccountsPanel && (
         <Suspense fallback={null}>
           <TestAccountsPanel />

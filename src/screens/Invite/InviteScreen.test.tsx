@@ -24,4 +24,14 @@ describe('InviteScreen offline', () => {
     expect(btn).toBeDisabled()
     expect(screen.getByText(strings.invite.offlineWarning)).toBeInTheDocument()
   })
+  it('S-064 AC4: shows the family name and a filled M3 confirm button', async () => {
+    render(
+      <MemoryRouter>
+        <InviteScreen />
+      </MemoryRouter>,
+    )
+    const btn = await waitFor(() => screen.getByRole('button', { name: strings.invite.confirm }))
+    expect(btn).toHaveClass('m3-btn--filled')
+    expect(screen.getByRole('heading', { name: strings.invite.title('Casa') })).toBeInTheDocument()
+  })
 })

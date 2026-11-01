@@ -81,6 +81,7 @@ describe('S-046 AC2: checkout screen', () => {
     renderIt()
     const market = screen.getByLabelText(strings.checkout.marketLabel)
     expect(market).toHaveValue('')
+    expect(market).toHaveAccessibleDescription(strings.checkout.marketHelper)
     expect(screen.getByRole('button', { name: 'Atacadão' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Feira' }))
     expect(market).toHaveValue('Feira')

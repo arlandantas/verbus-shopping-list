@@ -9,8 +9,10 @@ import {
   joinFamilyByCode,
 } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
+import { Button } from '@/components/m3/Button'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
+import '../auth.css'
 
 type Preview =
   | { state: 'loading' }
@@ -21,8 +23,6 @@ type Preview =
 // FamilyRoutes unmounts its routes while the new family loads, which would reset component
 // state and flash the "already in a family" notice; the pending-join flag survives that remount.
 let joinPending = false
-
-const button = 'min-h-12 w-full rounded px-4 text-base font-medium'
 
 /** /convite/:code — confirm joining the family named in the invite (ADR-0007). */
 export function InviteScreen() {
@@ -81,45 +81,48 @@ export function InviteScreen() {
 
   let body: ReactNode
   if (alreadyInFamily) {
-    body = <p role="alert">{strings.invite.alreadyInFamily}</p>
+    body = (
+      <p role="alert" className="auth-note">
+        {strings.invite.alreadyInFamily}
+      </p>
+    )
   } else if (preview.state === 'notFound') {
-    body = <p role="alert">{strings.invite.notFound}</p>
+    body = (
+      <p role="alert" className="auth-note">
+        {strings.invite.notFound}
+      </p>
+    )
   } else if (preview.state === 'error') {
-    body = <p role="alert">{strings.invite.error}</p>
+    body = (
+      <p role="alert" className="auth-note">
+        {strings.invite.error}
+      </p>
+    )
   } else if (preview.state === 'loading' || family.status === 'loading' || joined) {
     body = <Loading />
   } else {
     body = (
       <>
-        <h1 className="min-h-12 text-xl">{strings.invite.title(preview.familyName)}</h1>
-        {!online && <p className="text-red-700">{strings.invite.offlineWarning}</p>}
+        <h1 className="auth-title">{strings.invite.title(preview.familyName)}</h1>
+        {!online && <p className="auth-warning">{strings.invite.offlineWarning}</p>}
         {joinError && (
-          <p role="alert" className="text-red-700">
+          <p role="alert" className="auth-error">
             {joinError}
           </p>
         )}
-        <button
-          type="button"
-          disabled={busy || !online}
-          onClick={() => void confirm()}
-          className={`${button} bg-green-700 text-white disabled:opacity-50`}
-        >
+        <Button disabled={busy || !online} onClick={() => void confirm()}>
           {busy ? strings.invite.confirming : strings.invite.confirm}
-        </button>
+        </Button>
       </>
     )
   }
 
   return (
-    <main className="mx-auto flex max-w-sm flex-col gap-4 p-4">
+    <main className="auth-page">
       {body}
-      <button
-        type="button"
-        onClick={() => void navigate('/', { replace: true })}
-        className={`${button} bg-gray-200`}
-      >
+      <Button variant="tonal" onClick={() => void navigate('/', { replace: true })}>
         {strings.invite.back}
-      </button>
+      </Button>
     </main>
   )
 }

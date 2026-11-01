@@ -26,6 +26,8 @@ export const strings = {
     offlineWarning: 'Você está offline. Conecte-se à internet para criar a família.',
     members: (n: number) => (n === 1 ? '1 membro' : `${n} membros`),
     continue: 'Continuar',
+    memberFallback: 'Membro',
+    membersSection: 'Membros',
     join: {
       title: 'Já tem um código?',
       codeLabel: 'Código do convite',
@@ -40,8 +42,10 @@ export const strings = {
       code: 'Código',
       link: 'Link',
       share: 'Compartilhar convite',
+      copyCode: 'Copiar código',
       shareText: (name: string) => `Entre na família ${name} no Lista de Compras`,
       copied: 'Link copiado!',
+      codeCopied: 'Código copiado!',
     },
   },
   invite: {
@@ -89,6 +93,7 @@ export const strings = {
     title: 'Finalizar compra',
     summary: (n: number) => (n === 1 ? '1 item no carrinho' : `${n} itens no carrinho`),
     marketLabel: 'Mercado',
+    marketHelper: 'Opcional',
     marketSuggestions: 'Mercados usados antes',
     priceFor: (name: string) => `Valor de ${name}`,
     total: (value: string) => `Total: ${value}`,

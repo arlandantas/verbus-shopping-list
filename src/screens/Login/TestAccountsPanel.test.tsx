@@ -26,7 +26,7 @@ describe('S-050 AC4: test accounts panel', () => {
     expect(screen.getByText(devStrings.testAccounts)).toBeInTheDocument()
     for (const a of TEST_ACCOUNTS) {
       const btn = screen.getByRole('button', { name: new RegExp(a.displayName) })
-      expect(btn.className).toContain('min-h-12')
+      expect(btn).toHaveClass('m3-btn')
     }
     const first = TEST_ACCOUNTS[0]
     fireEvent.click(screen.getByRole('button', { name: new RegExp(first.displayName) }))

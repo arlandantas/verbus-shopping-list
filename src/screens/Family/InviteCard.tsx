@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { Button } from '@/components/m3/Button'
+import { IconButton } from '@/components/m3/IconButton'
 import { strings } from '@/strings/pt-BR'
+import '../auth.css'
 
 interface Props {
   code: string
@@ -8,12 +11,12 @@ interface Props {
 
 /** Shows the invite code and link; shares via the Web Share API or copies the link. */
 export function InviteCard({ code, familyName }: Props) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<'link' | 'code' | null>(null)
   const link = `${window.location.origin}/convite/${code}`
   const t = strings.family.invite
 
   async function share() {
-    setCopied(false)
+    setCopied(null)
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title: strings.appTitle, text: t.shareText(familyName), url: link })
@@ -23,31 +26,32 @@ export function InviteCard({ code, familyName }: Props) {
       return
     }
     await navigator.clipboard.writeText(link)
-    setCopied(true)
+    setCopied('link')
+  }
+
+  async function copyCode() {
+    await navigator.clipboard.writeText(code)
+    setCopied('code')
   }
 
   return (
-    <section className="flex flex-col gap-2 rounded border border-gray-400 p-4">
-      <h2 className="text-lg font-medium">{t.title}</h2>
-      <p>
-        {t.code}:{' '}
-        <strong data-testid="invite-code" className="font-mono text-xl tracking-widest">
+    <section className="family-card" aria-label={t.title}>
+      <h2 className="auth-heading">{t.title}</h2>
+      <div className="family-card__row">
+        <strong data-testid="invite-code" className="family-code">
           {code}
         </strong>
-      </p>
-      <p className="break-all">
+        <IconButton icon="content_copy" label={t.copyCode} onClick={() => void copyCode()} />
+      </div>
+      <p className="family-link">
         {t.link}: <span data-testid="invite-link">{link}</span>
       </p>
-      <button
-        type="button"
-        onClick={() => void share()}
-        className="min-h-12 rounded bg-green-700 px-4 font-medium text-white"
-      >
+      <Button variant="tonal" icon="share" onClick={() => void share()}>
         {t.share}
-      </button>
+      </Button>
       {copied && (
-        <p role="status" className="text-green-800">
-          {t.copied}
+        <p role="status" className="family-status">
+          {copied === 'code' ? t.codeCopied : t.copied}
         </p>
       )}
     </section>

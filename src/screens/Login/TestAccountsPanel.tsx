@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { TEST_ACCOUNTS } from '../../../scripts/seed/accounts.ts'
 import { authErrorMessage, signInWithEmail } from '@/data/auth'
+import { Button } from '@/components/m3/Button'
 import { devStrings } from '@/strings/pt-BR'
+import '../auth.css'
 
 /** Emulator-only quick login (S-050). Only imported when VITE_USE_EMULATOR === 'true'. */
 export function TestAccountsPanel() {
@@ -21,24 +23,22 @@ export function TestAccountsPanel() {
   }
 
   return (
-    <section aria-label={devStrings.testAccounts} className="flex flex-col gap-2 border-t pt-3">
-      <h2 className="text-base font-medium">{devStrings.testAccounts}</h2>
+    <section aria-label={devStrings.testAccounts} className="auth-form">
+      <h2 className="auth-heading">{devStrings.testAccounts}</h2>
       {error && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="auth-error">
           {error}
         </p>
       )}
       {TEST_ACCOUNTS.map((a) => (
-        <button
+        <Button
           key={a.key}
-          type="button"
+          variant="tonal"
           disabled={busy}
           onClick={() => void login(a.email, a.password)}
-          className="min-h-12 w-full rounded border border-amber-600 bg-amber-50 px-4 text-left text-base"
         >
-          <span className="font-medium">{a.displayName}</span>
-          <span className="text-sm text-gray-700"> — {a.hint}</span>
-        </button>
+          {a.displayName} — {a.hint}
+        </Button>
       ))}
     </section>
   )

@@ -23,4 +23,12 @@ describe('JoinForm offline', () => {
     render(<JoinForm />)
     expect(screen.queryByText(strings.family.join.offlineWarning)).toBeNull()
   })
+  it('S-064 AC2: code uses an M3 TextField and an outlined Button', () => {
+    online = true
+    render(<JoinForm />)
+    expect(screen.getByLabelText(strings.family.join.codeLabel).closest('.m3-field')).not.toBeNull()
+    expect(screen.getByRole('button', { name: strings.family.join.submit })).toHaveClass(
+      'm3-btn--outlined',
+    )
+  })
 })

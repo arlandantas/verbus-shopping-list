@@ -1,7 +1,10 @@
 import { useState, type FormEvent } from 'react'
+import { Button } from '@/components/m3/Button'
+import { TextField } from '@/components/m3/TextField'
 import { AlreadyInFamily, InviteNotFound, joinFamilyByCode } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { strings } from '@/strings/pt-BR'
+import '../auth.css'
 
 /** Join an existing family by typing the invite code; the family snapshot switches the screen. */
 export function JoinForm() {
@@ -28,32 +31,25 @@ export function JoinForm() {
   }
 
   return (
-    <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-3">
-      <h2 className="text-lg font-medium">{t.title}</h2>
-      <label className="flex flex-col gap-1">
-        {t.codeLabel}
-        <input
-          name="inviteCode"
-          autoCapitalize="characters"
-          autoComplete="off"
-          className="min-h-12 w-full rounded border border-gray-400 px-3 font-mono text-base uppercase"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-        />
-      </label>
-      {!online && <p className="text-red-700">{t.offlineWarning}</p>}
+    <form onSubmit={(e) => void onSubmit(e)} className="auth-form">
+      <h2 className="auth-heading">{t.title}</h2>
+      <TextField
+        label={t.codeLabel}
+        name="inviteCode"
+        autoCapitalize="characters"
+        autoComplete="off"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+      />
+      {!online && <p className="auth-warning">{t.offlineWarning}</p>}
       {error && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="auth-error">
           {error}
         </p>
       )}
-      <button
-        type="submit"
-        disabled={busy || !online || !code.trim()}
-        className="min-h-12 w-full rounded border border-green-700 px-4 text-base font-medium text-green-800 disabled:opacity-50"
-      >
+      <Button type="submit" variant="outlined" disabled={busy || !online || !code.trim()}>
         {busy ? t.submitting : t.submit}
-      </button>
+      </Button>
     </form>
   )
 }
