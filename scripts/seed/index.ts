@@ -34,8 +34,9 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
   for (const account of TEST_ACCOUNTS) {
     const s = await rest.account(account.email, account.password, account.displayName)
     people.push({ account, s })
-    // Profile exactly like the app's ensureUserProfile; created only once.
-    if (!(await rest.get(s, `users/${s.uid}`))) {
+    // Profile exactly like the app's ensureUserProfile; created only once. The legacy account
+    // gets its old-style profile (familyId, no groupIds) below, via the emulator admin bypass.
+    if (!account.legacyProfile && !(await rest.get(s, `users/${s.uid}`))) {
       await rest.commit(s, [
         {
           path: `users/${s.uid}`,
@@ -92,15 +93,25 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
     await rest.commit(owner.s, writes)
   }
 
+  // Legacy profile: only the emulator admin token can write the old shape (rules deny `familyId` on create).
   const joinerProfile = await rest.get(joiner.s, `users/${joiner.s.uid}`)
-  if (!hasGroups(joinerProfile)) {
-    await rest.commit(joiner.s, [
+  if (!joinerProfile) {
+    await rest.commit({ uid: joiner.s.uid, token: 'owner' }, [
       {
         path: `families/${FAMILY_ID}`,
         mask: ['members', 'joinCode'],
         data: { members: [owner.s.uid, joiner.s.uid], joinCode: INVITE_CODE },
       },
-      { path: `users/${joiner.s.uid}`, mask: ['groupIds'], data: { groupIds: [FAMILY_ID] } },
+      {
+        path: `users/${joiner.s.uid}`,
+        create: true,
+        data: {
+          displayName: joiner.account.displayName,
+          email: joiner.account.email,
+          familyId: FAMILY_ID,
+          createdAt: SERVER_TIME,
+        },
+      },
       {
         path: fam(`members/${joiner.s.uid}`),
         create: true,

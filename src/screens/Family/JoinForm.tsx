@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/m3/Button'
 import { TextField } from '@/components/m3/TextField'
-import { AlreadyInFamily, InviteNotFound, joinFamilyByCode } from '@/data/families'
+import { AlreadyMember, GroupLimitReached, InviteNotFound, joinFamilyByCode } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { strings } from '@/strings/pt-BR'
 import '../auth.css'
@@ -23,7 +23,8 @@ export function JoinForm() {
       await joinFamilyByCode(code)
     } catch (err) {
       if (err instanceof InviteNotFound) setError(t.notFound)
-      else if (err instanceof AlreadyInFamily) setError(strings.invite.alreadyInFamily)
+      else if (err instanceof AlreadyMember) setError(strings.invite.alreadyInFamily)
+      else if (err instanceof GroupLimitReached) setError(strings.invite.groupLimit)
       else setError(t.error)
     } finally {
       setBusy(false)

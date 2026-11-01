@@ -94,7 +94,11 @@ describe('S-050 seed against the emulators (real rules enforced)', () => {
         (u.fields.groupIds?.arrayValue as { values?: { stringValue: string }[] } | undefined)
           ?.values?.[0]?.stringValue === FAMILY_ID,
     )
-    expect(withFamily).toHaveLength(2)
+    expect(withFamily).toHaveLength(1)
+    const legacy = users.filter(
+      (u) => u.fields.familyId?.stringValue === FAMILY_ID && !u.fields.groupIds,
+    )
+    expect(legacy).toHaveLength(1)
     expect(users).toHaveLength(3)
   })
 

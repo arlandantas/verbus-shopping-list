@@ -71,6 +71,7 @@ export const strings = {
     notFound: 'Convite não encontrado',
     offlineWarning: 'Você está offline. Conecte-se à internet para entrar na família.',
     alreadyInFamily: 'Você já pertence a uma família. Convite não aplicado.',
+    groupLimit: 'Você chegou ao limite de 10 grupos.',
     error: 'Não foi possível entrar na família. Tente novamente.',
     back: 'Voltar',
   },

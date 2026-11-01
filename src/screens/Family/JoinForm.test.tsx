@@ -8,7 +8,8 @@ vi.mock('@/hooks/useOnlineStatus', () => ({ useOnlineStatus: () => online }))
 vi.mock('@/data/families', () => ({
   joinFamilyByCode: vi.fn(),
   InviteNotFound: class extends Error {},
-  AlreadyInFamily: class extends Error {},
+  AlreadyMember: class extends Error {},
+  GroupLimitReached: class extends Error {},
 }))
 
 describe('JoinForm offline', () => {

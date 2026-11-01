@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router'
 import { clearReturnTo } from '@/app/returnTo'
 import { useFamily } from '@/app/FamilyProvider'
 import {
-  AlreadyInFamily,
+  AlreadyMember,
+  GroupLimitReached,
   InviteNotFound,
   getInvitePreview,
   joinFamilyByCode,
@@ -72,7 +73,11 @@ export function InviteScreen() {
       if (e instanceof InviteNotFound) setPreview({ state: 'notFound' })
       else
         setJoinError(
-          e instanceof AlreadyInFamily ? strings.invite.alreadyInFamily : strings.invite.error,
+          e instanceof AlreadyMember
+            ? strings.invite.alreadyInFamily
+            : e instanceof GroupLimitReached
+              ? strings.invite.groupLimit
+              : strings.invite.error,
         )
     } finally {
       setBusy(false)

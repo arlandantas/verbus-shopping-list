@@ -2,13 +2,16 @@ import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/data/firebase'
 import type { Family, UserProfile } from '@/data/converters'
 import {
-  AlreadyInFamily,
+  AlreadyMember,
+  GroupLimitReached,
+  MAX_GROUPS_PER_USER,
   InviteNotFound,
   createFamily,
   getInvitePreview,
   joinFamilyByCode,
   rotateInviteCode,
   watchFamily,
+  watchMyGroups,
 } from '@/data/families'
 import { ensureUserProfile, watchUser } from '@/data/users'
 import { isValidInviteCode } from '@/domain/inviteCode'
@@ -24,6 +27,37 @@ async function signUp(name: string) {
   await ensureUserProfile(user)
   return user
 }
+
+/** Replaces users/{uid} through the emulator admin bypass (shapes the rules refuse to create). */
+async function adminSetProfile(uid: string, extra: Record<string, unknown>) {
+  const enc = (v: unknown): unknown =>
+    Array.isArray(v) ? { arrayValue: { values: v.map(enc) } } : { stringValue: v as string }
+  const fields: Record<string, unknown> = {
+    displayName: { stringValue: 'X' },
+    email: { stringValue: `${uid}@example.test` },
+    createdAt: { timestampValue: new Date().toISOString() },
+  }
+  for (const [k, v] of Object.entries(extra)) fields[k] = enc(v)
+  const res = await fetch(
+    `http://127.0.0.1:8080/v1/projects/demo-verbus/databases/(default)/documents/users/${uid}`,
+    {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields }),
+    },
+  )
+  expect(res.ok).toBe(true)
+}
+
+const groupsOf = (uid: string, want: number) =>
+  new Promise<Family[]>((resolve) => {
+    const off = watchMyGroups(uid, (g) => {
+      if (g.length === want) {
+        off()
+        resolve(g)
+      }
+    })
+  })
 
 const profileOf = async (uid: string) => (await getDoc(doc(db, 'users', uid))).data()
 
@@ -85,10 +119,74 @@ describe('S-009 AC4: joinFamilyByCode', () => {
     await expect(joinFamilyByCode('0000')).rejects.toBeInstanceOf(InviteNotFound)
   })
 
-  it('rejects a user already in a family with AlreadyInFamily', async () => {
+  it('S-088 AC3: joins while in another group; AlreadyMember writes nothing', async () => {
     await signUp('fabi')
-    const { inviteCode } = await createFamily('Casa')
-    await expect(joinFamilyByCode(inviteCode)).rejects.toBeInstanceOf(AlreadyInFamily)
+    const { familyId, inviteCode } = await createFamily('Casa')
+    await expect(joinFamilyByCode(inviteCode)).rejects.toMatchObject({
+      name: 'AlreadyMember',
+      familyId,
+    })
+    await expect(joinFamilyByCode(inviteCode)).rejects.toBeInstanceOf(AlreadyMember)
+    await logout()
+    const gil = await signUp('gil')
+    const own = await createFamily('Outra')
+    await expect(joinFamilyByCode(inviteCode)).resolves.toEqual({ familyId })
+    expect((await profileOf(gil.uid))?.groupIds).toEqual([own.familyId, familyId])
+  })
+})
+
+describe('S-088: multi-group create, limit and watchMyGroups', () => {
+  it('AC2: createFamily appends to the ledger for 0, 1 and more groups, no familyId', async () => {
+    const u = await signUp('hana')
+    const a = await createFamily('A')
+    const b = await createFamily('B')
+    const c = await createFamily('C')
+    const p = await profileOf(u.uid)
+    expect(p?.groupIds).toEqual([a.familyId, b.familyId, c.familyId])
+    expect(p).not.toHaveProperty('familyId')
+  })
+
+  it('AC4: with 10 groups, create and join throw GroupLimitReached before writing', async () => {
+    await signUp('ivo')
+    const other = await createFamily('Alvo')
+    await logout()
+    const u = await signUp('jaci')
+    const ids = Array.from({ length: MAX_GROUPS_PER_USER }, (_, i) => `G${i}`)
+    await adminSetProfile(u.uid, { groupIds: ids })
+    await expect(createFamily('Nova')).rejects.toBeInstanceOf(GroupLimitReached)
+    await expect(joinFamilyByCode(other.inviteCode)).rejects.toBeInstanceOf(GroupLimitReached)
+    expect((await profileOf(u.uid))?.groupIds).toEqual(ids)
+  })
+
+  it('AC5: watchMyGroups lists groups by createdAt and updates on create and join', async () => {
+    await signUp('kika')
+    const first = await createFamily('Primeira')
+    await logout()
+    const u = await signUp('leo')
+    const seen: string[][] = []
+    const off = watchMyGroups(u.uid, (g) => seen.push(g.map((x) => x.id)))
+    const mine = await createFamily('Minha')
+    await vi.waitFor(() => expect(seen.at(-1)).toEqual([mine.familyId]))
+    await joinFamilyByCode(first.inviteCode)
+    await vi.waitFor(() => expect(seen.at(-1)).toEqual([first.familyId, mine.familyId]))
+    off()
+  })
+
+  it('AC6: a legacy profile (familyId, no groupIds) sees its group and can join a second', async () => {
+    const u = await signUp('mel')
+    const old = await createFamily('Antiga')
+    await adminSetProfile(u.uid, { familyId: old.familyId })
+    expect(await groupsOf(u.uid, 1)).toMatchObject([{ id: old.familyId }])
+    await logout()
+    await signUp('nuno')
+    const other = await createFamily('Nova')
+    await logout()
+    await loginAs('mel')
+    await joinFamilyByCode(other.inviteCode)
+    const p = await profileOf(u.uid)
+    expect(p?.groupIds).toEqual([old.familyId, other.familyId])
+    expect(p?.familyId).toBe(old.familyId)
+    expect((await groupsOf(u.uid, 2)).map((g) => g.id)).toEqual([old.familyId, other.familyId])
   })
 })
 

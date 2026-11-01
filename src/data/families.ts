@@ -4,7 +4,9 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  query,
   serverTimestamp,
+  where,
   writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore'
@@ -21,12 +23,24 @@ export class InviteNotFound extends Error {
   }
 }
 
-export class AlreadyInFamily extends Error {
-  constructor() {
-    super('already-in-family')
-    this.name = 'AlreadyInFamily'
+/** Already a member of the invite's group: nothing is written; the client switches to `familyId`. */
+export class AlreadyMember extends Error {
+  readonly familyId: string
+  constructor(familyId: string) {
+    super('already-member')
+    this.name = 'AlreadyMember'
+    this.familyId = familyId
   }
 }
+
+export class GroupLimitReached extends Error {
+  constructor() {
+    super('group-limit-reached')
+    this.name = 'GroupLimitReached'
+  }
+}
+
+export const MAX_GROUPS_PER_USER = 10
 
 function currentUid(): string {
   const uid = auth.currentUser?.uid
@@ -58,6 +72,7 @@ export async function createFamily(
   const inviteCode = await freshInviteCode()
   const familyRef = doc(collection(db, 'families'))
   const profile = await getDoc(doc(db, 'users', uid))
+  if (ledgerOf(profile.data()).length >= MAX_GROUPS_PER_USER) throw new GroupLimitReached()
   const batch = writeBatch(db)
   batch.set(familyRef, {
     name,
@@ -126,18 +141,46 @@ export async function joinFamilyByCode(rawCode: string): Promise<{ familyId: str
   if (!isValidInviteCode(code)) throw new InviteNotFound()
 
   const profile = await getDoc(doc(db, 'users', uid))
-  if (ledgerOf(profile.data()).length > 0) throw new AlreadyInFamily() // one group until S-088
-
   const invite = await getDoc(doc(db, 'invites', code))
   if (!invite.exists()) throw new InviteNotFound()
   const familyId: string = invite.data().familyId
+  const base = ledgerOf(profile.data())
+  if (base.includes(familyId)) throw new AlreadyMember(familyId)
+  if (base.length >= MAX_GROUPS_PER_USER) throw new GroupLimitReached()
 
   const batch = writeBatch(db)
   batch.update(doc(db, 'families', familyId), { members: arrayUnion(uid), joinCode: code })
-  batch.update(doc(db, 'users', uid), { groupIds: [...ledgerOf(profile.data()), familyId] })
+  batch.update(doc(db, 'users', uid), { groupIds: [...base, familyId] })
   addMemberProfileToBatch(batch, familyId, uid, profile.data()?.displayName ?? '')
   await batch.commit()
   return { familyId }
+}
+
+/**
+ * Live list of the user's groups (`members array-contains uid`), oldest first. Sorted on the
+ * client: array-contains + orderBy would need a composite index.
+ */
+export function watchMyGroups(
+  uid: string,
+  cb: (groups: Family[]) => void,
+  onError?: () => void,
+): Unsubscribe {
+  const q = query(
+    collection(db, 'families').withConverter(familyConverter),
+    where('members', 'array-contains', uid),
+  )
+  return onSnapshot(
+    q,
+    { includeMetadataChanges: true },
+    (snap) => {
+      const groups = snap.docs
+        .filter((d) => !d.metadata.hasPendingWrites) // not accepted server-side yet
+        .map((d) => d.data({ serverTimestamps: 'estimate' }))
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      cb(groups)
+    },
+    () => onError?.(),
+  )
 }
 
 const WATCH_RETRIES = 5

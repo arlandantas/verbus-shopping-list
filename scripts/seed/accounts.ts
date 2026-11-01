@@ -9,6 +9,8 @@ export interface TestAccount {
   hint: string
   /** true = belongs to the seeded family; false = no family (tests create/join). */
   family: boolean
+  /** true = old-style profile (familyId, no groupIds) to prove ADR-0024 compatibility. */
+  legacyProfile?: boolean
 }
 
 const PASSWORD = 'Teste-7e8f1fb502c3'
@@ -27,8 +29,9 @@ export const TEST_ACCOUNTS: readonly TestAccount[] = [
     displayName: 'Beto',
     email: 'beto@teste.local',
     password: PASSWORD,
-    hint: 'casal, com família',
+    hint: 'casal, perfil legado',
     family: true,
+    legacyProfile: true,
   },
   {
     key: 'carla',

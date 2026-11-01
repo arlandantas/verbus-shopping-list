@@ -11,7 +11,8 @@ vi.mock('@/data/families', () => ({
   createFamily: vi.fn(),
   joinFamilyByCode: vi.fn(),
   InviteNotFound: class extends Error {},
-  AlreadyInFamily: class extends Error {},
+  AlreadyMember: class extends Error {},
+  GroupLimitReached: class extends Error {},
 }))
 vi.mock('@/hooks/useOnlineStatus', () => ({ useOnlineStatus: () => true }))
 vi.mock('@/hooks/useMemberNames', () => ({ useMemberNames: () => ({ u1: 'Ana' }) }))

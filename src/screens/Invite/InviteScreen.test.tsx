@@ -10,7 +10,8 @@ vi.mock('@/data/families', () => ({
   joinFamilyByCode: vi.fn(),
   getInvitePreview: () => Promise.resolve({ familyId: 'f', familyName: 'Casa' }),
   InviteNotFound: class extends Error {},
-  AlreadyInFamily: class extends Error {},
+  AlreadyMember: class extends Error {},
+  GroupLimitReached: class extends Error {},
 }))
 
 describe('InviteScreen offline', () => {
