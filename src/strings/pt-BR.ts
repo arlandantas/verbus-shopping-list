@@ -16,6 +16,9 @@ export const strings = {
     signUp: 'Criar conta',
     google: 'Entrar com Google',
     signOut: 'Sair',
+    signOutTitle: 'Sair da conta?',
+    signOutNote: 'Você precisará entrar de novo para ver as listas da família.',
+    signOutCancel: 'Cancelar',
   },
   family: {
     title: 'Família',

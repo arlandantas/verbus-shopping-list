@@ -3,6 +3,7 @@ import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { createFamily } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
+import { Dialog } from '@/components/m3/Dialog'
 import { Button } from '@/components/m3/Button'
 import { Icon } from '@/components/m3/Icon'
 import { IconButton } from '@/components/m3/IconButton'
@@ -21,9 +22,24 @@ export function FamilyScreen() {
   const online = useOnlineStatus()
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
+  const [confirmOut, setConfirmOut] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const t = strings.family
   const names = useMemberNames(family.status === 'ready' ? family.family.id : undefined)
+
+  /** Closes the dialog and signs out only after its history entry unwinds, else the login redirect gets undone. */
+  function confirmSignOut() {
+    let done = false
+    const run = () => {
+      if (done) return
+      done = true
+      window.removeEventListener('popstate', run)
+      void signOut()
+    }
+    window.addEventListener('popstate', run)
+    setTimeout(run, 500) // fallback if no history entry was unwound
+    setConfirmOut(false)
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -98,10 +114,27 @@ export function FamilyScreen() {
       <TopAppBar
         title={family.status === 'ready' ? family.family.name : t.title}
         actions={
-          <IconButton icon="logout" label={strings.login.signOut} onClick={() => void signOut()} />
+          <IconButton
+            icon="logout"
+            label={strings.login.signOut}
+            onClick={() => setConfirmOut(true)}
+          />
         }
       />
       <div className="flex flex-col gap-4 p-4">{body}</div>
+      {confirmOut && (
+        <Dialog
+          open
+          variant="confirm"
+          title={strings.login.signOutTitle}
+          confirmLabel={strings.login.signOut}
+          cancelLabel={strings.login.signOutCancel}
+          onClose={() => setConfirmOut(false)}
+          onConfirm={confirmSignOut}
+        >
+          {strings.login.signOutNote}
+        </Dialog>
+      )}
     </main>
   )
 }

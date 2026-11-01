@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { FamilyScreen } from './FamilyScreen'
 import { strings } from '@/strings/pt-BR'
@@ -36,8 +37,30 @@ describe('FamilyScreen (S-064 AC3)', () => {
   it('top bar shows the family name and a logout icon button', () => {
     renderIt()
     expect(screen.getByRole('heading', { name: 'Casa', level: 1 })).toBeInTheDocument()
+  })
+
+  it('S-073 AC1: logout asks for confirmation; cancel/Esc do not sign out, confirm does', async () => {
+    h.signOut.mockClear()
+    renderIt()
     fireEvent.click(screen.getByRole('button', { name: strings.login.signOut }))
-    expect(h.signOut).toHaveBeenCalled()
+    const dlg = screen.getByRole('dialog', { name: strings.login.signOutTitle })
+    expect(within(dlg).getByText(strings.login.signOutNote)).toBeInTheDocument()
+    expect(h.signOut).not.toHaveBeenCalled()
+    fireEvent.click(within(dlg).getByRole('button', { name: strings.login.signOutCancel }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: strings.login.signOut }))
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+    expect(h.signOut).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: strings.login.signOut }))
+    fireEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: strings.login.signOut }),
+    )
+    await waitFor(() => expect(h.signOut).toHaveBeenCalledTimes(1))
+  })
+
+  it('S-073: add-bar pill shows a visible focus indicator', () => {
+    const css = readFileSync('src/index.css', 'utf8')
+    expect(css).toMatch(/\.add-bar:focus-within\s*{[^}]*outline:[^;]*primary/)
   })
 
   it('invite card: highlighted code, copy icon button and tonal share button', () => {

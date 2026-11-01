@@ -49,10 +49,18 @@ test('S-010 AC3: Google sign-in through the Auth emulator popup', async ({ page 
   expect(await userDocs()).toHaveLength(1)
 })
 
+async function signOutConfirmed(page: Page) {
+  await page.getByRole('button', { name: strings.login.signOut }).click()
+  await page
+    .getByRole('dialog', { name: strings.login.signOutTitle })
+    .getByRole('button', { name: strings.login.signOut })
+    .click()
+  await expect(page).toHaveURL(/\/entrar$/)
+}
+
 test('S-010 AC4: wrong password shows a pt-BR message only', async ({ page }) => {
   await signUp(page)
-  await page.getByRole('button', { name: strings.login.signOut }).click()
-  await expect(page).toHaveURL(/\/entrar$/)
+  await signOutConfirmed(page)
   await page.getByLabel(strings.login.email).fill(EMAIL)
   await page.getByLabel(strings.login.password).fill('wrong-password')
   await page.getByRole('button', { name: strings.login.signIn, exact: true }).click()
@@ -66,8 +74,16 @@ test('S-010 AC6: reload keeps the session; sign out returns to /entrar', async (
   await page.reload()
   await expect(page).toHaveURL(/\/familia$/)
   await expect(page.getByRole('heading', { name: strings.family.title })).toBeVisible()
+  await signOutConfirmed(page)
+})
+
+test('S-073 AC2: cancelling the sign-out dialog keeps the session', async ({ page }) => {
+  await signUp(page)
   await page.getByRole('button', { name: strings.login.signOut }).click()
-  await expect(page).toHaveURL(/\/entrar$/)
+  const dialog = page.getByRole('dialog', { name: strings.login.signOutTitle })
+  await dialog.getByRole('button', { name: strings.login.signOutCancel }).click()
+  await expect(dialog).toHaveCount(0)
+  await expect(page).toHaveURL(/\/familia$/)
 })
 
 /** Marks the persisted Firebase ID token as expired so the next load must use the refresh token. */
