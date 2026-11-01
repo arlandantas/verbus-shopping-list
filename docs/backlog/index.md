@@ -70,7 +70,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-060 | UX | Adicionar item na parte inferior da tela | done | S-058 |
 | S-061 | UX | Despensa: redesign, texto explicativo e "Entenda melhor" | done | S-053, S-055 |
 | S-062 | UX | Categorias: personalizadas primeiro, padrão com cadeado | done | S-053, S-054, S-055 |
-| S-063 | UX | Finalizar compra: redesign M3 | todo | S-054, S-058 |
+| S-063 | UX | Finalizar compra: redesign M3 | done | S-054, S-058 |
 | S-064 | UX | Família, convite e login: redesign M3 | todo | S-053, S-054 |
 | S-065 | UX | Histórico: redesign M3 (meses e mês) | todo | S-053, S-055 |
 | S-066 | UX | Histórico: agrupar por compra finalizada | todo | S-065 |
