@@ -10,6 +10,12 @@
 - Link "Entenda melhor" abre um diálogo com o descritivo completo: o que é recorrente, como tornar um item recorrente (no "Editar item" ou aqui), os três estados (falta / tenho / no carrinho), que os recorrentes voltam sozinhos à Lista no começo de cada mês e como remover dos recorrentes.
 - Cada estado tem ícone e cor próprios, além do texto.
 
+## Agrupamento por categoria (S-094)
+- Recorrentes e "Outros itens já usados" agrupam por categoria, na ordem da Lista (ADR-0014); "Sem categoria" por último; categoria vazia some; nomes em ordem alfabética dentro do grupo.
+- Recorrentes: cada categoria é uma seção recolhível com contador; o estado recolhido fica salvo no aparelho.
+- "Outros itens" segue recolhível; dentro dele, subtítulos fixos por categoria (sem recolher).
+- Grupo sem categorias, ou nenhum item com categoria: lista plana, sem cabeçalhos.
+
 ## Notas
 - Recorrentes voltam como pendentes no início do próximo mês ou ao iniciar novo ciclo (ver `50-checkout-history.md`).
 - Recorrência mora no catálogo; estado da Despensa (falta / tenho / no carrinho) é derivado da lista, sem campo novo (ADR-0010).

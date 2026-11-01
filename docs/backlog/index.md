@@ -107,4 +107,5 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-091 | LISTS | Criar outro grupo e entrar por convite já estando em um | done | S-090 |
 | S-092 | LISTS | Categorias: sem semente, sugestões com um toque | done | S-091 |
 | S-093 | E-ADD | Colar lista de itens no campo de adicionar (sheet de pré-visualização, ADR-0027) | todo | S-060, S-055 |
+| S-094 | E-UX | Despensa agrupada por categoria (recorrentes e "Outros itens"); roda após S-093 | todo | S-092 |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |
