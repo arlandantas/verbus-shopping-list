@@ -124,11 +124,11 @@ describe('S-077 AC2: denied rotations', () => {
       joinCode: 'ABCD2345',
       inviteCode: 'ABCD9999',
     })
-    bad.update(doc(db, 'users/carol'), { familyId: 'F1' })
+    bad.update(doc(db, 'users/carol'), { groupIds: ['F1'] })
     await assertFails(bad.commit())
     const ok = writeBatch(db)
     ok.update(doc(db, 'families/F1'), { members: arrayUnion('carol'), joinCode: 'ABCD2345' })
-    ok.update(doc(db, 'users/carol'), { familyId: 'F1' })
+    ok.update(doc(db, 'users/carol'), { groupIds: ['F1'] })
     await assertSucceeds(ok.commit())
   })
 })
@@ -138,7 +138,7 @@ describe('S-077 AC3: old code stops working', () => {
     const db = asUser(env, 'carol')
     const b = writeBatch(db)
     b.update(doc(db, 'families/F1'), { members: arrayUnion('carol'), joinCode: code })
-    b.update(doc(db, 'users/carol'), { familyId: 'F1' })
+    b.update(doc(db, 'users/carol'), { groupIds: ['F1'] })
     return b.commit()
   }
   it('denies join with the old code after rotation, allows the new one', async () => {

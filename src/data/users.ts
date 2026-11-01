@@ -22,7 +22,7 @@ export async function ensureUserProfile(user: AuthUser): Promise<void> {
   await setDoc(ref, {
     displayName: (user.displayName ?? user.email ?? '').slice(0, 60),
     email: user.email ?? '',
-    familyId: null,
+    groupIds: [],
     createdAt: serverTimestamp(),
   })
 }

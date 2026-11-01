@@ -61,7 +61,7 @@ function createFamily(
     createdBy: uid,
     createdAt: serverTimestamp(),
   })
-  if (profile) b.update(doc(db, `users/${uid}`), { familyId: id })
+  if (profile) b.update(doc(db, `users/${uid}`), { groupIds: [id] })
   return b.commit()
 }
 
@@ -130,7 +130,7 @@ describe('S-014 AC2: creating a family updates the profile in the same batch', (
       createdBy: 'carol',
       createdAt: serverTimestamp(),
     })
-    b.update(doc(db, 'users/carol'), { familyId: 'F1' })
+    b.update(doc(db, 'users/carol'), { groupIds: ['F1'] })
     await assertFails(b.commit())
   })
 

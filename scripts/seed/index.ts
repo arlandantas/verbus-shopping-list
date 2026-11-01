@@ -21,6 +21,11 @@ import {
 
 type Who = { account: TestAccount; s: Session }
 
+// Seed profiles are created with an empty ledger (ADR-0024); "has a group" = non-empty groupIds.
+const hasGroups = (p: Awaited<ReturnType<Rest['get']>>) =>
+  ((p?.groupIds as { arrayValue?: { values?: unknown[] } } | undefined)?.arrayValue?.values
+    ?.length ?? 0) > 0
+
 const fam = (p: string) => `families/${FAMILY_ID}/${p}`
 
 export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<void> {
@@ -38,7 +43,7 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
           data: {
             displayName: account.displayName,
             email: account.email,
-            familyId: null,
+            groupIds: [],
             createdAt: SERVER_TIME,
           },
         },
@@ -49,7 +54,7 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
   const joiner = people.find((p) => p.account.key === 'beto')!
 
   const ownerProfile = await rest.get(owner.s, `users/${owner.s.uid}`)
-  if (ownerProfile?.familyId?.stringValue == null) {
+  if (!hasGroups(ownerProfile)) {
     const writes: Write[] = [
       {
         path: `families/${FAMILY_ID}`,
@@ -72,7 +77,7 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
           createdAt: SERVER_TIME,
         },
       },
-      { path: `users/${owner.s.uid}`, mask: ['familyId'], data: { familyId: FAMILY_ID } },
+      { path: `users/${owner.s.uid}`, mask: ['groupIds'], data: { groupIds: [FAMILY_ID] } },
       {
         path: fam(`members/${owner.s.uid}`),
         create: true,
@@ -88,14 +93,14 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
   }
 
   const joinerProfile = await rest.get(joiner.s, `users/${joiner.s.uid}`)
-  if (joinerProfile?.familyId?.stringValue == null) {
+  if (!hasGroups(joinerProfile)) {
     await rest.commit(joiner.s, [
       {
         path: `families/${FAMILY_ID}`,
         mask: ['members', 'joinCode'],
         data: { members: [owner.s.uid, joiner.s.uid], joinCode: INVITE_CODE },
       },
-      { path: `users/${joiner.s.uid}`, mask: ['familyId'], data: { familyId: FAMILY_ID } },
+      { path: `users/${joiner.s.uid}`, mask: ['groupIds'], data: { groupIds: [FAMILY_ID] } },
       {
         path: fam(`members/${joiner.s.uid}`),
         create: true,

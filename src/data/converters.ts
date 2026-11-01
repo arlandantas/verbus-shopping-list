@@ -27,7 +27,8 @@ export const userConverter: FirestoreDataConverter<UserProfile> = {
     return {
       displayName: d.displayName,
       email: d.email,
-      familyId: d.familyId ?? null,
+      // Until S-088 (multi-group UI) the single group is the legacy pointer or the first ledger entry.
+      familyId: d.familyId ?? d.groupIds?.[0] ?? null,
       createdAt: d.createdAt.toDate(),
     }
   },

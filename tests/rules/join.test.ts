@@ -72,12 +72,12 @@ function join(
   familyId: string,
   members: string[],
   fam: Record<string, unknown> = {},
-  userFamily: string | null = familyId,
+  userFamily: string = familyId,
 ) {
   const db = asUser(env, uid)
   const b = writeBatch(db)
   b.update(doc(db, `families/${familyId}`), { members, joinCode: 'ABCD2345', ...fam })
-  b.update(doc(db, `users/${uid}`), { familyId: userFamily })
+  b.update(doc(db, `users/${uid}`), { groupIds: [userFamily] })
   return b.commit()
 }
 
@@ -144,7 +144,7 @@ describe('S-008 AC4: joining is denied when abusive', () => {
 
   it('denies pointing the profile at a family that was not joined', async () => {
     const db = asUser(env, 'carol')
-    await assertFails(updateDoc(doc(db, 'users/carol'), { familyId: 'F1' }))
+    await assertFails(updateDoc(doc(db, 'users/carol'), { groupIds: ['F1'] }))
   })
 })
 

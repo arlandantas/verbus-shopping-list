@@ -60,11 +60,12 @@ function join(
   members: string[],
   joinCode: unknown = 'ABCD2345',
   profile = true,
+  ledger?: string[],
 ) {
   const db = asUser(env, uid)
   const b = writeBatch(db)
   b.update(doc(db, `families/${familyId}`), { members, joinCode })
-  if (profile) b.update(doc(db, `users/${uid}`), { familyId })
+  if (profile) b.update(doc(db, `users/${uid}`), { groupIds: ledger ?? [familyId] })
   return b.commit()
 }
 
@@ -92,7 +93,8 @@ describe('S-076 AC2: nonexistent or malformed code', () => {
 })
 
 describe('S-076 AC3: profile requirements', () => {
-  it('denies a member of another family, allows a free user (control)', async () => {
+  it('denies a member of another family dropping the ledger entry, allows a free user (control)', async () => {
+    // S-087: bob (legacy F2) may join F1 only with groupIds == [F2, F1]; [F1] erases F2.
     await assertFails(join('bob', 'F1', ['alice', 'bob']))
     await assertSucceeds(join('carol', 'F1', ['alice', 'carol']))
   })
@@ -158,7 +160,7 @@ describe('S-076 AC6: family create tied to invite', () => {
       createdBy: inviteBy,
       createdAt: serverTimestamp(),
     })
-    b.update(doc(db, 'users/carol'), { familyId: 'F3' })
+    b.update(doc(db, 'users/carol'), { groupIds: ['F3'] })
     return b.commit()
   }
 
@@ -223,7 +225,7 @@ describe('S-076 gaps: re-join and extra keys', () => {
       joinCode: 'ABCD2345',
       ownerId: 'dave',
     })
-    bad.update(doc(db, 'users/dave'), { familyId: 'F1' })
+    bad.update(doc(db, 'users/dave'), { groupIds: ['F1'] })
     await assertFails(bad.commit())
     await assertSucceeds(join('dave', 'F1', ['alice', 'dave']))
   })

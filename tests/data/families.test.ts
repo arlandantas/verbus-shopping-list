@@ -32,7 +32,7 @@ describe('S-009 AC2: ensureUserProfile', () => {
     const user = await loginAs('ana')
     await ensureUserProfile(user)
     const first = await profileOf(user.uid)
-    expect(first).toMatchObject({ email: 'ana@example.test', familyId: null })
+    expect(first).toMatchObject({ email: 'ana@example.test', groupIds: [] })
     await ensureUserProfile(user)
     expect((await profileOf(user.uid))?.createdAt).toEqual(first?.createdAt)
   })
@@ -55,7 +55,7 @@ describe('S-009 AC3: createFamily', () => {
       familyName: 'Casa',
       createdBy: user.uid,
     })
-    expect((await profileOf(user.uid))?.familyId).toBe(familyId)
+    expect((await profileOf(user.uid))?.groupIds).toEqual([familyId])
   })
 })
 
@@ -67,7 +67,7 @@ describe('S-009 AC4: joinFamilyByCode', () => {
     const dani = await signUp('dani')
     const lower = ` ${inviteCode.slice(0, 4).toLowerCase()}-${inviteCode.slice(4)} `
     await expect(joinFamilyByCode(lower)).resolves.toEqual({ familyId })
-    expect((await profileOf(dani.uid))?.familyId).toBe(familyId)
+    expect((await profileOf(dani.uid))?.groupIds).toEqual([familyId])
     const members = await new Promise<string[]>((resolve) => {
       const off = watchFamily(familyId, (f) => {
         if (f?.members.includes(dani.uid)) {

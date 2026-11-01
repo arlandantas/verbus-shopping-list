@@ -35,7 +35,7 @@ beforeEach(async () => {
     'users/carol': {
       displayName: 'Carol',
       email: 'c@x.com',
-      familyId: null,
+      groupIds: [],
       createdAt: new Date(),
     },
   })
@@ -68,7 +68,7 @@ function createFamilyBatch(uid: string, id: string, members: string[]) {
     createdBy: uid,
     createdAt: serverTimestamp(),
   })
-  b.update(doc(db, `users/${uid}`), { familyId: id })
+  b.update(doc(db, `users/${uid}`), { groupIds: [id] })
   DEFAULTS.forEach((k, i) => b.set(doc(db, cat(k, id)), { name: k, isDefault: true, order: i }))
   return b.commit()
 }

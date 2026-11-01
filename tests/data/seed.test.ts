@@ -89,7 +89,11 @@ describe('S-050 seed against the emulators (real rules enforced)', () => {
     )
 
     const users = await list('users')
-    const withFamily = users.filter((u) => u.fields.familyId?.stringValue === FAMILY_ID)
+    const withFamily = users.filter(
+      (u) =>
+        (u.fields.groupIds?.arrayValue as { values?: { stringValue: string }[] } | undefined)
+          ?.values?.[0]?.stringValue === FAMILY_ID,
+    )
     expect(withFamily).toHaveLength(2)
     expect(users).toHaveLength(3)
   })

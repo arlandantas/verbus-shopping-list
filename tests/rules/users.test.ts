@@ -21,7 +21,7 @@ beforeEach(async () => {
 const profile = () => ({
   displayName: 'Alice',
   email: '',
-  familyId: null,
+  groupIds: [] as string[],
   createdAt: serverTimestamp(),
 })
 
@@ -58,7 +58,7 @@ describe('S-007 AC2: users shape', () => {
     const db = asUser(env, 'alice')
     await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), displayName: 42 }))
     await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), createdAt: 'now' }))
-    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), familyId: 7 }))
+    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), groupIds: 7 }))
     await assertFails(setDoc(doc(db, 'users/alice'), { displayName: 'A', email: 'a@x.com' }))
   })
 
@@ -90,7 +90,7 @@ describe('users.createdAt is pinned', () => {
   })
 })
 
-describe('S-007 AC5: users.familyId requires membership', () => {
+describe('S-007 AC5: users.groupIds requires membership', () => {
   const fam = () => ({
     name: 'Casa',
     members: ['alice'],
@@ -110,7 +110,7 @@ describe('S-007 AC5: users.familyId requires membership', () => {
       createdBy: 'alice',
       createdAt: serverTimestamp(),
     })
-    b.update(doc(db, 'users/alice'), { familyId: 'F1' })
+    b.update(doc(db, 'users/alice'), { groupIds: ['F1'] })
     await assertSucceeds(b.commit())
   })
 
@@ -119,48 +119,54 @@ describe('S-007 AC5: users.familyId requires membership', () => {
       'families/F2': { name: 'Outra', members: ['bob'], ownerId: 'bob', createdAt: new Date() },
     })
     const db = asUser(env, 'alice')
-    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), familyId: 'F2' }))
+    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), groupIds: ['F2'] }))
   })
 
   it('denies setting familyId to a nonexistent family', async () => {
     const db = asUser(env, 'alice')
-    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), familyId: 'nope' }))
+    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), groupIds: ['nope'] }))
   })
 })
 
-describe('S-014 AC1: familyId only moves from null to a family', () => {
+describe('S-014/S-087: legacy familyId is immutable', () => {
   const stored = (familyId: string | null) => ({
-    'users/alice': { ...profile(), familyId, createdAt: new Date() },
+    'users/alice': {
+      displayName: 'A',
+      email: '',
+      familyId,
+      createdAt: new Date(),
+    },
     'families/F1': { name: 'Casa', members: ['alice'], ownerId: 'alice', createdAt: new Date() },
     'families/F2': { name: 'Outra', members: ['alice'], ownerId: 'alice', createdAt: new Date() },
   })
+  const upd = (data: Record<string, unknown>) =>
+    updateDoc(doc(asUser(env, 'alice'), 'users/alice'), data)
 
-  it('allows null -> family where the user is a member', async () => {
+  it('denies null -> familyId (the legacy pointer is no longer written)', async () => {
     await seed(env, stored(null))
-    await assertSucceeds(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { familyId: 'F1' }))
+    await assertFails(upd({ familyId: 'F1' }))
   })
 
   it('denies F1 -> F2, even when a member of both', async () => {
     await seed(env, stored('F1'))
-    await assertFails(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { familyId: 'F2' }))
+    await assertFails(upd({ familyId: 'F2' }))
   })
 
   it('denies F1 -> null', async () => {
     await seed(env, stored('F1'))
-    await assertFails(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { familyId: null }))
+    await assertFails(upd({ familyId: null }))
   })
 
   it('allows other fields to change while familyId stays', async () => {
     await seed(env, stored('F1'))
-    await assertSucceeds(updateDoc(doc(asUser(env, 'alice'), 'users/alice'), { displayName: 'Z' }))
+    await assertSucceeds(upd({ displayName: 'Z' }))
   })
 
-  it('denies creating a profile that already carries a familyId', async () => {
-    await seed(env, stored(null))
-    await env.clearFirestore()
+  it('denies creating a profile that already carries a familyId (or familyId null)', async () => {
     await seed(env, { 'families/F1': stored(null)['families/F1'] })
-    await assertFails(
-      setDoc(doc(asUser(env, 'alice'), 'users/alice'), { ...profile(), familyId: 'F1' }),
-    )
+    const db = asUser(env, 'alice')
+    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), familyId: 'F1' }))
+    await assertFails(setDoc(doc(db, 'users/alice'), { ...profile(), familyId: null }))
+    await assertSucceeds(setDoc(doc(db, 'users/alice'), profile()))
   })
 })

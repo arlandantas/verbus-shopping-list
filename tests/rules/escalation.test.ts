@@ -141,7 +141,7 @@ describe('S-078 AC4: users displayName and email', () => {
   const user = (over: Record<string, unknown> = {}) => ({
     displayName: 'Dave',
     email: 'dave@x.com',
-    familyId: null,
+    groupIds: [],
     createdAt: serverTimestamp(),
     ...over,
   })
@@ -198,17 +198,17 @@ describe('S-078 AC6: users.familyId', () => {
     const db = asUser(env, 'carol')
     const b = writeBatch(db)
     b.update(doc(db, 'families/F1'), { members: ['alice', 'bob', 'carol'], joinCode: 'ABCD2345' })
-    b.update(doc(db, 'users/carol'), { familyId: 'F1' })
+    b.update(doc(db, 'users/carol'), { groupIds: ['F1'] })
     await assertSucceeds(b.commit())
   })
   it('denies pointing familyId at a family the user is not in', async () => {
-    await assertFails(updateDoc(doc(asUser(env, 'carol'), 'users/carol'), { familyId: 'F1' }))
-    await assertFails(updateDoc(doc(asUser(env, 'carol'), 'users/carol'), { familyId: 'F2' }))
+    await assertFails(updateDoc(doc(asUser(env, 'carol'), 'users/carol'), { groupIds: ['F1'] }))
+    await assertFails(updateDoc(doc(asUser(env, 'carol'), 'users/carol'), { groupIds: ['F2'] }))
   })
   it('denies resetting familyId to null or switching families once set', async () => {
     const db = asUser(env, 'alice')
     await assertFails(updateDoc(doc(db, 'users/alice'), { familyId: null }))
-    await assertFails(updateDoc(doc(db, 'users/alice'), { familyId: 'F2' }))
+    await assertFails(updateDoc(doc(db, 'users/alice'), { groupIds: ['F2'] }))
     await assertSucceeds(updateDoc(doc(db, 'users/alice'), { displayName: 'Ali' }))
   })
 })

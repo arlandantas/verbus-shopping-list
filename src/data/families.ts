@@ -34,6 +34,12 @@ function currentUid(): string {
   return uid
 }
 
+/** Group ledger of a stored profile (ADR-0024): groupIds, else the legacy familyId, else empty. */
+function ledgerOf(data: Record<string, unknown> | undefined): string[] {
+  if (Array.isArray(data?.groupIds)) return data.groupIds as string[]
+  return typeof data?.familyId === 'string' ? [data.familyId] : []
+}
+
 const MAX_CODE_ATTEMPTS = 3
 
 async function freshInviteCode(): Promise<string> {
@@ -44,7 +50,7 @@ async function freshInviteCode(): Promise<string> {
   throw new Error('invite-code-collision')
 }
 
-/** Single batch: family + invite + profile.familyId + 6 default categories (ADR-0014). Needs an existing profile (ensureUserProfile). */
+/** Single batch: family + invite + profile.groupIds + 6 default categories (ADR-0014). Needs an existing profile (ensureUserProfile). */
 export async function createFamily(
   name: string,
 ): Promise<{ familyId: string; inviteCode: string }> {
@@ -66,7 +72,9 @@ export async function createFamily(
     createdBy: uid,
     createdAt: serverTimestamp(),
   })
-  batch.update(doc(db, 'users', uid), { familyId: familyRef.id })
+  batch.update(doc(db, 'users', uid), {
+    groupIds: [...ledgerOf(profile.data()), familyRef.id],
+  })
   addMemberProfileToBatch(batch, familyRef.id, uid, profile.data()?.displayName ?? '')
   for (const c of DEFAULT_CATEGORIES) {
     batch.set(doc(db, 'families', familyRef.id, 'categories', c.id), {
@@ -118,7 +126,7 @@ export async function joinFamilyByCode(rawCode: string): Promise<{ familyId: str
   if (!isValidInviteCode(code)) throw new InviteNotFound()
 
   const profile = await getDoc(doc(db, 'users', uid))
-  if (profile.exists() && profile.data().familyId != null) throw new AlreadyInFamily()
+  if (ledgerOf(profile.data()).length > 0) throw new AlreadyInFamily() // one group until S-088
 
   const invite = await getDoc(doc(db, 'invites', code))
   if (!invite.exists()) throw new InviteNotFound()
@@ -126,7 +134,7 @@ export async function joinFamilyByCode(rawCode: string): Promise<{ familyId: str
 
   const batch = writeBatch(db)
   batch.update(doc(db, 'families', familyId), { members: arrayUnion(uid), joinCode: code })
-  batch.update(doc(db, 'users', uid), { familyId })
+  batch.update(doc(db, 'users', uid), { groupIds: [...ledgerOf(profile.data()), familyId] })
   addMemberProfileToBatch(batch, familyId, uid, profile.data()?.displayName ?? '')
   await batch.commit()
   return { familyId }

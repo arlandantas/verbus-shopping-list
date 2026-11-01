@@ -25,10 +25,32 @@ service cloud.firestore {
       return /databases/$(database)/documents/users/$(uid);
     }
 
-    // One family per user (S-014): profile goes null -> familyId, in the same batch.
+    // ADR-0024: group ledger of a profile. Legacy profiles (no groupIds) use [familyId] or [].
+    function groupsBefore(d) {
+      return ('groupIds' in d) ? d.groupIds
+        : ((d.get('familyId', null) != null) ? [d.familyId] : []);
+    }
+
+    // The profile ledger gains exactly this group, in the same batch (appended once, max 10).
     function profileJoins(familyId) {
-      return get(userRef(request.auth.uid)).data.familyId == null
-        && getAfter(userRef(request.auth.uid)).data.familyId == familyId;
+      let before = groupsBefore(get(userRef(request.auth.uid)).data);
+      return before.size() < 10
+        && !(familyId in before)
+        && getAfter(userRef(request.auth.uid)).data.groupIds == before.concat([familyId]);
+    }
+
+    // Isolated or batched profile update: ledger unchanged or one appended group the user is a member of.
+    function validLedgerChange(before, after) {
+      let b = groupsBefore(before);
+      let a = groupsBefore(after);
+      return a == b
+        || (a.size() == b.size() + 1
+          && a.size() <= 10
+          && 'groupIds' in after
+          && a == b.concat([a[b.size()]])
+          && a[b.size()] is string
+          && !(a[b.size()] in b)
+          && isMemberAfter(a[b.size()]));
     }
 
     // S-078: email must be the token email ('' when the token has none); updates may keep a stored value.
@@ -37,14 +59,16 @@ service cloud.firestore {
     }
 
     function validUser(data) {
-      return data.keys().hasOnly(['displayName', 'email', 'familyId', 'createdAt'])
-        && data.keys().hasAll(['displayName', 'email', 'familyId', 'createdAt'])
+      return data.keys().hasOnly(['displayName', 'email', 'familyId', 'groupIds', 'createdAt'])
+        && data.keys().hasAll(['displayName', 'email', 'createdAt'])
         && data.displayName is string
         && data.displayName.size() >= 1 && data.displayName.size() <= 60
         && data.email is string
         && data.email.size() <= 254
         && data.createdAt is timestamp
-        && (data.familyId == null
+        && (!('groupIds' in data) || (data.groupIds is list && data.groupIds.size() <= 10))
+        && (!('familyId' in data)
+          || data.familyId == null
           || (data.familyId is string && isMemberAfter(data.familyId)));
     }
 
@@ -267,14 +291,15 @@ service cloud.firestore {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && validUser(request.resource.data)
         && request.resource.data.email == tokenEmail()
-        && request.resource.data.familyId == null
+        && !('familyId' in request.resource.data)
+        && request.resource.data.get('groupIds', null) == []
         && request.resource.data.createdAt == request.time;
       allow update: if isOwner(uid) && validUser(request.resource.data)
         && (request.resource.data.email == tokenEmail()
           || request.resource.data.email == resource.data.email)
         && request.resource.data.createdAt == resource.data.createdAt
-        && (resource.data.familyId == null
-          || request.resource.data.familyId == resource.data.familyId);
+        && request.resource.data.get('familyId', null) == resource.data.get('familyId', null)
+        && validLedgerChange(resource.data, request.resource.data);
       allow delete: if false;
     }
 

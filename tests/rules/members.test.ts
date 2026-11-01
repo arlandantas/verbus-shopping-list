@@ -97,7 +97,7 @@ describe('S-026 members rules', () => {
     const join = (profileUid: string) => {
       const b = writeBatch(carol)
       b.update(doc(carol, 'families/f1'), { members: arrayUnion('carol'), joinCode: 'ABCD2345' })
-      b.update(doc(carol, 'users/carol'), { familyId: 'f1' })
+      b.update(doc(carol, 'users/carol'), { groupIds: ['f1'] })
       b.set(doc(carol, mine(profileUid)), { displayName: 'Carol' })
       return b.commit()
     }
@@ -121,7 +121,7 @@ describe('S-026 members rules', () => {
         createdBy: 'carol',
         createdAt: serverTimestamp(),
       })
-      b.update(doc(carol, 'users/carol'), { familyId: id })
+      b.update(doc(carol, 'users/carol'), { groupIds: [id] })
     }
     const ok = writeBatch(carol)
     base(ok, 'f3')
