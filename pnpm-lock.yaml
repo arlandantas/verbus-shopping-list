@@ -27,6 +27,9 @@ importers:
       '@firebase/rules-unit-testing':
         specifier: 6.0.0
         version: 6.0.0(firebase@13.1.0)
+      '@material-symbols/svg-400':
+        specifier: ^0.48.2
+        version: 0.48.2
       '@playwright/test':
         specifier: ^1.64.1
         version: 1.64.1
@@ -1229,6 +1232,9 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@material-symbols/svg-400@0.48.2':
+    resolution: {integrity: sha512-JJXRvRoHhMbrSFQIkiUwjFkCnurH0Yg+cGMCn9xS0PRtLXovIAQCz7NltNn/teQ9VRYmbzZB75Uw6Hx0umu5Bg==}
 
   '@modelcontextprotocol/sdk@1.32.2':
     resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
@@ -6678,6 +6684,8 @@ snapshots:
       keyv: 5.6.0
 
   '@keyv/serialize@1.1.1': {}
+
+  '@material-symbols/svg-400@0.48.2': {}
 
   '@modelcontextprotocol/sdk@1.32.2(zod@4.6.7)':
     dependencies:

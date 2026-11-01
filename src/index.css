@@ -1,1 +1,41 @@
 @import 'tailwindcss';
+@import './styles/tokens.css';
+
+@theme inline {
+  --color-primary: var(--md-sys-color-primary);
+  --color-on-primary: var(--md-sys-color-on-primary);
+  --color-primary-container: var(--md-sys-color-primary-container);
+  --color-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-secondary-container: var(--md-sys-color-secondary-container);
+  --color-surface: var(--md-sys-color-surface);
+  --color-surface-container-low: var(--md-sys-color-surface-container-low);
+  --color-surface-container: var(--md-sys-color-surface-container);
+  --color-surface-container-high: var(--md-sys-color-surface-container-high);
+  --color-on-surface: var(--md-sys-color-on-surface);
+  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-outline: var(--md-sys-color-outline);
+  --color-outline-variant: var(--md-sys-color-outline-variant);
+  --color-error: var(--md-sys-color-error);
+  --color-on-error: var(--md-sys-color-on-error);
+  --color-inverse-surface: var(--md-sys-color-inverse-surface);
+  --color-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+  --color-inverse-primary: var(--md-sys-color-inverse-primary);
+
+  --font-sans: var(--md-ref-font);
+
+  --radius-m3-sm: var(--md-sys-shape-corner-sm);
+  --radius-m3-md: var(--md-sys-shape-corner-md);
+  --radius-m3-lg: var(--md-sys-shape-corner-lg);
+  --radius-m3-xl: var(--md-sys-shape-corner-xl);
+  --radius-m3-full: var(--md-sys-shape-corner-full);
+
+  --shadow-m3-1: var(--md-sys-elevation-1);
+  --shadow-m3-2: var(--md-sys-elevation-2);
+  --shadow-m3-3: var(--md-sys-elevation-3);
+}
+
+body {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-font);
+}

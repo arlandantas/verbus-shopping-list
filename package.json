@@ -30,6 +30,7 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@firebase/rules-unit-testing": "6.0.0",
+    "@material-symbols/svg-400": "^0.48.2",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/dom": "10.4.2",
