@@ -82,3 +82,39 @@ describe('AddItemBar combobox (ADR-0009)', () => {
     expect(input).toHaveAttribute('aria-expanded', 'false')
   })
 })
+
+describe('S-060 AC1/AC2: bottom bar', () => {
+  it('S-060 AC1: M3 field with placeholder "Adicionar item" and a filled add icon button', () => {
+    render(<AddItemBar onAdd={vi.fn()} />)
+    const input = screen.getByLabelText(strings.list.addLabel)
+    expect(input).toHaveAttribute('placeholder', 'Adicionar item')
+    expect(input.closest('.m3-field')).not.toBeNull()
+    const btn = screen.getByRole('button', { name: 'Adicionar' })
+    expect(btn).toHaveClass('m3-icon-btn--filled')
+    expect(btn).toBeDisabled()
+    fireEvent.change(input, { target: { value: 'leite' } })
+    expect(btn).toBeEnabled()
+  })
+
+  it('S-060 AC2: suggestions open upward with own scroll and show "feijão · 2 kg"', () => {
+    const catalog = [
+      {
+        name: 'feijão',
+        nameKey: 'feijao',
+        quantity: 2,
+        unit: 'kg' as const,
+        categoryId: null,
+        recurring: false,
+        lastUsedAt: new Date(2026, 9, 1),
+      },
+    ]
+    render(<AddItemBar onAdd={vi.fn()} catalog={catalog} />)
+    fireEvent.change(screen.getByLabelText(strings.list.addLabel), { target: { value: 'fei' } })
+    const list = screen.getByRole('listbox')
+    expect(list).toHaveClass('bottom-full')
+    expect(list).not.toHaveClass('top-full')
+    expect(list).toHaveClass('overflow-y-auto')
+    expect(list.className).toMatch(/max-h-\[40vh\]/)
+    expect(screen.getByRole('option', { name: 'feijão · 2 kg' })).toBeInTheDocument()
+  })
+})

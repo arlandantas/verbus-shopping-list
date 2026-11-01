@@ -161,3 +161,21 @@ test('S-044 AC4: deleting a category moves its items to Sem categoria without re
   await expect(beto.getByRole('region', { name: 'Pets' })).toHaveCount(0)
   await expect(beto.getByRole('region', { name: 'Sem categoria' })).toContainText('pilha')
 })
+
+test('S-060 AC3/AC5: field sits in the lower half above the tabs; last item is not covered', async ({
+  page,
+}) => {
+  await setupFamily(page)
+  for (let i = 1; i <= 14; i++) {
+    await field(page).fill(`item${String(i).padStart(2, '0')}`)
+    await field(page).press('Enter')
+  }
+  const box = (await field(page).boundingBox())!
+  const nav = (await page.getByRole('navigation', { name: strings.nav.label }).boundingBox())!
+  const viewport = page.viewportSize()!
+  expect(box.y).toBeGreaterThan(viewport.height / 2)
+  expect(box.y + box.height).toBeLessThanOrEqual(nav.y + 1)
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await page.getByRole('checkbox', { name: 'item14' }).click()
+  await expect(page.getByRole('checkbox', { name: 'item14' })).toBeChecked()
+})

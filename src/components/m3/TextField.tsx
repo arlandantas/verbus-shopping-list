@@ -1,11 +1,13 @@
-import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
+import { useId, type ComponentPropsWithRef, type ReactNode } from 'react'
 import './fields.css'
 
 export type TextFieldProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
+  ComponentPropsWithRef<'input'>,
   'className' | 'aria-invalid' | 'aria-describedby'
 > & {
   label: string
+  /** Keeps the label for assistive tech only (compact bars). */
+  hideLabel?: boolean
   helper?: string
   /** Error message; when set the field is invalid and the message is announced. */
   error?: string
@@ -17,6 +19,7 @@ export type TextFieldProps = Omit<
 
 export function TextField({
   label,
+  hideLabel,
   helper,
   error,
   prefix,
@@ -33,7 +36,7 @@ export function TextField({
   const showCounter = counter && maxLength !== undefined
   return (
     <div className={`m3-field${error ? ' m3-field--error' : ''}`}>
-      <label htmlFor={inputId} className="m3-field__label">
+      <label htmlFor={inputId} className={`m3-field__label${hideLabel ? ' sr-only' : ''}`}>
         {label}
       </label>
       <div className="m3-field__box">

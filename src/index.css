@@ -53,3 +53,22 @@ body {
   bottom: 0;
   z-index: 20;
 }
+
+/* Add-item bar (S-060): fixed above the bottom tabs; suggestions open upward. */
+.add-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: var(--app-bottom-inset, 0px);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 8px 16px;
+  background: var(--md-sys-color-surface-container-low, var(--md-sys-color-surface));
+}
+/* Room so the last item is not covered by the bar. */
+.list-screen {
+  padding-bottom: 88px;
+}

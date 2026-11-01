@@ -63,9 +63,9 @@ export const strings = {
   back: 'Voltar',
   list: {
     addLabel: 'Novo item',
-    addPlaceholder: 'Ex.: 3 kg feijão',
+    addPlaceholder: 'Adicionar item',
     add: 'Adicionar',
-    empty: 'Sua lista está vazia. Adicione o primeiro item acima.',
+    empty: 'Sua lista está vazia. Adicione o primeiro item abaixo.',
     pendingSync: 'pendente de sincronização',
     addedToCart: 'Item adicionado ao carrinho',
     undo: 'Desfazer',

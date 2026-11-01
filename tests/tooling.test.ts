@@ -57,3 +57,11 @@ describe('S-050 AC1: dev:local is wired and documented', () => {
     expect(read('AGENTS.md')).toContain('`pnpm dev:local`')
   })
 })
+
+describe('S-060 AC4: viewport meta', () => {
+  it('S-060 AC4: index.html resizes content with the keyboard', () => {
+    expect(readFileSync(join(root, 'index.html'), 'utf8')).toContain(
+      'content="width=device-width, initial-scale=1, interactive-widget=resizes-content"',
+    )
+  })
+})

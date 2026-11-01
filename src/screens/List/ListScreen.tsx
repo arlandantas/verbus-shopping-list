@@ -69,7 +69,7 @@ export function ListScreen() {
   const done = list.filter((i) => i.status === 'bought').length
 
   return (
-    <main className="mx-auto max-w-md">
+    <main className="list-screen mx-auto max-w-md">
       <TopAppBar
         title={family.name}
         subtitle={list.length > 0 ? strings.market.counter(done, list.length) : undefined}

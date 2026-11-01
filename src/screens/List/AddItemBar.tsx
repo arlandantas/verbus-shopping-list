@@ -3,6 +3,8 @@ import type { CatalogEntry } from '@/data/converters'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { suggest } from '@/domain/suggest'
 import { strings } from '@/strings/pt-BR'
+import { IconButton } from '@/components/m3/IconButton'
+import { TextField } from '@/components/m3/TextField'
 import { Suggestions } from './Suggestions'
 
 const NO_KEYS: ReadonlySet<string> = new Set()
@@ -66,34 +68,36 @@ export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick 
   }
 
   return (
-    <form onSubmit={submit} className="sticky top-0 z-10 flex gap-2 bg-white p-4 shadow-sm">
-      <input
-        ref={inputRef}
-        role="combobox"
-        aria-expanded={open}
-        aria-controls={open ? listId : undefined}
-        aria-autocomplete="list"
-        aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
-        onKeyDown={onKeyDown}
-        aria-label={strings.list.addLabel}
-        placeholder={strings.list.addPlaceholder}
-        value={text}
-        onChange={(e) => {
-          setText(e.target.value)
-          setDismissed(false)
-          setActive(-1)
-        }}
-        enterKeyHint="done"
-        autoComplete="off"
-        className="min-h-12 min-w-0 flex-1 rounded border border-gray-500 px-3 text-base"
-      />
-      <button
+    <form onSubmit={submit} className="add-bar">
+      <div className="min-w-0 flex-1">
+        <TextField
+          ref={inputRef}
+          label={strings.list.addLabel}
+          hideLabel
+          role="combobox"
+          aria-expanded={open}
+          aria-controls={open ? listId : undefined}
+          aria-autocomplete="list"
+          aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
+          onKeyDown={onKeyDown}
+          placeholder={strings.list.addPlaceholder}
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value)
+            setDismissed(false)
+            setActive(-1)
+          }}
+          enterKeyHint="done"
+          autoComplete="off"
+        />
+      </div>
+      <IconButton
         type="submit"
+        variant="filled"
+        icon="add"
+        label={strings.list.add}
         disabled={blank}
-        className="min-h-12 min-w-12 rounded bg-green-700 px-4 text-base font-medium text-white disabled:bg-gray-400"
-      >
-        {strings.list.add}
-      </button>
+      />
       <Suggestions id={listId} entries={suggestions} active={active} onPick={pick} />
     </form>
   )

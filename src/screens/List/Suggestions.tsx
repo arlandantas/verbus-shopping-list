@@ -19,7 +19,7 @@ export function Suggestions({
       id={id}
       role="listbox"
       aria-label={strings.list.suggestionsLabel}
-      className="absolute inset-x-4 top-full z-20 rounded border border-gray-500 bg-white shadow-md"
+      className="absolute inset-x-4 bottom-full z-20 mb-1 max-h-[40vh] overflow-y-auto rounded border border-gray-500 bg-white shadow-md"
     >
       {entries.map((e, i) => (
         <li

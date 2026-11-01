@@ -167,7 +167,10 @@ describe('S-058 AC4: top bar counter and Finalizar compra', () => {
 })
 
 describe('S-058 AC7: snackbar Desfazer', () => {
-  beforeEach(() => vi.useFakeTimers())
+  beforeEach(() => {
+    vi.useFakeTimers()
+    window.localStorage.clear()
+  })
   afterEach(() => vi.useRealTimers())
   const snack = () => screen.queryByText(strings.list.addedToCart)
 
@@ -200,6 +203,24 @@ describe('S-058 AC7: snackbar Desfazer', () => {
     expect(screen.getAllByText(strings.list.addedToCart)).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: strings.list.undo }))
     expect(setItemStatus).toHaveBeenCalledWith('f1', 'i2', 'pending')
+  })
+
+  it('S-060: Desfazer works while the row is hidden by "ocultar itens no carrinho"', () => {
+    window.localStorage.setItem('verbus.ui.hideBought', 'true')
+    itemsState.items = [mk()]
+    const view = renderIt()
+    fireEvent.click(screen.getByRole('checkbox', { name: 'arroz' }))
+    itemsState.items = [mk({ status: 'bought' })]
+    view.rerender(
+      <MemoryRouter>
+        <ListScreen />
+      </MemoryRouter>,
+    )
+    expect(screen.queryByRole('checkbox', { name: 'arroz' })).toBeNull()
+    expect(snack()).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: strings.list.undo }))
+    expect(setItemStatus).toHaveBeenCalledWith('f1', 'i1', 'pending')
+    window.localStorage.clear()
   })
 
   it('unmarking shows no snackbar', () => {
