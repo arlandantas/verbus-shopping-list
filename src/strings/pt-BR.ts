@@ -123,6 +123,9 @@ export const strings = {
     readdFor: (name: string) => `Readicionar ${name} à lista`,
     readded: (name: string) => `${name} readicionado à lista`,
     inListFor: (name: string) => `Já na lista: ${name}`,
+    editFor: (name: string) => `Editar ${name}`,
+    editTitle: 'Editar item comprado',
+    purchaseInfo: 'Compra',
   },
   pantry: {
     title: 'Despensa',

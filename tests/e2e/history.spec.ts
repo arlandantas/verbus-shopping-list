@@ -113,3 +113,57 @@ test('S-066 AC5: two purchases in a month show as cards; category sums still hol
     formatBRL(500),
   )
 })
+
+test('S-068 AC4/AC5: edit a purchased line; other member sees it; offline works', async ({
+  browser,
+}) => {
+  const { ana, beto } = await twoMembers(browser, ['arroz'])
+  await row(ana, 'arroz').click()
+  await expect(row(ana, 'arroz')).toBeChecked()
+  await ana.getByRole('link', { name: strings.checkout.link }).click()
+  await ana.getByRole('button', { name: strings.checkout.finish, exact: true }).click()
+  await expect(ana).toHaveURL(/\/$/)
+
+  await beto.getByRole('link', { name: strings.history.link, exact: true }).click()
+  await beto.getByRole('list', { name: strings.history.monthsLabel }).getByRole('link').click()
+  await beto.getByRole('radio', { name: strings.history.byPurchase }).click()
+
+  await ana.getByRole('link', { name: strings.history.link, exact: true }).click()
+  await ana.getByRole('list', { name: strings.history.monthsLabel }).getByRole('link').click()
+  await ana.getByRole('radio', { name: strings.history.byPurchase }).click()
+  await ana.getByRole('button', { name: strings.history.editFor('arroz') }).click()
+  const sheet = ana.getByRole('dialog', { name: strings.history.editTitle })
+  await sheet.getByLabel(strings.item.quantity).fill('2')
+  await sheet.getByLabel(strings.item.price).fill('12,90')
+  await sheet.getByRole('button', { name: strings.item.save }).click()
+  await expect(sheet).toHaveCount(0)
+  const line = ana.getByRole('listitem').filter({ hasText: 'arroz' })
+  await expect(line).toContainText(formatBRL(1290))
+  await expect(line).toContainText('2 un')
+  await expect(ana.getByRole('region').filter({ hasText: /\d{1,2} de / })).toContainText(
+    formatBRL(1290),
+  )
+  await expect(beto.getByRole('listitem').filter({ hasText: 'arroz' })).toContainText(
+    formatBRL(1290),
+  )
+  await ana.getByRole('radio', { name: strings.history.byCategory }).click()
+  await expect(ana.getByRole('region', { name: strings.history.categorySumTitle })).toContainText(
+    formatBRL(1290),
+  )
+
+  // AC5: offline edit shows at once and persists after reconnect
+  await ana.getByRole('radio', { name: strings.history.byPurchase }).click()
+  await ana.context().setOffline(true)
+  await ana.getByRole('button', { name: strings.history.editFor('arroz') }).click()
+  await sheet.getByLabel(strings.item.price).fill('15,00')
+  await sheet.getByRole('button', { name: strings.item.save }).click()
+  await expect(ana.getByRole('listitem').filter({ hasText: 'arroz' })).toContainText(
+    formatBRL(1500),
+  )
+  await ana.context().setOffline(false)
+  await ana.reload()
+  await ana.getByRole('radio', { name: strings.history.byPurchase }).click()
+  await expect(ana.getByRole('listitem').filter({ hasText: 'arroz' })).toContainText(
+    formatBRL(1500),
+  )
+})

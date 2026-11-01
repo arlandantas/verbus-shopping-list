@@ -6,6 +6,8 @@ import type { PurchaseLine } from '@/data/converters'
 import { useCategories } from '@/hooks/useCategories'
 import { useCatalog } from '@/screens/List/useCatalog'
 import { useItems } from '@/screens/List/useItems'
+import { updatePurchaseLine } from '@/data/history'
+import { EditLineSheet } from './EditLineSheet'
 import { LineRow } from './LineRow'
 import { PurchaseCards } from './PurchaseCards'
 import { useHistoryGroup } from './useHistoryGroup'
@@ -41,6 +43,7 @@ export function CycleScreen() {
     [items],
   )
   const [group, setGroup] = useHistoryGroup()
+  const [editing, setEditing] = useState<PurchaseLine | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const readd = (l: PurchaseLine) => {
     if (!family) return
@@ -90,7 +93,13 @@ export function CycleScreen() {
         </p>
       )}
       {loaded && lines.length > 0 && byPurchase && (
-        <PurchaseCards lines={lines} purchases={mine} pendingKeys={pendingKeys} onAdd={readd} />
+        <PurchaseCards
+          lines={lines}
+          purchases={mine}
+          pendingKeys={pendingKeys}
+          onAdd={readd}
+          onEdit={setEditing}
+        />
       )}
       {loaded && lines.length > 0 && !byPurchase && (
         <section aria-label={strings.history.categorySumTitle} className="history-summary">
@@ -136,6 +145,14 @@ export function CycleScreen() {
             </ul>
           </section>
         ))}
+      {editing && (
+        <EditLineSheet
+          line={editing}
+          purchase={mine.find((p) => p.id === editing.purchaseId)}
+          onSave={(patch) => updatePurchaseLine(family.id, editing, patch, lines ?? [])}
+          onClose={() => setEditing(null)}
+        />
+      )}
       {toast && <Snackbar message={toast} onDismiss={() => setToast(null)} />}
     </main>
   )

@@ -17,6 +17,7 @@ const h = vi.hoisted(() => ({
   addItem: vi.fn(),
 }))
 vi.mock('@/data/items', () => ({ addItem: h.addItem }))
+vi.mock('@/data/history', () => ({ updatePurchaseLine: vi.fn() }))
 vi.mock('@/screens/List/useItems', () => ({ useItems: () => h.items }))
 vi.mock('@/screens/List/useCatalog', () => ({ useCatalog: () => h.catalog }))
 vi.mock('@/hooks/useCategories', () => ({ useCategories: () => h.categories }))

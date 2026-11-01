@@ -19,9 +19,10 @@ interface Props {
   purchases: { id: string; market: string | null; purchasedAt: Date }[]
   pendingKeys: Set<string>
   onAdd: (line: PurchaseLine) => void
+  onEdit: (line: PurchaseLine) => void
 }
 
-export function PurchaseCards({ lines, purchases, pendingKeys, onAdd }: Props) {
+export function PurchaseCards({ lines, purchases, pendingKeys, onAdd, onEdit }: Props) {
   const groups = groupByPurchase(lines, purchases)
   return (
     <>
@@ -46,7 +47,13 @@ export function PurchaseCards({ lines, purchases, pendingKeys, onAdd }: Props) {
             )}
             <ul className="history-list">
               {g.lines.map((l) => (
-                <LineRow key={l.id} line={l} pending={pendingKeys.has(l.nameKey)} onAdd={onAdd} />
+                <LineRow
+                  key={l.id}
+                  line={l}
+                  pending={pendingKeys.has(l.nameKey)}
+                  onAdd={onAdd}
+                  onEdit={onEdit}
+                />
               ))}
             </ul>
           </section>
