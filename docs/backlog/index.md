@@ -2,7 +2,8 @@
 
 Uma linha por história. Status: `todo` · `doing` · `done` · `blocked`.
 Detalhe da história: `stories/S-NNN.md`. Linhas `E-Mx` são épicos: o Arquiteto os detalha em histórias antes de iniciar o marco.
-Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
+Ordem = ordem de execução. Tudo até S-068 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
+E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) → lista/mercado (S-058..S-060) → demais telas (S-061..S-065) → histórico por compra (S-066) → editar histórico (S-067, S-068).
 
 | ID | Marco | Título | Status | Deps |
 |---|---|---|---|---|
@@ -56,5 +57,26 @@ Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input 
 | S-047 | M5 | Tela Histórico (meses e mês somente leitura) | done | S-040, S-036 |
 | S-048 | M5 | Histórico: readicionar item à lista atual | done | S-047 |
 | S-049 | M5 | Virada do mês: aviso e E2E dos recorrentes | done | S-041, S-046 |
+| E-UX | UX | Épico: redesign Material 3 (feedback da 1ª rodada; ADR-0018..0022). Prioridade atual | todo | — |
+| S-051 | UX | Tokens Material 3, tema claro/escuro e ícones | todo | — |
+| S-052 | UX | Componentes base: Button, IconButton, TopAppBar, NavigationBar | todo | S-051 |
+| S-053 | UX | Shell com abas inferiores e barras superiores | todo | S-052 |
+| S-054 | UX | Componentes de formulário: TextField, MoneyField, Select, Checkbox, Switch | todo | S-051 |
+| S-055 | UX | Componentes sobrepostos: BottomSheet, Dialog e Snackbar | todo | S-052 |
+| S-056 | UX | Dados e regras: renomear item e valor independente do carrinho (ADR-0022) | todo | — |
+| S-057 | UX | Sheet "Editar item" substitui a tela de detalhe | todo | S-054, S-055, S-056 |
+| S-058 | UX | Lista única: linha com checkbox e editar, fusão do Modo mercado, snackbar Desfazer | todo | S-053, S-055, S-057 |
+| S-059 | UX | Categorias colapsáveis e "Ocultar itens no carrinho" | todo | S-058 |
+| S-060 | UX | Adicionar item na parte inferior da tela | todo | S-058 |
+| S-061 | UX | Despensa: redesign, texto explicativo e "Entenda melhor" | todo | S-053, S-055 |
+| S-062 | UX | Categorias: personalizadas primeiro, padrão com cadeado | todo | S-053, S-054, S-055 |
+| S-063 | UX | Finalizar compra: redesign M3 | todo | S-054, S-058 |
+| S-064 | UX | Família, convite e login: redesign M3 | todo | S-053, S-054 |
+| S-065 | UX | Histórico: redesign M3 (meses e mês) | todo | S-053, S-055 |
+| S-066 | UX | Histórico: agrupar por compra finalizada | todo | S-065 |
+| S-067 | UX | Regras e dados: editar linhas de compras passadas (ADR-0021) | todo | S-066 |
+| S-068 | UX | Histórico: editar item comprado | todo | S-067 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |
 | E-SEC | — | Épico: endurecimento de segurança (só após a 1ª rodada de testes do usuário; ADR-0017, ADR-0016) | todo | — |
+| E-LISTS | — | Épico futuro: várias listas por família (mercado, roupas, desejos) com acesso por lista; exige ADR de modelo de dados e regras antes das histórias | todo | E-UX |
+| E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |

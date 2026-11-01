@@ -1,28 +1,23 @@
 # Estado atual
 
-**Fase:** MVP (M0–M5) implementado e verificado; aguardando a 1ª rodada de testes manuais do usuário (ADR-0017).
-**Verificação (2026-10-31):** `pnpm check` verde (258 unit, 289 regras, 52 dados) e `pnpm test:e2e` 78/78.
-
-## Como testar
-`pnpm dev:local` + roteiro em `docs/manual-test.md` (contas Ana, Beto, Carla no login; só com emulador).
+**Fase:** MVP (M0–M5) implementado; 1ª rodada de testes manuais feita. Foco atual: épico E-UX (redesign Material 3), prioridade para o MVP ser compartilhável com a família.
+**Última verificação (2026-10-31):** `pnpm check` verde e `pnpm test:e2e` 78/78 (antes do redesign).
 
 ## Próximo passo
-Receber o feedback do usuário e corrigir/ajustar. Depois: épico `E-SEC` (segurança, ADR-0016/0017), M6 (aviso iOS, polimento PWA) e S-013 (Firebase real).
+Plano E-UX aprovado (S-051..S-068, ADR-0018..0022). Manager loop a partir de S-051 (builder → reviewer), uma história por vez (todas mexem nas mesmas telas).
+
+## Decisões do redesign
+- Material 3 básico, componentes próprios, ícones SVG inline (ADR-0018). Cor semente `#1816a6` provisória (discutível).
+- Abas inferiores fixas; Home e "Ir ao mercado" fundidas em lista única (ADR-0019, aprovado).
+- Sheet "Editar item" reaproveitável, renomear item (ADR-0020). Editar linhas do histórico (ADR-0021).
+- Valor independente do carrinho: preço em pendente aceito, desmarcar não limpa (ADR-0022). Snackbar "Desfazer" ao marcar (ADR-0019).
+
+## Depois do E-UX
+E-SEC (segurança, ADR-0016/0017), M6 (aviso iOS, polimento PWA), S-013 (Firebase real). Épicos futuros: E-LISTS (várias listas por família), E-MCP (integração com agentes de IA).
 
 ## Pendências do usuário (nada bloqueia o teste local)
 - S-013: projeto Firebase (ID, região sugerida `southamerica-east1`), Google + e-mail/senha ativos, config web, `firebase login`.
-- Remoto no GitHub para o CI (S-006) rodar de fato.
-- Ícones finais do PWA (hoje provisórios) e nome de marca.
-- Teste em iPhone real (instalação pelo Safari).
-
-## Decisões vigentes
-Stack ADR-0002; modelo ADR-0003 e 0007..0015; offline ADR-0004; riscos aceitos ADR-0016; segurança adiada ADR-0017.
-Categorias padrão: 6 (mercearia, hortifruti, carnes, laticínios, limpeza, higiene pessoal), não editáveis.
-
-## Dívidas conhecidas (baixa prioridade)
-- Cabeçalho da lista quebra linha em telas estreitas (nome da família + 4 links).
-- AC3 do histórico readiciona do mês atual (sem semente de ciclo passado nos testes).
-- Famílias criadas antes do S-037 não têm categorias padrão (não há dados reais).
+- Remoto no GitHub para o CI (S-006). Ícones finais do PWA e nome de marca. Teste em iPhone real.
 
 ## Ambiente
-Node 22, pnpm 11, JDK 21. Repo git local em `main`, sem remoto.
+Node 22, pnpm 11, JDK 21. Repo git local em `main`, sem remoto. Testes: `pnpm dev:local`, `docs/manual-test.md`.

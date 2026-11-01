@@ -9,12 +9,13 @@ App web instalável (PWA) para listas de compras compartilhadas em um núcleo fa
 - Back-end: sem servidor próprio no MVP. Front-end fala direto com Firebase (Authentication e Firestore, persistência offline ativada).
 - iOS: aviso claro para instalar pelo Safari (Compartilhar → Adicionar à Tela de Início).
 - Offline: marcações feitas sem sinal ficam salvas localmente e sincronizam ao reconectar.
-- Nome do app/repositório: `verbus-shopping-list` (provisório). Ícones e identidade visual: depois.
+- Nome do app/repositório: `verbus-shopping-list` (provisório). Visual: Material 3 básico (ADR-0018); ícones do app e identidade visual: depois.
 
 ## Fora do MVP
 - Leitura de QR Code da NFC-e com vínculo por IA (V0.1/V1) → `90-nfce.md`.
 - Comparativo de preços mês a mês e por mercado (V1).
-- Sugestão de itens que costumam acabar; notificações push; várias listas por família.
+- Sugestão de itens que costumam acabar; notificações push.
+- Várias listas por família com acesso por lista (épico E-LISTS) e servidor MCP para agentes de IA/chatbot (épico E-MCP).
 
 ## Riscos
 - iOS pode limpar dados locais de PWAs pouco usados → a nuvem é a fonte da verdade.

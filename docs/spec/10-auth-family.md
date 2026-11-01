@@ -10,6 +10,7 @@
 - Login
 - Criar ou entrar na família
 - Aviso de instalação no iOS
+- Aba Família (depois de entrar): nome da família, convite (código, copiar e compartilhar com ícones), acesso a Categorias e sair (ícone `logout` na barra superior). Ver `05-ui-shell.md`.
 
 ## Notas
 - Detecção de iOS com banner de instalação (ver `80-tech-requirements.md`).

@@ -1,6 +1,6 @@
 # 70 — Modelo de dados sugerido (Firestore)
 
-Sugestão inicial. Refinado pelas ADRs (campos em inglês, chaves exatas nas ADRs): 0003/0007 (`users`, `families`, `invites`), 0008 + 0015 (`items`, sem `cycle`; preço só se comprado), 0009/0010 (`catalog`), 0011 (`members`), 0012 (`purchases` + `purchaseLines`), 0013 (`cycles` = marcador de abertura do mês), 0014 (`categories`).
+Sugestão inicial. Refinado pelas ADRs (campos em inglês, chaves exatas nas ADRs): 0003/0007 (`users`, `families`, `invites`), 0008 + 0015 + 0022 (`items`, sem `cycle`; preço em qualquer status, nulo na criação), 0009/0010 (`catalog`), 0011 (`members`), 0012 (`purchases` + `purchaseLines`), 0013 (`cycles` = marcador de abertura do mês), 0014 (`categories`), 0020 (renomear item: `nameKey` novo + catálogo), 0021 (linhas de compra editáveis: `quantity`, `unit`, `priceCents`; compra: `totalCents`).
 
 - **users:** id, nome, e-mail, familyId.
 - **families:** id, nome, membros (lista de ids), código de convite.

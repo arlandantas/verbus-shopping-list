@@ -1,6 +1,6 @@
 # 0015 — Preço só em item comprado; mercado opcional (emenda a 0008)
 
-**Status:** aceito · **Data:** 2026-10-31 · **Autor:** arquiteto
+**Status:** aceito; regra de preço e "desmarcar limpa" substituídos por 0022 · **Data:** 2026-10-31 · **Autor:** arquiteto
 
 ## Contexto
 Spec 60: preço pago é opcional e fora do fluxo rápido do mercado. ADR-0008 já tem `priceCents` (int 0–10 000 000 ou null), mas aceita preço em item pendente (nit do revisor). Mercado é perguntado ao finalizar.

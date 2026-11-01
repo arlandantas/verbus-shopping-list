@@ -20,4 +20,9 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0014](0014-categories-defaults-and-grouping.md) | Categorias: padrões, CRUD e agrupamento (emenda spec 70 / 0009) | aceito |
 | [0017](0017-mvp-first-security-later.md) | MVP primeiro, endurecimento de segurança depois | aceito |
 | [0016](0016-accepted-risks-m5-rules.md) | Riscos aceitos nas regras do M5 | aceito |
-| [0015](0015-price-only-when-bought.md) | Preço só em item comprado; mercado opcional (emenda a 0008) | aceito |
+| [0015](0015-price-only-when-bought.md) | Preço só em item comprado; mercado opcional (emenda a 0008) | aceito; preço/desmarcar substituídos por 0022 |
+| [0018](0018-material3-design-system.md) | Design system: Material 3 básico, componentes próprios | aceito |
+| [0019](0019-bottom-tabs-and-single-list.md) | Abas inferiores e lista única (Home + Modo mercado fundidos) | aceito |
+| [0020](0020-edit-item-sheet-and-rename.md) | Sheet "Editar item", renomear e valor na compra (emenda 0009/0010/0015) | aceito |
+| [0021](0021-edit-past-purchase-lines.md) | Editar linhas de compras passadas (emenda 0012) | aceito |
+| [0022](0022-price-independent-of-cart.md) | Valor independente do carrinho (emenda 0015 e 0020) | aceito |

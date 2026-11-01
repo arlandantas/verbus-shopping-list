@@ -5,6 +5,7 @@ Um arquivo por feature. Histórias referenciam só os arquivos de que precisam.
 | Arquivo | Conteúdo |
 |---|---|
 | 00-overview.md | Visão, princípios, decisões tomadas, riscos, fora do MVP |
+| 05-ui-shell.md | Design system (Material 3), ícones, abas inferiores, componentes reaproveitáveis |
 | 10-auth-family.md | Login, família, convite, aviso iOS |
 | 20-items.md | Lista atual, adicionar item, texto livre, autocompletar, detalhe |
 | 30-pantry.md | Despensa / recorrentes |
