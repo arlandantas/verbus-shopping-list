@@ -1,5 +1,6 @@
 import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { setItemCategory } from './support/categorize'
 import { clearEmulators } from './support/emulator'
 import { twoMembers } from './support/members'
 
@@ -103,4 +104,22 @@ test('S-029 AC3: undoing removes the "por ..." label', async ({ browser }) => {
   await leite.click()
   await expect(ana.getByText(/^por /)).toHaveCount(0)
   await expect(beto.getByText(/^por /)).toHaveCount(0)
+})
+
+test('S-044 AC3: checking arroz moves it to the end of its own section; undo restores it', async ({
+  page,
+}) => {
+  await setup(page, ['arroz', 'feijão', 'leite'])
+  await setItemCategory(page, 'arroz', 'Mercearia')
+  await setItemCategory(page, 'feijão', 'Mercearia')
+  await setItemCategory(page, 'leite', 'Laticínios')
+  await goMarket(page)
+  const mercearia = page.getByRole('region', { name: 'Mercearia' }).getByRole('button')
+  await expect(mercearia.first()).toContainText('arroz')
+  await page.getByRole('button', { name: /arroz/ }).click()
+  await expect(mercearia.last()).toContainText('arroz')
+  await expect(mercearia.first()).toContainText('feijão')
+  await expect(page.getByRole('region', { name: 'Laticínios' }).getByRole('button')).toHaveCount(1)
+  await page.getByRole('button', { name: /arroz/ }).click()
+  await expect(mercearia.first()).toContainText('arroz')
 })

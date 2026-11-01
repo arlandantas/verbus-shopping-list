@@ -112,9 +112,12 @@ test('S-021 AC6: unknown id shows "Item não encontrado" with a link to the list
 test('S-043 AC3: category set on the item comes back through autocomplete', async ({ page }) => {
   await setupWithItem(page, 'leite')
   await page.getByRole('link', { name: 'leite' }).click()
-  await page.getByLabel(strings.item.category).selectOption({ label: 'Laticínios' })
+  await page
+    .getByRole('combobox', { name: strings.item.category })
+    .selectOption({ label: 'Laticínios' })
   await save(page).click()
   await expect(page).toHaveURL(/\/$/)
+  await expect(row(page, 'leite')).toBeVisible()
   await expect(row(page, 'leite').getByText(strings.list.pendingSync)).toHaveCount(0)
   await deleteAllItems()
   await expect(page.getByRole('listitem')).toHaveCount(0)
@@ -122,9 +125,9 @@ test('S-043 AC3: category set on the item comes back through autocomplete', asyn
   await page.getByRole('option', { name: /leite/ }).click()
   await expect(row(page, 'leite')).toBeVisible()
   await page.getByRole('link', { name: 'leite' }).click()
-  await expect(page.getByLabel(strings.item.category).locator('option:checked')).toHaveText(
-    'Laticínios',
-  )
+  await expect(
+    page.getByRole('combobox', { name: strings.item.category }).locator('option:checked'),
+  ).toHaveText('Laticínios')
 })
 
 test('S-043 AC4: free-text add does not ask for a category', async ({ page }) => {

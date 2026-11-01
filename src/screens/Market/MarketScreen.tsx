@@ -1,6 +1,8 @@
 import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
+import { CategorySections } from '@/components/CategorySections'
+import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import { toggleItemStatus } from '@/data/items'
 import { strings } from '@/strings/pt-BR'
@@ -11,6 +13,7 @@ export function MarketScreen() {
   const { family } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
+  const categories = useCategories(family?.id)
   const names = useMemberNames(family?.id)
   const uid = useAuth().user?.uid
   if (!family) return null
@@ -33,17 +36,22 @@ export function MarketScreen() {
         </p>
       )}
       {allDone && <p className="px-4 pb-2 text-lg text-green-800">{strings.market.allDone}</p>}
-      <ul>
-        {list.map((item) => (
-          <MarketRow
-            key={item.id}
-            item={item}
-            names={names}
-            uid={uid}
-            onToggle={(i) => toggleItemStatus(familyId, i)}
-          />
-        ))}
-      </ul>
+      {categories && (
+        <CategorySections
+          large
+          items={list}
+          categories={categories}
+          renderItem={(item) => (
+            <MarketRow
+              key={item.id}
+              item={item}
+              names={names}
+              uid={uid}
+              onToggle={(i) => toggleItemStatus(familyId, i)}
+            />
+          )}
+        />
+      )}
     </main>
   )
 }

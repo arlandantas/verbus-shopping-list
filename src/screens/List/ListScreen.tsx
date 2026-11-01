@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
+import { CategorySections } from '@/components/CategorySections'
+import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import type { CatalogEntry, Item } from '@/data/converters'
 import { addItem, toggleItemStatus } from '@/data/items'
@@ -13,37 +15,12 @@ import { ItemRow } from './ItemRow'
 import { useCatalog } from './useCatalog'
 import { useItems } from './useItems'
 
-function Section({
-  title,
-  items,
-  onToggle,
-  names,
-  uid,
-}: {
-  title: string
-  items: Item[]
-  onToggle: (item: Item) => void
-  names: Record<string, string> | null
-  uid: string | undefined
-}) {
-  if (items.length === 0) return null
-  return (
-    <section aria-label={title}>
-      <h2 className="px-4 pt-4 text-sm font-medium text-gray-700">{title}</h2>
-      <ul>
-        {items.map((item) => (
-          <ItemRow key={item.id} item={item} onToggle={onToggle} names={names} uid={uid} />
-        ))}
-      </ul>
-    </section>
-  )
-}
-
 export function ListScreen() {
   const { family } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
   const catalog = useCatalog(familyId)
+  const categories = useCategories(family?.id)
   const names = useMemberNames(family?.id)
   const uid = useAuth().user?.uid
   const pendingKeys = useMemo(
@@ -87,20 +64,15 @@ export function ListScreen() {
       </header>
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
       {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}
-      <Section
-        title={strings.list.pendingTitle}
-        items={(items ?? []).filter((i) => i.status === 'pending')}
-        onToggle={onToggle}
-        names={names}
-        uid={uid}
-      />
-      <Section
-        title={strings.list.boughtTitle}
-        items={(items ?? []).filter((i) => i.status === 'bought')}
-        onToggle={onToggle}
-        names={names}
-        uid={uid}
-      />
+      {items && categories && (
+        <CategorySections
+          items={items}
+          categories={categories}
+          renderItem={(item) => (
+            <ItemRow key={item.id} item={item} onToggle={onToggle} names={names} uid={uid} />
+          )}
+        />
+      )}
     </main>
   )
 }

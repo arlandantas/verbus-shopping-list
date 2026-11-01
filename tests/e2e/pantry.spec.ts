@@ -65,9 +65,7 @@ test('S-024 AC2: tapping "Tenho em casa" marks Falta and adds a pending item', a
   await expect(row).toContainText(strings.pantry.missing)
   await page.getByRole('link', { name: strings.pantry.back }).click()
   await expect(listRow(page, 'feijão')).toContainText('3 kg')
-  await expect(page.getByRole('region', { name: strings.list.pendingTitle })).toContainText(
-    'feijão',
-  )
+  await expect(page.getByRole('region', { name: strings.noCategory })).toContainText('feijão')
 })
 
 test('S-024 AC3: tapping Falta again returns to Tenho em casa and removes the pending', async ({

@@ -57,8 +57,6 @@ export const strings = {
     addPlaceholder: 'Ex.: 3 kg feijão',
     add: 'Adicionar',
     empty: 'Sua lista está vazia. Adicione o primeiro item acima.',
-    pendingTitle: 'Pendentes',
-    boughtTitle: 'Comprados',
     pendingSync: 'pendente de sincronização',
     markBought: (name: string) => `Marcar ${name} como comprado`,
     markPending: (name: string) => `Devolver ${name} para pendentes`,

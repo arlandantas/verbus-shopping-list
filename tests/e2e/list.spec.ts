@@ -1,6 +1,8 @@
 import { devices, expect, test, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { setItemCategory } from './support/categorize'
 import { clearEmulators } from './support/emulator'
+import { twoMembers } from './support/members'
 
 test.use({ ...devices['Pixel 7'] })
 test.beforeEach(async () => {
@@ -56,21 +58,26 @@ test('S-019 AC2: empty or blank input adds nothing and the button is disabled', 
   await expect(page.getByText(strings.list.empty)).toBeVisible()
 })
 
-test('S-019 AC3: toggling the checkbox moves an item to Comprados and back', async ({ page }) => {
+test('S-019 AC3: toggling the checkbox checks an item (struck through) and back', async ({
+  page,
+}) => {
   await setupFamily(page)
   await field(page).fill('arroz')
   await field(page).press('Enter')
   await expect(row(page, 'arroz')).toBeVisible()
 
   await page.getByRole('checkbox', { name: strings.list.markBought('arroz') }).click()
-  const bought = page.getByRole('region', { name: strings.list.boughtTitle })
-  await expect(bought.getByRole('listitem').filter({ hasText: 'arroz' })).toBeVisible()
-  await expect(bought.getByText('arroz')).toHaveCSS('text-decoration-line', 'line-through')
+  const label = row(page, 'arroz').getByText('arroz')
+  await expect(
+    page.getByRole('checkbox', { name: strings.list.markPending('arroz') }),
+  ).toBeChecked()
+  await expect(label).toHaveCSS('text-decoration-line', 'line-through')
 
   await page.getByRole('checkbox', { name: strings.list.markPending('arroz') }).click()
-  const pending = page.getByRole('region', { name: strings.list.pendingTitle })
-  await expect(pending.getByRole('listitem').filter({ hasText: 'arroz' })).toBeVisible()
-  await expect(bought.getByRole('listitem')).toHaveCount(0)
+  await expect(
+    page.getByRole('checkbox', { name: strings.list.markBought('arroz') }),
+  ).not.toBeChecked()
+  await expect(label).not.toHaveCSS('text-decoration-line', 'line-through')
 })
 
 test('S-019 AC4: offline add shows at once with sync indicator; reconnect clears it and it persists', async ({
@@ -116,4 +123,49 @@ test('S-019 AC6: empty list shows a pt-BR message; header has family name and /f
   await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await page.getByRole('link', { name: strings.family.title }).click()
   await expect(page).toHaveURL(/\/familia$/)
+})
+
+const headings = (page: Page) => page.getByRole('heading', { level: 2 }).allTextContents()
+
+test('S-044 AC2: list and market group Mercearia, Laticínios, Sem categoria', async ({ page }) => {
+  await setupFamily(page)
+  for (const name of ['pilha', 'leite', 'arroz']) {
+    await field(page).fill(name)
+    await field(page).press('Enter')
+    await expect(row(page, name)).toBeVisible()
+  }
+  await setItemCategory(page, 'leite', 'Laticínios')
+  await setItemCategory(page, 'arroz', 'Mercearia')
+  const expected = ['Mercearia', 'Laticínios', 'Sem categoria']
+  await expect.poll(() => headings(page)).toEqual(expected)
+  await expect(
+    page.getByRole('region', { name: 'Laticínios' }).getByRole('listitem'),
+  ).toContainText(['leite'])
+  await page.getByRole('link', { name: strings.market.enter }).click()
+  await expect(page).toHaveURL(/\/mercado$/)
+  await expect.poll(() => headings(page)).toEqual(expected)
+  await expect(
+    page.getByRole('region', { name: 'Sem categoria' }).getByRole('listitem'),
+  ).toContainText(['pilha'])
+})
+
+test('S-044 AC4: deleting a category moves its items to Sem categoria without reload', async ({
+  browser,
+}) => {
+  const { ana, beto } = await twoMembers(browser, ['pilha'])
+  const t = strings.categories
+  await ana.goto('/categorias')
+  await ana.getByLabel(t.newLabel).fill('Pets')
+  await ana.getByRole('button', { name: t.add }).click()
+  await expect(ana.getByRole('listitem').filter({ hasText: 'Pets' })).toBeVisible()
+  await ana.goto('/')
+  await setItemCategory(ana, 'pilha', 'Pets')
+  await beto.getByRole('link', { name: strings.market.exit }).click()
+  await expect(beto.getByRole('region', { name: 'Pets' })).toContainText('pilha')
+
+  await ana.goto('/categorias')
+  await ana.getByRole('button', { name: t.deleteFor('Pets') }).click()
+  await ana.getByRole('button', { name: t.confirm }).click()
+  await expect(beto.getByRole('region', { name: 'Pets' })).toHaveCount(0)
+  await expect(beto.getByRole('region', { name: 'Sem categoria' })).toContainText('pilha')
 })
