@@ -1,0 +1,33 @@
+/* M3 suggestion chip. */
+.m3-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-label-large);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.m3-chip::after {
+  content: '';
+  position: absolute;
+  inset-block: -8px;
+  inset-inline: 0;
+}
+.m3-chip:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+.m3-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

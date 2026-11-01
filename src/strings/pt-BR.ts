@@ -87,15 +87,12 @@ export const strings = {
   checkout: {
     link: 'Finalizar compra',
     title: 'Finalizar compra',
-    summary: (bought: number, pending: number) =>
-      `${bought === 1 ? '1 item comprado' : `${bought} itens comprados`}` +
-      (pending > 0
-        ? `. ${pending === 1 ? '1 item pendente continua' : `${pending} itens pendentes continuam`} na lista.`
-        : '.'),
-    marketLabel: 'Mercado (opcional)',
-    pricesTitle: 'Preços pagos (opcional)',
-    priceFor: (name: string) => `Preço de ${name}`,
-    finish: 'Finalizar',
+    summary: (n: number) => (n === 1 ? '1 item no carrinho' : `${n} itens no carrinho`),
+    marketLabel: 'Mercado',
+    marketSuggestions: 'Mercados usados antes',
+    priceFor: (name: string) => `Valor de ${name}`,
+    total: (value: string) => `Total: ${value}`,
+    finish: 'Finalizar compra',
   },
   history: {
     title: 'Histórico',

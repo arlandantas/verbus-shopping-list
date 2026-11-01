@@ -38,7 +38,7 @@ test('S-046 AC3: price + market, only the pending item stays; market is suggeste
   await field.press('Enter')
   await row(ana, 'café').click()
   await finalizeLink(ana).click()
-  await expect(ana.locator('datalist option[value="Atacadão"]')).toHaveCount(1)
+  await expect(ana.getByRole('button', { name: 'Atacadão', exact: true })).toHaveCount(1)
 })
 
 test('S-046 AC4: offline checkout clears bought at once; the other member sees it on reconnect', async ({

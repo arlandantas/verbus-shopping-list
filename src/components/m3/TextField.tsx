@@ -3,7 +3,7 @@ import './fields.css'
 
 export type TextFieldProps = Omit<
   ComponentPropsWithRef<'input'>,
-  'className' | 'aria-invalid' | 'aria-describedby'
+  'className' | 'prefix' | 'aria-invalid' | 'aria-describedby'
 > & {
   label: string
   /** Keeps the label for assistive tech only (compact bars). */
