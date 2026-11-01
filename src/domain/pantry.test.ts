@@ -1,6 +1,6 @@
 import type { CatalogEntry, Item } from '@/data/converters'
 import { catalogConverter } from '@/data/converters'
-import { pantryState } from './pantry'
+import { groupForPantry, pantryState } from './pantry'
 
 const entry = (name: string, nameKey: string, recurring?: boolean): CatalogEntry => ({
   name,
@@ -67,5 +67,34 @@ describe('S-023 AC5: CatalogEntry.recurring default', () => {
       data: () => ({ name: 'A', nameKey: 'a', quantity: 1, unit: 'un', recurring: true }),
     }
     expect(catalogConverter.fromFirestore(t as never, {}).recurring).toBe(true)
+  })
+})
+
+describe('S-094 groupForPantry', () => {
+  const cats = [
+    { id: 'b', name: 'Bebidas', order: 1 },
+    { id: 'a', name: 'Açougue', order: 0 },
+    { id: 'z', name: 'Vazia', order: 2 },
+  ]
+  const e = (name: string, categoryId: string | null) => ({ name, categoryId })
+  const same = (x: { categoryId: string | null }) => x.categoryId
+
+  it('AC1: sorts by order, "Sem categoria" last with orphan ids, omits empty, keeps input order', () => {
+    const items = [
+      e('arroz', null),
+      e('cola', 'b'),
+      e('bife', 'a'),
+      e('ovo', 'ghost'),
+      e('água', 'b'),
+    ]
+    const groups = groupForPantry(items, cats, same)!
+    expect(groups.map((g) => g.name)).toEqual(['Açougue', 'Bebidas', 'Sem categoria'])
+    expect(groups[1]!.items.map((i) => i.name)).toEqual(['cola', 'água'])
+    expect(groups[2]!.items.map((i) => i.name)).toEqual(['arroz', 'ovo'])
+  })
+
+  it('AC2: null with zero categories or when no entry has a known category', () => {
+    expect(groupForPantry([e('arroz', 'a')], [], same)).toBeNull()
+    expect(groupForPantry([e('arroz', null), e('ovo', 'ghost')], cats, same)).toBeNull()
   })
 })

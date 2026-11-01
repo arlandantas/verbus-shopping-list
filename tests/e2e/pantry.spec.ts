@@ -243,3 +243,41 @@ test('S-061 AC5: "Entenda melhor" opens the dialog; Esc and Entendi close it', a
   await page.getByRole('button', { name: strings.pantry.helpClose }).click()
   await expect(dialog).toBeHidden()
 })
+
+test('S-094 AC7: Despensa groups by category in order; collapsing persists after reload', async ({
+  page,
+}) => {
+  await signUpWithFamily(page)
+  await page.goto('/categorias')
+  await page
+    .getByRole('button', { name: strings.categories.suggestionChip('Mercearia'), exact: true })
+    .click()
+  await expect(page.getByRole('list', { name: strings.categories.userList })).toBeVisible()
+  await page.goto('/')
+  for (const name of ['feijão', 'pilha']) {
+    await field(page).fill(name)
+    await field(page).press('Enter')
+    await expect(listRow(page, name)).toBeVisible()
+  }
+  await page.getByRole('button', { name: strings.list.edit('feijão') }).click()
+  await page.getByRole('combobox', { name: strings.item.category }).selectOption('Mercearia')
+  await page.getByLabel(strings.item.recurring).check()
+  await page.getByRole('button', { name: strings.item.save }).click()
+  await page.getByRole('button', { name: strings.list.edit('pilha') }).click()
+  await page.getByLabel(strings.item.recurring).check()
+  await page.getByRole('button', { name: strings.item.save }).click()
+  await openPantry(page)
+  const headers = page.getByRole('heading', { level: 2 })
+  await expect(headers).toHaveText([/Mercearia/, new RegExp(strings.noCategory)])
+  const merc = page.getByRole('button', { name: /Mercearia/ })
+  await expect(merc).toHaveAttribute('aria-expanded', 'true')
+  await merc.click()
+  await expect(pantryRow(page, 'feijão')).toHaveCount(0)
+  await page.reload()
+  await expect(page.getByRole('button', { name: /Mercearia/ })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+  await expect(pantryRow(page, 'feijão')).toHaveCount(0)
+  await expect(pantryRow(page, 'pilha')).toBeVisible()
+})

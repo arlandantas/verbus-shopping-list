@@ -18,6 +18,7 @@ Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Grupo**.
 
 8. Ler o texto explicativo e abrir **Entenda melhor**. Marcar o que falta; tornar item recorrente; remover dos recorrentes.
 9. Expandir/recolher a seção **Outros itens já usados**.
+9a. **Por categoria:** com categorias no grupo, os recorrentes aparecem em seções por categoria ("Sem categoria" por último); recolher uma e recarregar mantém recolhida. Em **Outros itens já usados**, os itens aparecem sob subtítulos por categoria com contagem. Grupo sem categorias: lista plana.
 
 ## Finalizar compra e Histórico
 

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import type { CatalogEntry, Item } from '@/data/converters'
 import { icons } from '@/components/m3/icons'
@@ -12,6 +12,8 @@ vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({ family: { id: 'f1', name: 'Casa' } }),
 }))
 
+let categories: { id: string; name: string; order: number }[] = []
+vi.mock('@/hooks/useCategories', () => ({ useCategories: () => categories }))
 let catalog: CatalogEntry[] = []
 let items: Item[] = []
 vi.mock('@/screens/List/useCatalog', () => ({ useCatalog: () => catalog }))
@@ -48,6 +50,8 @@ beforeEach(() => {
   h.setRecurring.mockReset()
   catalog = []
   items = []
+  categories = []
+  localStorage.clear()
 })
 
 describe('S-024 PantryScreen', () => {
@@ -195,5 +199,77 @@ describe('S-074: "Outros itens já usados" collapsible section', () => {
     expect(
       screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') }),
     ).toBeInTheDocument()
+  })
+})
+
+describe('S-094 PantryScreen grouped by category', () => {
+  const inCat = (name: string, categoryId: string | null, recurring = true) => ({
+    ...entry(name, recurring),
+    categoryId,
+  })
+  beforeEach(() => {
+    categories = [
+      { id: 'c2', name: 'Limpeza', order: 1 },
+      { id: 'c1', name: 'Mercearia', order: 0 },
+    ]
+  })
+
+  it('AC3: recurring under h2 per category with count, Sem categoria last', () => {
+    catalog = [
+      inCat('Sabão', 'c2'),
+      inCat('Feijão', 'c1'),
+      inCat('Arroz', 'c1'),
+      inCat('Pilha', null),
+    ]
+    renderIt()
+    const h2 = screen.getAllByRole('heading', { level: 2 })
+    expect(h2.map((h) => h.textContent)).toEqual(['Mercearia2', 'Limpeza1', 'Sem categoria1'])
+    const btn = screen.getByRole('button', { name: /Mercearia/ })
+    expect(btn).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      within(screen.getByRole('list', { name: 'Mercearia' })).getAllByRole('listitem'),
+    ).toHaveLength(2)
+  })
+
+  it('AC4: collapsing hides rows, saves the pref and survives remount', () => {
+    catalog = [inCat('Feijão', 'c1'), inCat('Sabão', 'c2')]
+    const first = renderIt()
+    fireEvent.click(screen.getByRole('button', { name: /Mercearia/ }))
+    expect(screen.queryByText('Feijão')).not.toBeInTheDocument()
+    expect(screen.getByText('Sabão')).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('verbus.ui.pantryCollapsed')!)).toEqual(['c1'])
+    first.unmount()
+    renderIt()
+    expect(screen.queryByText('Feijão')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Mercearia/ })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+  })
+
+  it('AC5: group without categories stays flat', () => {
+    categories = []
+    catalog = [inCat('Feijão', 'c1'), inCat('Sal', 'c1', false)]
+    renderIt()
+    expect(screen.getByRole('list', { name: strings.pantry.listLabel })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(strings.pantry.othersTitle) }))
+    expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toEqual([
+      `${strings.pantry.othersTitle}1`,
+    ])
+  })
+
+  it('AC6: Outros itens shows h3 per category with count; + still promotes', () => {
+    catalog = [inCat('Sal', 'c1', false), inCat('Cera', 'c2', false), inCat('Pilha', null, false)]
+    renderIt()
+    expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(strings.pantry.othersTitle) }))
+    expect(screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual([
+      'Mercearia (1)',
+      'Limpeza (1)',
+      'Sem categoria (1)',
+    ])
+    fireEvent.click(screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') }))
+    expect(h.setRecurring).toHaveBeenCalledWith('f1', 'sal', true, [])
   })
 })
