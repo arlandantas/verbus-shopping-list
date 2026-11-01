@@ -3,6 +3,8 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import net from 'node:net'
+import { copyFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { loadEnv, type Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
 
@@ -25,6 +27,23 @@ function emulatorWarning(): Plugin {
   }
 }
 
+/** GitHub Pages has no SPA fallback: a deep link on a first visit (no SW yet) hits 404.html. */
+function spa404(): Plugin {
+  let outDir = 'dist'
+  let root = process.cwd()
+  return {
+    name: 'spa-404-fallback',
+    apply: 'build',
+    configResolved(config) {
+      outDir = config.build.outDir
+      root = config.root
+    },
+    closeBundle() {
+      copyFileSync(resolve(root, outDir, 'index.html'), resolve(root, outDir, '404.html'))
+    },
+  }
+}
+
 // Deploy base path (e.g. '/verbus-shopping-list/' on a GitHub project page); '/' by default.
 const base = process.env.VITE_BASE ?? '/'
 
@@ -32,6 +51,7 @@ export default defineConfig({
   base,
   plugins: [
     emulatorWarning(),
+    spa404(),
     react(),
     tailwindcss(),
     VitePWA({
@@ -57,6 +77,8 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: 'index.html',
+        // Firebase auth handler (/__/) and anything with a file extension are never the app shell.
+        navigateFallbackDenylist: [/^\/__\//, /\/[^/?]+\.[^/]+$/],
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'],
         // Firestore/Auth traffic is handled by the Firebase SDK, never by the SW.
         runtimeCaching: [],

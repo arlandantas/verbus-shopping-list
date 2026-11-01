@@ -41,3 +41,20 @@ test('S-081 AC3: build under VITE_BASE=/sub/ resolves manifest and html links un
   expect(html).toMatch(/href="\/sub\/manifest\.webmanifest"/)
   expect(html).not.toMatch(/(href|src)="\/(icons|assets)\//)
 }, 120_000)
+
+test('S-082 AC3/AC5: SW denylist and 404.html equals index.html', () => {
+  const out = mkdtempSync(join(tmpdir(), 'verbus-dist-'))
+  dirs.push(out)
+  execSync(`pnpm exec vite build --outDir ${out} --emptyOutDir`, {
+    env: { ...process.env, VITE_BASE: '/sub/' },
+    stdio: 'pipe',
+  })
+  expect(readFileSync(join(out, '404.html'), 'utf8')).toBe(
+    readFileSync(join(out, 'index.html'), 'utf8'),
+  )
+  const sw = readFileSync(join(out, 'sw.js'), 'utf8')
+  expect(sw).toMatch(/NavigationRoute/)
+  const compact = sw.replace(/\s+/g, '')
+  expect(compact).toContain('denylist:[/^\\/__\\//,/\\/[^/?]+\\.[^/]+$/]')
+  expect(sw).toMatch(/createHandlerBoundToURL\("index\.html"\)/)
+}, 120_000)
