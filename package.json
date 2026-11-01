@@ -18,6 +18,7 @@
     "format:check": "prettier --check .",
     "test:rules": "firebase emulators:exec --only firestore \"vitest run --project rules\"",
     "test:data": "firebase emulators:exec --only auth,firestore \"vitest run --project data\"",
+    "audit:ci": "pnpm audit --prod --audit-level high",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules && pnpm test:data",
     "test:e2e": "firebase emulators:exec --only auth,firestore \"playwright test\""
   },

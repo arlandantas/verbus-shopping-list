@@ -1,0 +1,20 @@
+title = "verbus-shopping-list gitleaks config"
+
+[extend]
+useDefault = true
+
+# The Firebase web config (apiKey "AIza...") is public by design: it only
+# identifies the project and is shipped to every browser. Access control is
+# enforced by Firestore rules and Auth, not by this key. Allowed only in the
+# example env file and docs. Fake emulator keys are also not secrets.
+[[allowlists]]
+description = "Public Firebase web config and fictitious emulator keys"
+paths = [
+  '''\.env\.example$''',
+  '''\.env\.development$''',
+  '''^docs/.*\.md$''',
+]
+regexes = [
+  '''AIza[0-9A-Za-z_-]{35}''',
+  '''fake-api-key''',
+]
