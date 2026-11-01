@@ -172,3 +172,27 @@ describe('S-079 AC5: accepted risks (ADR-0016, documented current behavior)', ()
     await assertSucceeds(setDoc(ref('purchaseLines/bought'), await newPurchaseLine()))
   })
 })
+
+describe('S-079 forged timestamps and extra keys on create', () => {
+  const past = new Date('2020-01-01T00:00:00Z')
+  const future = new Date('2099-01-01T00:00:00Z')
+
+  it('purchases: purchasedAt must be request.time; extra key denied', async () => {
+    await assertSucceeds(setDoc(ref('purchases/P2'), await newPurchase()))
+    await assertFails(setDoc(ref('purchases/P3'), await newPurchase({ purchasedAt: past })))
+    await assertFails(setDoc(ref('purchases/P4'), await newPurchase({ purchasedAt: future })))
+    await assertFails(setDoc(ref('purchases/P5'), await newPurchase({ extra: 1 })))
+  })
+  it('purchaseLines: purchasedAt must be request.time; extra key denied', async () => {
+    await assertSucceeds(setDoc(ref('purchaseLines/L2'), await newPurchaseLine()))
+    await assertFails(setDoc(ref('purchaseLines/L3'), await newPurchaseLine({ purchasedAt: past })))
+    await assertFails(setDoc(ref('purchaseLines/L4'), await newPurchaseLine({ extra: 1 })))
+  })
+  it('cycles: openedAt/openedBy forged or extra key denied', async () => {
+    await assertSucceeds(setDoc(ref('cycles/2026-11'), await newCycle()))
+    await assertFails(setDoc(ref('cycles/2026-12'), await newCycle({ openedAt: past })))
+    await assertFails(setDoc(ref('cycles/2027-01'), await newCycle({ openedAt: future })))
+    await assertFails(setDoc(ref('cycles/2027-02'), await newCycle({ openedBy: 'dave' })))
+    await assertFails(setDoc(ref('cycles/2027-03'), await newCycle({ extra: 1 })))
+  })
+})
