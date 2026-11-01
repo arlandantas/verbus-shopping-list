@@ -12,7 +12,7 @@ const TABS = [
   { name: strings.nav.list, url: /\/$/ },
   { name: strings.pantry.link, url: /\/despensa$/ },
   { name: strings.history.link, url: /\/historico$/ },
-  { name: strings.family.title, url: /\/familia$/ },
+  { name: strings.family.title, url: /\/grupo$/ },
 ]
 
 test('S-053 AC5: each tab changes the URL and the bar stays visible', async ({ browser }) => {
@@ -53,5 +53,5 @@ test('S-053 AC4: sub-screens keep the parent tab and Voltar returns to it', asyn
     'page',
   )
   await ana.getByRole('button', { name: strings.back }).click()
-  await expect(ana).toHaveURL(/\/familia$/)
+  await expect(ana).toHaveURL(/\/grupo$/)
 })

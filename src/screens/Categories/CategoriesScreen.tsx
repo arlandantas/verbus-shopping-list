@@ -33,7 +33,7 @@ export function CategoriesScreen() {
 
   return (
     <main className="mx-auto max-w-md">
-      <TopAppBar title={t.title} navigation={<BackButton to="/familia" />} />
+      <TopAppBar title={t.title} navigation={<BackButton to="/grupo" />} />
       <h2 className="categories-section">{t.userSection}</h2>
       {own.length === 0 && <p className="categories-empty">{t.emptyUser}</p>}
       <ul aria-label={t.userList} className="categories-list">

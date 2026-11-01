@@ -18,7 +18,7 @@ async function signUp(page: Page) {
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
 }
 
 test.describe('iPhone Safari', () => {

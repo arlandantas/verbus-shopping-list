@@ -23,7 +23,7 @@ async function signUp(page: Page, email: string) {
 }
 
 async function createFamily(page: Page, name: string): Promise<string> {
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill(name)
   await page.getByRole('button', { name: strings.family.create }).click()
   await expect(page.getByTestId('invite-code')).toBeVisible()
@@ -40,7 +40,7 @@ test('S-012 AC1: B joins by typing the code and A sees B in real time', async ({
 
   const b = await newPage(browser)
   await signUp(b, 'beto@example.com')
-  await expect(b).toHaveURL(/\/familia$/)
+  await expect(b).toHaveURL(/\/grupo$/)
   await b
     .getByLabel(strings.family.join.codeLabel)
     .fill(`${code.slice(0, 4).toLowerCase()}-${code.slice(4)}`)
@@ -78,13 +78,13 @@ test('S-012 AC3: unknown code shows "Convite não encontrado" and changes nothin
   page,
 }) => {
   await signUp(page, 'beto@example.com')
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await page.goto('/convite/ZZZZ2222')
   await expect(page.getByText(strings.invite.notFound)).toBeVisible()
   await expect(page.getByRole('button', { name: strings.invite.confirm })).toHaveCount(0)
 
   await page.goto('/')
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await expect(page.getByLabel(strings.family.nameLabel)).toBeVisible()
 })
 
@@ -103,7 +103,7 @@ test('S-089: a member of group A opens the invite for group B, previews, confirm
   await expect(page.getByRole('heading', { name: strings.invite.title('Outra') })).toBeVisible()
   await page.getByRole('button', { name: strings.invite.confirm }).click()
   await expect(page).toHaveURL(/\/$/)
-  await page.goto('/familia')
+  await page.goto('/grupo')
   await expect(page.getByRole('heading', { name: 'Outra' })).toBeVisible()
   await expect(page.getByText(strings.family.members(2))).toBeVisible()
   await b.context().close()
@@ -123,7 +123,7 @@ test('S-077 AC5: rotating the code shows a new one and the old one stops working
 
   const b = await newPage(browser)
   await signUp(b, 'beto@example.com')
-  await expect(b).toHaveURL(/\/familia$/)
+  await expect(b).toHaveURL(/\/grupo$/)
   await b.goto(`/convite/${oldCode}`)
   await expect(b.getByText(strings.invite.notFound)).toBeVisible()
   await b.goto(`/convite/${newCode}`)

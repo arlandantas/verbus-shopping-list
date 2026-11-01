@@ -16,7 +16,7 @@ async function signUp(page: Page) {
   await page.getByLabel(strings.login.email).fill(EMAIL)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
 }
 
 async function createFamily(page: Page, name = 'Casa') {
@@ -25,10 +25,10 @@ async function createFamily(page: Page, name = 'Casa') {
   await expect(page.getByTestId('invite-code')).toBeVisible()
 }
 
-test('S-011 AC1: signed in without family, / redirects to /familia', async ({ page }) => {
+test('S-011 AC1: signed in without family, / redirects to /grupo', async ({ page }) => {
   await signUp(page)
   await page.goto('/')
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await expect(page.getByLabel(strings.family.nameLabel)).toBeVisible()
 })
 
@@ -50,10 +50,10 @@ test('S-011 AC2: creating a family shows code and link, then / shows the name', 
   await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
 })
 
-test('S-011 AC3: with a family, /familia shows name, members and invite', async ({ page }) => {
+test('S-011 AC3: with a family, /grupo shows name, members and invite', async ({ page }) => {
   await signUp(page)
   await createFamily(page)
-  await page.goto('/familia')
+  await page.goto('/grupo')
   await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await expect(page.getByText(strings.family.members(1))).toBeVisible()
   await expect(page.getByTestId('invite-code')).toHaveText(CODE)

@@ -16,7 +16,7 @@ describe('S-012 AC5: post-login return route', () => {
     expect(peekReturnTo()).toBeNull()
     sessionStorage.setItem('returnTo', '//evil.example')
     expect(peekReturnTo()).toBeNull()
-    sessionStorage.setItem('returnTo', '/familia')
+    sessionStorage.setItem('returnTo', '/grupo')
     expect(peekReturnTo()).toBeNull()
   })
 })

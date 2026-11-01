@@ -26,7 +26,7 @@ vi.mock('@/screens/Login/LoginScreen', () => ({ LoginScreen: () => null }))
 const nav = () => screen.queryByRole('navigation', { name: 'Principal' })
 
 describe('AppRoutes shell', () => {
-  it.each(['/familia', '/convite/ABCD2345', '/entrar'])(
+  it.each(['/grupo', '/convite/ABCD2345', '/entrar'])(
     'S-053 AC2: no tabs without a ready family (%s)',
     (path) => {
       fam.status = 'none'
@@ -39,9 +39,9 @@ describe('AppRoutes shell', () => {
     },
   )
 
-  it('S-053 AC1: tabs on /familia and / with a ready family', () => {
+  it('S-053 AC1: tabs on /grupo and / with a ready family', () => {
     fam.status = 'ready'
-    for (const path of ['/familia', '/']) {
+    for (const path of ['/grupo', '/']) {
       const { unmount } = render(
         <MemoryRouter initialEntries={[path]}>
           <AppRoutes />

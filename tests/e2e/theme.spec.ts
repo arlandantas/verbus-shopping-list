@@ -126,7 +126,7 @@ test('S-070 AC3: every visible text meets contrast in light and dark across scre
 }) => {
   await clearEmulators()
   const page = await newMember(browser, 'ana@example.com', 'Ana')
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
   await page
@@ -166,7 +166,7 @@ test('S-070 AC3: every visible text meets contrast in light and dark across scre
     for (const [route, name] of [
       ['/despensa', 'pantry'],
       ['/historico', 'history'],
-      ['/familia', 'family'],
+      ['/grupo', 'family'],
       ['/finalizar', 'checkout'],
       ['/categorias', 'categories'],
     ] as const) {

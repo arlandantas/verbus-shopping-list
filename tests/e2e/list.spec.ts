@@ -21,7 +21,7 @@ async function signUp(page: Page, email: string) {
 
 async function setupFamily(page: Page): Promise<string> {
   await signUp(page, 'ana@example.com')
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
   await expect(page.getByTestId('invite-code')).toBeVisible()
@@ -101,7 +101,7 @@ test('S-019 AC5: an item added by one member appears for the other', async ({ pa
   const ctx = await (browser as Browser).newContext({ ...devices['Pixel 7'], baseURL: BASE_URL })
   const b = await ctx.newPage()
   await signUp(b, 'beto@example.com')
-  await expect(b).toHaveURL(/\/familia$/)
+  await expect(b).toHaveURL(/\/grupo$/)
   await b.getByLabel(strings.family.join.codeLabel).fill(code)
   await b.getByRole('button', { name: strings.family.join.submit }).click()
   await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
@@ -114,14 +114,14 @@ test('S-019 AC5: an item added by one member appears for the other', async ({ pa
   await ctx.close()
 })
 
-test('S-019 AC6: empty list shows a pt-BR message; header has family name and /familia link', async ({
+test('S-019 AC6: empty list shows a pt-BR message; header has family name and /grupo link', async ({
   page,
 }) => {
   await setupFamily(page)
   await expect(page.getByText(strings.list.empty)).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await page.getByRole('link', { name: strings.family.title, exact: true }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
 })
 
 const headings = (page: Page) => page.locator('h2 > button > span:first-child').allTextContents()

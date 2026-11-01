@@ -51,7 +51,7 @@ test('S-005 AC2: service worker controls the page', async ({ page }) => {
 test('S-005 AC3: app shell reloads offline, including deep routes', async ({ page, context }) => {
   await loadWithServiceWorker(page)
   await context.setOffline(true)
-  for (const path of ['/', '/familia']) {
+  for (const path of ['/', '/grupo']) {
     await page.goto(path)
     await expect(page.getByRole('heading', { name: strings.appTitle })).toBeVisible()
   }

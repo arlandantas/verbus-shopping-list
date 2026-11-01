@@ -63,13 +63,13 @@ test('S-042 AC3: new family sees 6 defaults; create, rename, delete sync to anot
   await expect(row(beto, 'Pets')).toHaveCount(0)
 })
 
-test('S-042 AC4: Categorias link on Família opens /categorias; Voltar icon returns', async ({
+test('S-042 AC4: Categorias link on Grupo opens /categorias; Voltar icon returns', async ({
   page,
 }) => {
   await signUpWithFamily(page)
   await openFromFamily(page)
   await page.getByRole('button', { name: strings.back }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
 })
 
 test('S-042 AC5: offline, creating Bebidas shows at once and syncs on reconnect', async ({

@@ -37,7 +37,7 @@ export async function signIn(browser: Browser, email: string, now?: Date): Promi
 /** Ana creates "Casa" with the given items; Beto joins. Each has its own browser context. */
 export async function twoMembers(browser: Browser, items: string[], now?: Date) {
   const ana = await newMember(browser, 'ana@example.com', 'Ana', now)
-  await expect(ana).toHaveURL(/\/familia$/)
+  await expect(ana).toHaveURL(/\/grupo$/)
   await ana.getByLabel(strings.family.nameLabel).fill('Casa')
   await ana.getByRole('button', { name: strings.family.create }).click()
   const code = (await ana.getByTestId('invite-code').textContent()) ?? ''
@@ -53,7 +53,7 @@ export async function twoMembers(browser: Browser, items: string[], now?: Date) 
   }
   await waitForItemCount(items.length) // item writes reached the emulator
   const beto = await newMember(browser, 'beto@example.com', 'Beto', now)
-  await expect(beto).toHaveURL(/\/familia$/)
+  await expect(beto).toHaveURL(/\/grupo$/)
   await beto.getByLabel(strings.family.join.codeLabel).fill(code)
   await beto.getByRole('button', { name: strings.family.join.submit }).click()
   await expect(beto.getByRole('heading', { name: 'Casa' })).toBeVisible()

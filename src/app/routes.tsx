@@ -30,7 +30,7 @@ function AfterLogin({ fallback }: { fallback: string }): ReactNode {
   return <Navigate to={peekReturnTo() ?? fallback} replace />
 }
 
-/** Signed-in routes, guarded by family membership: no family -> only /familia. */
+/** Signed-in routes, guarded by family membership: no family -> only /grupo. */
 function FamilyRoutes(): ReactNode {
   const family = useFamily()
   const { status } = family
@@ -52,12 +52,12 @@ function FamilyRoutes(): ReactNode {
     <Routes key={family.family?.id}>
       <Route
         path="/entrar"
-        element={<AfterLogin fallback={status === 'ready' ? '/' : '/familia'} />}
+        element={<AfterLogin fallback={status === 'ready' ? '/' : '/grupo'} />}
       />
       <Route path="/convite/:code" element={<InviteScreen />} />
       {status === 'ready' ? (
         <Route element={<AppShell />}>
-          <Route path="/familia" element={<FamilyScreen />} />
+          <Route path="/grupo" element={<FamilyScreen />} />
           <Route path="/" element={<ListScreen />} />
           <Route path="/mercado" element={<Navigate to="/" replace />} />
           <Route path="/finalizar" element={<CheckoutScreen />} />
@@ -69,7 +69,7 @@ function FamilyRoutes(): ReactNode {
         </Route>
       ) : (
         <Route
-          path="/familia"
+          path="/grupo"
           element={
             <>
               <IosInstallHint />
@@ -78,12 +78,13 @@ function FamilyRoutes(): ReactNode {
           }
         />
       )}
-      <Route path="*" element={<Navigate to={status === 'ready' ? '/' : '/familia'} replace />} />
+      <Route path="/familia" element={<Navigate to="/grupo" replace />} />
+      <Route path="*" element={<Navigate to={status === 'ready' ? '/' : '/grupo'} replace />} />
     </Routes>
   )
 }
 
-/** Auth-guarded routes (ADR-0005): /entrar, /familia, / (list lands in later stories). */
+/** Auth-guarded routes (ADR-0005): /entrar, /grupo, / (list lands in later stories). */
 export function AppRoutes(): ReactNode {
   const { status, user } = useAuth()
   if (status === 'loading') return <Loading />

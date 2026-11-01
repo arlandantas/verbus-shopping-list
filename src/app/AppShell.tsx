@@ -12,7 +12,7 @@ const destinations: NavDestination[] = [
   },
   { to: '/despensa', label: strings.pantry.link, icon: 'kitchen' },
   { to: '/historico', label: strings.history.link, icon: 'history' },
-  { to: '/familia', label: strings.family.title, icon: 'group', also: ['/categorias'] },
+  { to: '/grupo', label: strings.family.title, icon: 'group', also: ['/categorias'] },
 ]
 
 /** Layout route for screens with a ready family: fixed bottom tabs (ADR-0019). */

@@ -14,7 +14,7 @@ async function setup(page: Page, items: string[]) {
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
   await expect(page.getByTestId('invite-code')).toBeVisible()

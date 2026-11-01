@@ -17,6 +17,7 @@ import { addItem, setItemStatus, toggleItemStatus } from '@/data/items'
 import { toNameKey } from '@/domain/nameKey'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { strings } from '@/strings/pt-BR'
+import { GroupSwitcher } from './GroupSwitcher'
 import { AddItemBar } from './AddItemBar'
 import { ItemRow } from './ItemRow'
 import { useCatalog } from './useCatalog'
@@ -34,6 +35,7 @@ export function ListScreen() {
   const categories = useCategories(family?.id)
   const names = useMemberNames(family?.id)
   const uid = useAuth().user?.uid
+  const [switching, setSwitching] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [undo, setUndo] = useState<{ itemId: string; key: number } | null>(null)
   const [collapsed, setCollapsed] = useLocalPref<string[]>('verbus.ui.collapsed', [], isStrings)
@@ -72,6 +74,8 @@ export function ListScreen() {
     <main className="list-screen mx-auto max-w-md">
       <TopAppBar
         title={family.name}
+        titleLabel={strings.groups.switchLabel}
+        onTitleClick={() => setSwitching(true)}
         subtitle={list.length > 0 ? strings.market.counter(done, list.length) : undefined}
         actions={
           done > 0 ? (
@@ -129,6 +133,7 @@ export function ListScreen() {
           onDismiss={() => setUndo(null)}
         />
       )}
+      {switching && <GroupSwitcher onClose={() => setSwitching(false)} />}
       {editing && categories && (
         <EditItemSheet
           familyId={familyId}

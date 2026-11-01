@@ -29,8 +29,8 @@ describe('AppShell', () => {
     ['/despensa', 'Despensa'],
     ['/historico', 'Histórico'],
     ['/historico/2026-10', 'Histórico'],
-    ['/familia', 'Família'],
-    ['/categorias', 'Família'],
+    ['/grupo', 'Grupo'],
+    ['/categorias', 'Grupo'],
   ])('S-053 AC1: %s activates %s', (path, tab) => {
     at(path)
     const active = screen

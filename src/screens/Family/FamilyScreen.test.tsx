@@ -25,9 +25,9 @@ vi.mock('@/app/FamilyProvider', () => ({
 
 function renderIt() {
   return render(
-    <MemoryRouter initialEntries={['/familia']}>
+    <MemoryRouter initialEntries={['/grupo']}>
       <Routes>
-        <Route path="/familia" element={<FamilyScreen />} />
+        <Route path="/grupo" element={<FamilyScreen />} />
         <Route path="/categorias" element={<p>cats page</p>} />
       </Routes>
     </MemoryRouter>,

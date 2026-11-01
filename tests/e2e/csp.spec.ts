@@ -20,7 +20,7 @@ test('S-084 AC4: login, list, add item and family tab raise no CSP violation', a
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
   await expect(page.getByTestId('invite-code')).toBeVisible()

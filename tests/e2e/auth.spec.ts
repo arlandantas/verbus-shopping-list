@@ -16,7 +16,7 @@ async function signUp(page: Page) {
   await page.getByLabel(strings.login.email).fill(EMAIL)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
 }
 
 async function userDocs(): Promise<unknown[]> {
@@ -29,7 +29,7 @@ test('S-010 AC1: signed-out visit to / redirects to /entrar', async ({ page }) =
   await expect(page).toHaveURL(/\/entrar$/)
 })
 
-test('S-010 AC2: e-mail sign-up lands on /familia and creates users/{uid}', async ({ page }) => {
+test('S-010 AC2: e-mail sign-up lands on /grupo and creates users/{uid}', async ({ page }) => {
   await signUp(page)
   const docs = (await userDocs()) as { fields: { email: { stringValue: string } } }[]
   expect(docs).toHaveLength(1)
@@ -45,7 +45,7 @@ test('S-010 AC3: Google sign-in through the Auth emulator popup', async ({ page 
   await popup.getByText('Add new account').click()
   await popup.getByRole('button', { name: /auto-generate user information/i }).click()
   await popup.getByRole('button', { name: /sign in with google/i }).click()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   expect(await userDocs()).toHaveLength(1)
 })
 
@@ -72,7 +72,7 @@ test('S-010 AC4: wrong password shows a pt-BR message only', async ({ page }) =>
 test('S-010 AC6: reload keeps the session; sign out returns to /entrar', async ({ page }) => {
   await signUp(page)
   await page.reload()
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
   await expect(page.getByRole('heading', { name: strings.family.title })).toBeVisible()
   await signOutConfirmed(page)
 })
@@ -83,7 +83,7 @@ test('S-073 AC2: cancelling the sign-out dialog keeps the session', async ({ pag
   const dialog = page.getByRole('dialog', { name: strings.login.signOutTitle })
   await dialog.getByRole('button', { name: strings.login.signOutCancel }).click()
   await expect(dialog).toHaveCount(0)
-  await expect(page).toHaveURL(/\/familia$/)
+  await expect(page).toHaveURL(/\/grupo$/)
 })
 
 /** Marks the persisted Firebase ID token as expired so the next load must use the refresh token. */

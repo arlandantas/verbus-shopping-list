@@ -1,8 +1,8 @@
 # Roteiro de teste manual (Material 3)
 
 Rode `pnpm dev:local` (JDK 21) e abra o endereço do Vite. Na tela de login, use o painel **Contas de teste**:
-**Ana** e **Beto** (casal, "Casa Teste", com itens) e **Carla** (sem família). Dica: abra Ana e Beto em duas janelas (uma anônima) para ver o tempo real.
-Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Família**.
+**Ana** e **Beto** (casal, "Casa Teste", com itens) e **Carla** (sem grupo). Dica: abra Ana e Beto em duas janelas (uma anônima) para ver o tempo real.
+Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Grupo**.
 
 ## Lista (única, também no mercado)
 
@@ -25,11 +25,11 @@ Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Família
 11. **Histórico:** ver meses, abrir um mês: compras agrupadas por compra finalizada, gasto por categoria; alternar o agrupamento (botão segmentado); readicionar um item à lista.
 12. **Editar linhas:** em uma compra passada, editar um item comprado (nome, quantidade, valor) e salvar; conferir os totais.
 
-## Categorias e Família
+## Categorias e Grupo
 
-13. Família → Categorias: as personalizadas aparecem primeiro; criar, renomear, excluir uma própria. As padrão ficam fixas (cadeado, sem editar/excluir).
-14. **Carla:** criar uma família nova, copiar o convite; entrar com o código/link em outra conta.
-15. **Sair:** Família → sair; aparece diálogo de confirmação; cancelar mantém a sessão, confirmar volta ao login.
+13. Grupo → Categorias: as personalizadas aparecem primeiro; criar, renomear, excluir uma própria. As padrão ficam fixas (cadeado, sem editar/excluir).
+14. **Carla:** criar um grupo novo, copiar o convite; entrar com o código/link em outra conta.
+15. **Sair:** Grupo → sair; aparece diálogo de confirmação; cancelar mantém a sessão, confirmar volta ao login.
 16. **Virada do mês:** aviso "recorrentes voltaram para a lista" na 1ª abertura do mês.
 
 ## Offline, tema e tela larga
