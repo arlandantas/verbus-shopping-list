@@ -78,7 +78,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-068 | UX | Histórico: editar item comprado | done | S-067 |
 | E-UX2 | UX | Épico: ajustes da 2ª rodada (revisão em navegador, 2026-11-01). Prioridade atual | todo | E-UX |
 | S-069 | UX | Overlay: sheet e diálogos fecham sozinhos em dev (StrictMode) | done | — |
-| S-070 | UX | Legibilidade e contraste no modo escuro | todo | S-069 |
+| S-070 | UX | Legibilidade e contraste no modo escuro | done | S-069 |
 | S-071 | UX | Campo de valor com máscara de centavos | todo | — |
 | S-072 | UX | Shell: abas centralizadas, barra de adicionar flutuante, avisos empilhados | todo | S-070 |
 | S-073 | UX | Confirmar sair da conta | todo | S-069 |
