@@ -50,3 +50,7 @@
   background: var(--md-sys-color-surface-container-low);
   padding-inline: 8px;
 }
+.m3-section__header:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}

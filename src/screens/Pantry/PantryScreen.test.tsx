@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-import { readFileSync } from 'node:fs'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import type { CatalogEntry, Item } from '@/data/converters'
@@ -181,6 +180,9 @@ describe('S-074: "Outros itens já usados" collapsible section', () => {
     fireEvent.click(header())
     expect(header()).toHaveAttribute('aria-expanded', 'true')
     expect(header().querySelector('path')).toHaveAttribute('d', icons.expand_less)
+    const list = screen.getByRole('list', { name: strings.pantry.othersTitle })
+    expect(list.id).not.toBe('')
+    expect(header()).toHaveAttribute('aria-controls', list.id)
   })
 
   it('AC2: open rows are accessible and styled as tonal containers with radius >= 16px', () => {
@@ -193,8 +195,5 @@ describe('S-074: "Outros itens já usados" collapsible section', () => {
     expect(
       screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') }),
     ).toBeInTheDocument()
-    const css = readFileSync('src/components/m3/collapsible.css', 'utf8')
-    expect(css).toMatch(/\.m3-section__list > li \{[^}]*surface-container-low/)
-    expect(css).toMatch(/\.m3-section__header \{[^}]*corner-lg[^}]*surface-container\)/)
   })
 })

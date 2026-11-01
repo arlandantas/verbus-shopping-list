@@ -156,6 +156,18 @@ test('S-074 AC4: "Outros itens já usados" opens and closes', async ({ page }) =
   await header.click()
   await expect(header).toHaveAttribute('aria-expanded', 'true')
   await expect(others(page).getByRole('listitem').filter({ hasText: 'feijão' })).toBeVisible()
+  const rowBox = others(page).getByRole('listitem').first()
+  expect(
+    await rowBox.evaluate((e) => parseFloat(getComputedStyle(e).borderTopLeftRadius)),
+  ).toBeGreaterThanOrEqual(16)
+  expect(await rowBox.evaluate((e) => getComputedStyle(e).backgroundColor)).not.toBe(
+    'rgba(0, 0, 0, 0)',
+  )
+  await header.focus()
+  await page.keyboard.press('Shift+Tab')
+  await page.keyboard.press('Tab')
+  expect(await header.evaluate((e) => getComputedStyle(e).outlineStyle)).toBe('solid')
+  expect(await header.evaluate((e) => getComputedStyle(e).outlineWidth)).toBe('3px')
   await header.click()
   await expect(others(page)).toBeHidden()
 })

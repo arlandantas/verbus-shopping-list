@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import { Icon } from './Icon'
 import './collapsible.css'
 
@@ -25,12 +25,14 @@ export function CollapsibleSection({
   footer?: ReactNode
   children: ReactNode
 }) {
+  const listId = useId()
   return (
     <section aria-label={title} className="m3-section">
       <h2 className="m3-section__heading">
         <button
           type="button"
           aria-expanded={open}
+          aria-controls={listId}
           onClick={onToggle}
           className="m3-section__header"
         >
@@ -43,7 +45,7 @@ export function CollapsibleSection({
         </button>
       </h2>
       {open && (
-        <ul className="m3-section__list" aria-label={listLabel}>
+        <ul id={listId} className="m3-section__list" aria-label={listLabel}>
           {children}
         </ul>
       )}
