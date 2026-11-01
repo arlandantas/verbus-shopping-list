@@ -42,11 +42,11 @@ Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input 
 | S-034 | M5 | Regras: marcador `cycles` | done | S-033 |
 | S-035 | M5 | Domínio: ciclo (mês) e preço em reais | done | S-017 |
 | S-036 | M5 | Domínio: categorias padrão, agrupamento e soma por categoria | done | S-017 |
-| S-037 | M5 | Camada de dados: categorias (semente e CRUD) | todo | S-031, S-036 |
-| S-038 | M5 | Camada de dados: preço do item e desmarcar limpa o preço | todo | S-032 |
-| S-039 | M5 | Camada de dados: `checkout` (finalizar compra) | todo | S-033, S-035, S-037 |
-| S-040 | M5 | Camada de dados: leitura do histórico e mercados usados | todo | S-039 |
-| S-041 | M5 | Camada de dados: abrir o ciclo e devolver recorrentes | todo | S-034, S-035 |
+| S-037 | M5 | Camada de dados: categorias (semente e CRUD) | done | S-031, S-036 |
+| S-038 | M5 | Camada de dados: preço do item e desmarcar limpa o preço | done | S-032 |
+| S-039 | M5 | Camada de dados: `checkout` (finalizar compra) | done | S-033, S-035, S-037 |
+| S-040 | M5 | Camada de dados: leitura do histórico e mercados usados | done | S-039 |
+| S-041 | M5 | Camada de dados: abrir o ciclo e devolver recorrentes | done | S-034, S-035 |
 | S-042 | M5 | Tela Categorias (criar, renomear, excluir) | todo | S-037 |
 | S-043 | M5 | Categoria no detalhe do item e no autocompletar | todo | S-037 |
 | S-044 | M5 | Agrupar por categoria na Lista e no Modo mercado | todo | S-037 |
