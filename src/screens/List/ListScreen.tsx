@@ -58,6 +58,9 @@ export function ListScreen() {
           <Link to="/despensa" className="flex min-h-12 items-center underline">
             {strings.pantry.link}
           </Link>
+          <Link to="/historico" className="flex min-h-12 items-center underline">
+            {strings.history.link}
+          </Link>
           <Link to="/familia" className="flex min-h-12 items-center underline">
             {strings.family.title}
           </Link>

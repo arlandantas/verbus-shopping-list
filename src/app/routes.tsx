@@ -7,6 +7,8 @@ import { CheckoutScreen } from '@/screens/Checkout/CheckoutScreen'
 import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
 import { ItemScreen } from '@/screens/Item/ItemScreen'
+import { CycleScreen } from '@/screens/History/CycleScreen'
+import { HistoryScreen } from '@/screens/History/HistoryScreen'
 import { MarketScreen } from '@/screens/Market/MarketScreen'
 import { PantryScreen } from '@/screens/Pantry/PantryScreen'
 import { ListScreen } from '@/screens/List/ListScreen'
@@ -56,6 +58,8 @@ function FamilyRoutes(): ReactNode {
       {status === 'ready' && <Route path="/" element={<ListScreen />} />}
       {status === 'ready' && <Route path="/mercado" element={<MarketScreen />} />}
       {status === 'ready' && <Route path="/finalizar" element={<CheckoutScreen />} />}
+      {status === 'ready' && <Route path="/historico" element={<HistoryScreen />} />}
+      {status === 'ready' && <Route path="/historico/:cycle" element={<CycleScreen />} />}
       {status === 'ready' && <Route path="/despensa" element={<PantryScreen />} />}
       {status === 'ready' && <Route path="/categorias" element={<CategoriesScreen />} />}
       {status === 'ready' && <Route path="/item/:id" element={<ItemScreen />} />}
