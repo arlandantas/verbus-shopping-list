@@ -97,7 +97,7 @@ describe('S-055 AC3: history back', () => {
     })
     expect(onClose).toHaveBeenCalledTimes(1)
   })
-  it('closing via app consumes the pushed state', () => {
+  it('closing via app consumes the pushed state', async () => {
     const back = vi.spyOn(history, 'back')
     const { rerender } = render(
       <BottomSheet open title="T" onClose={vi.fn()}>
@@ -109,6 +109,7 @@ describe('S-055 AC3: history back', () => {
         x
       </BottomSheet>,
     )
+    await act(async () => {})
     expect(back).toHaveBeenCalledTimes(1)
     back.mockRestore()
   })
@@ -223,7 +224,7 @@ describe('S-055 AC7: replacement and offset', () => {
 })
 
 describe('S-055 review fixes', () => {
-  it('S-055 AC3: open/close repeatedly balances history', () => {
+  it('S-055 AC3: open/close repeatedly balances history', async () => {
     const back = vi.spyOn(history, 'back')
     for (let i = 0; i < 3; i++) {
       const { unmount } = render(
@@ -232,6 +233,7 @@ describe('S-055 review fixes', () => {
         </BottomSheet>,
       )
       unmount()
+      await act(async () => {})
     }
     expect(back).toHaveBeenCalledTimes(3)
     back.mockRestore()

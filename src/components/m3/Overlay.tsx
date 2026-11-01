@@ -10,7 +10,7 @@ const FIELDS = 'input:not([disabled]),select:not([disabled]),textarea:not([disab
 
 let overlaySeq = 0
 /** Open overlays, bottom first. Each owns one history entry, so depth in history = stack order. */
-const stack: { token: number; close: () => void }[] = []
+const stack: { token: number; close: () => void; pending: boolean }[] = []
 
 /** Drops `token` and every overlay above it; returns how many history entries to unwind. */
 function release(token: number): { count: number; above: (() => void)[] } {
@@ -35,6 +35,7 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef(onClose)
+  const tokenRef = useRef(0)
   useEffect(() => {
     closeRef.current = onClose
   })
@@ -50,9 +51,18 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
 
-    const token = ++overlaySeq
-    stack.push({ token, close: () => closeRef.current() })
-    history.pushState({ m3overlay: token }, '')
+    // A cleanup only marks the entry pending; the history unwind runs in a microtask and is
+    // skipped when the same component re-registers first (StrictMode's simulated remount).
+    const revived = stack.find((o) => o.token === tokenRef.current && o.pending)
+    let token = tokenRef.current
+    if (revived) {
+      revived.pending = false
+      revived.close = () => closeRef.current()
+    } else {
+      token = tokenRef.current = ++overlaySeq
+      stack.push({ token, close: () => closeRef.current(), pending: false })
+      history.pushState({ m3overlay: token }, '')
+    }
     const onPop = (e: PopStateEvent) => {
       // The entry we landed on tells how deep we are: overlays above it were popped by navigation.
       // Landing on an overlay entry that is no longer open is the echo of our own unwind: ignore.
@@ -68,11 +78,16 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
 
     return () => {
       window.removeEventListener('popstate', onPop)
-      const { count, above } = release(token)
-      if (count > 0) {
-        if (count === 1) history.back()
-        else history.go(-count)
-        above.forEach((close) => close())
+      const entry = stack.find((o) => o.token === token)
+      if (entry) {
+        entry.pending = true
+        queueMicrotask(() => {
+          if (!entry.pending) return
+          const { count, above } = release(token)
+          if (count === 1) history.back()
+          else if (count > 1) history.go(-count)
+          above.forEach((close) => close())
+        })
       }
       document.body.style.overflow = prevOverflow
       opener?.focus?.()
