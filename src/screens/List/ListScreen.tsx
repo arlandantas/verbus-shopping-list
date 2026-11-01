@@ -13,13 +13,15 @@ import { useLocalPref } from '@/hooks/useLocalPref'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import type { CatalogEntry, Item } from '@/data/converters'
-import { addItem, setItemStatus, toggleItemStatus } from '@/data/items'
+import { addItem, addItems, setItemStatus, toggleItemStatus } from '@/data/items'
 import { toNameKey } from '@/domain/nameKey'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
+import type { PasteResult, PasteRow } from '@/domain/pasteList'
 import { strings } from '@/strings/pt-BR'
 import { GroupSwitcher } from './GroupSwitcher'
 import { AddItemBar } from './AddItemBar'
 import { ItemRow } from './ItemRow'
+import { PasteListSheet } from './PasteListSheet'
 import { useCatalog } from './useCatalog'
 import { useItems } from './useItems'
 
@@ -38,6 +40,8 @@ export function ListScreen() {
   const [switching, setSwitching] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [undo, setUndo] = useState<{ itemId: string; key: number } | null>(null)
+  const [pasted, setPasted] = useState<PasteResult | null>(null)
+  const [added, setAdded] = useState<{ count: number; key: number } | null>(null)
   const [collapsed, setCollapsed] = useLocalPref<string[]>('verbus.ui.collapsed', [], isStrings)
   const [hideBought, setHideBought] = useLocalPref('verbus.ui.hideBought', false, isBool)
   const pendingKeys = useMemo(
@@ -61,6 +65,20 @@ export function ListScreen() {
       categoryId: entry.categoryId,
       recurring: entry.recurring,
     })
+  }
+  const onConfirmPaste = (rows: PasteRow[]) => {
+    addItems(
+      familyId,
+      rows.map(({ name, quantity, unit, categoryId, recurring }) => ({
+        name,
+        quantity,
+        unit,
+        categoryId,
+        ...(recurring === undefined ? {} : { recurring }),
+      })),
+    )
+    setPasted(null)
+    setAdded({ count: rows.length, key: Date.now() + Math.random() })
   }
   const onToggle = (item: Item) => {
     toggleItemStatus(familyId, item)
@@ -90,7 +108,13 @@ export function ListScreen() {
         <p className="px-4 pb-2 text-on-surface-variant">{strings.market.allDone}</p>
       )}
       <CycleNotice added={recurringAdded} onDismiss={dismissRecurringNotice} />
-      <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
+      <AddItemBar
+        onAdd={onAdd}
+        catalog={catalog}
+        pendingKeys={pendingKeys}
+        onPick={onPick}
+        onPasteList={setPasted}
+      />
       {list.length > 0 && (
         <div className="px-4 py-2">
           <Switch
@@ -131,6 +155,22 @@ export function ListScreen() {
           actionLabel={strings.list.undo}
           onAction={() => setItemStatus(familyId, undo.itemId, 'pending')}
           onDismiss={() => setUndo(null)}
+        />
+      )}
+      {added && (
+        <Snackbar
+          key={added.key}
+          message={strings.list.paste.added(added.count)}
+          onDismiss={() => setAdded(null)}
+        />
+      )}
+      {pasted && categories && (
+        <PasteListSheet
+          rows={pasted.rows}
+          truncated={pasted.truncated}
+          categories={categories}
+          onConfirm={onConfirmPaste}
+          onClose={() => setPasted(null)}
         />
       )}
       {switching && <GroupSwitcher onClose={() => setSwitching(false)} />}

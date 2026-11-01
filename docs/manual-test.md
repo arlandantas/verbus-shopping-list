@@ -32,6 +32,7 @@ Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Grupo**.
 15. **Sair:** Grupo → sair; aparece diálogo de confirmação; cancelar mantém a sessão, confirmar volta ao login.
 16. **Trocar de grupo:** na Lista, tocar no título (ou na seta) abre o sheet com os grupos, o ativo marcado; escolher outro mostra os itens dele (Lista, Despensa, Histórico). Com um só grupo o título também abre o sheet. "Criar novo grupo" e "Entrar com código" levam à aba Grupo já com o formulário correspondente aberto. Recarregar mantém o grupo escolhido.
     **Mais grupos (S-091):** na aba Grupo, "Criar novo grupo" e "Entrar em outro grupo" abrem os formulários; sucesso ativa o novo grupo e volta à Lista. Abrir o convite de um grupo em que já está troca para ele com "Você já está neste grupo". Com 10 grupos aparece "Limite de 10 grupos atingido" e as ações ficam desabilitadas.
+    **Colar lista (S-093):** na Lista, colar no campo "Adicionar item" um texto de várias linhas (ex.: do WhatsApp, com `-`, `[ ]`, numeração, linhas vazias e repetidos, ou "arroz, feijão, leite"). Abre o sheet "Colar lista" com uma linha por item; o que já está pendente vem desmarcado com "Já está na lista". "Adicionar (N)" grava tudo de uma vez e mostra "N itens adicionados". Colar uma linha só ("1,5 kg arroz") preenche o campo como antes.
 17. **Virada do mês:** aviso "recorrentes voltaram para a lista" na 1ª abertura do mês.
 
 ## Offline, tema e tela larga

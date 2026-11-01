@@ -1,6 +1,15 @@
-import { useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import {
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ClipboardEvent,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react'
 import type { CatalogEntry } from '@/data/converters'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
+import { buildPasteRows, splitPastedList, type PasteResult } from '@/domain/pasteList'
 import { suggest } from '@/domain/suggest'
 import { strings } from '@/strings/pt-BR'
 import { IconButton } from '@/components/m3/IconButton'
@@ -15,9 +24,17 @@ interface Props {
   pendingKeys?: ReadonlySet<string>
   /** `typed` is set only when the text carried its own quantity/unit (it wins over the catalog). */
   onPick?: (entry: CatalogEntry, typed: ParsedItem | null) => void
+  /** Called instead of filling the field when the pasted text is a multi-item list (ADR-0027). */
+  onPasteList?: (result: PasteResult) => void
 }
 
-export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick }: Props) {
+export function AddItemBar({
+  onAdd,
+  catalog = [],
+  pendingKeys = NO_KEYS,
+  onPick,
+  onPasteList,
+}: Props) {
   const [text, setText] = useState('')
   const [dismissed, setDismissed] = useState(false)
   const [active, setActive] = useState(-1)
@@ -52,6 +69,16 @@ export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick 
     reset()
   }
 
+  const onPaste = (e: ClipboardEvent<HTMLInputElement>) => {
+    if (!onPasteList) return
+    const lines = splitPastedList(e.clipboardData.getData('text'))
+    if (!lines) return
+    const result = buildPasteRows(lines, catalog, pendingKeys)
+    if (result.rows.length === 0) return
+    e.preventDefault()
+    onPasteList(result)
+  }
+
   const open = suggestions.length > 0
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -80,6 +107,7 @@ export function AddItemBar({ onAdd, catalog = [], pendingKeys = NO_KEYS, onPick 
           aria-autocomplete="list"
           aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
           onKeyDown={onKeyDown}
+          onPaste={onPaste}
           placeholder={strings.list.addPlaceholder}
           value={text}
           onChange={(e) => {

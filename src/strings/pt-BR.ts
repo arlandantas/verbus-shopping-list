@@ -107,6 +107,13 @@ export const strings = {
     edit: (name: string) => `Editar ${name}`,
     writeError: 'Não foi possível salvar a alteração. Tente novamente.',
     suggestionsLabel: 'Sugestões',
+    paste: {
+      title: 'Colar lista',
+      duplicate: 'Já está na lista',
+      confirm: (n: number) => `Adicionar (${n})`,
+      truncated: 'Só os primeiros 100 itens foram lidos',
+      added: (n: number) => (n === 1 ? '1 item adicionado' : `${n} itens adicionados`),
+    },
   },
   markedBy: {
     you: 'por você',

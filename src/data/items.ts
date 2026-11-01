@@ -7,6 +7,7 @@ import {
   updateDoc,
   writeBatch,
   type Unsubscribe,
+  type WriteBatch,
 } from 'firebase/firestore'
 import { auth, db } from '@/data/firebase'
 import { toNameKey } from '@/domain/nameKey'
@@ -40,14 +41,12 @@ const itemsCol = (familyId: string) => collection(db, 'families', familyId, 'ite
 const catalogRef = (familyId: string, nameKey: string) =>
   doc(db, 'families', familyId, 'catalog', nameKey)
 
-/** One batch (no transaction, not awaited): item + catalog entry. Returns the new id at once. */
-export function addItem(familyId: string, input: NewItem): string {
-  const uid = currentUid()
+/** Queues item + catalog entry on `batch` (merge + `recurring` only when given: ADR-0010). */
+function queueItem(batch: WriteBatch, familyId: string, uid: string, input: NewItem): string {
   const name = input.name.trim()
   const nameKey = toNameKey(name)
   const categoryId = input.categoryId ?? null
   const ref = doc(itemsCol(familyId))
-  const batch = writeBatch(db)
   batch.set(ref, {
     name,
     nameKey,
@@ -63,7 +62,6 @@ export function addItem(familyId: string, input: NewItem): string {
     createdBy: uid,
     createdAt: serverTimestamp(),
   })
-  // merge + `recurring` only when given: re-adding by free text must not erase the mark (ADR-0010)
   batch.set(
     catalogRef(familyId, nameKey),
     {
@@ -77,8 +75,22 @@ export function addItem(familyId: string, input: NewItem): string {
     },
     { merge: true },
   )
-  fireAndForget(batch.commit())
   return ref.id
+}
+
+/** One batch (no transaction, not awaited): item + catalog entry. Returns the new id at once. */
+export function addItem(familyId: string, input: NewItem): string {
+  return addItems(familyId, [input])[0]!
+}
+
+/** Many items in a single batch (2 writes each, ≤100 items), not awaited. Returns the ids. */
+export function addItems(familyId: string, inputs: readonly NewItem[]): string[] {
+  if (inputs.length === 0) return []
+  const uid = currentUid()
+  const batch = writeBatch(db)
+  const ids = inputs.map((input) => queueItem(batch, familyId, uid, input))
+  fireAndForget(batch.commit())
+  return ids
 }
 
 const time = (d: Date | null) => d?.getTime() ?? 0
