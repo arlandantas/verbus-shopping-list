@@ -168,3 +168,32 @@ describe('S-043 AC1/AC2: category select', () => {
     expect(onSave).toHaveBeenCalledWith({ categoryId: null })
   })
 })
+
+describe('S-092 AC7: no categories', () => {
+  it('shows the hint instead of an empty category select', () => {
+    render(
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    )
+    expect(screen.getByText(strings.categories.noneForItem)).toBeInTheDocument()
+    expect(screen.queryByLabelText(strings.item.category)).not.toBeInTheDocument()
+  })
+  it('with categories the select is shown and the hint is not', () => {
+    render(
+      <ItemForm
+        item={item}
+        categories={[{ id: 'c1', name: 'Pet', isDefault: false, order: 0 }]}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    )
+    expect(screen.getByLabelText(strings.item.category)).toBeInTheDocument()
+    expect(screen.queryByText(strings.categories.noneForItem)).not.toBeInTheDocument()
+  })
+})

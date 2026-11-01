@@ -39,7 +39,7 @@ beforeEach(async () => {
 })
 
 describe('S-050 seed data (pure)', () => {
-  it('S-050 AC3: seed categories are the 6 ADR-0014 defaults', () => {
+  it('S-050 AC3: seed categories are the 6 ADR-0014 defaults (a legacy group, S-092 AC6)', () => {
     expect(SEED_CATEGORIES).toEqual(DEFAULT_CATEGORIES)
   })
   it('S-050 AC3: item/catalog name keys and units follow the domain', () => {

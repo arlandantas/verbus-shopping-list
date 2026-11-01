@@ -48,9 +48,12 @@ describe('S-062 CategoriesScreen', () => {
     const user = screen.getByRole('heading', { name: t.userSection })
     const def = screen.getByRole('heading', { name: t.defaultSection })
     expect(user.compareDocumentPosition(def) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    const lists = screen.getAllByRole('list')
-    expect(within(lists[0]).getByText('Pet')).toBeInTheDocument()
-    expect(within(lists[1]).getByText('Mercearia')).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('list', { name: t.userList })).getByText('Pet'),
+    ).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('list', { name: t.defaultList })).getByText('Mercearia'),
+    ).toBeInTheDocument()
   })
 
   it('AC2: own rows have edit/delete; rename and delete use dialogs', () => {
@@ -90,5 +93,55 @@ describe('S-062 CategoriesScreen', () => {
     fireEvent.change(field, { target: { value: ' Bebidas ' } })
     fireEvent.click(screen.getByRole('button', { name: t.save }))
     expect(h.addCategory).toHaveBeenCalledWith('f1', 'Bebidas', categories)
+  })
+})
+
+describe('S-092 suggestions', () => {
+  it('AC4: empty group lists 6 chips; tapping one adds that category', () => {
+    categories = []
+    renderIt()
+    const list = screen.getByRole('list', { name: t.suggestionsList })
+    expect(within(list).getAllByRole('button')).toHaveLength(6)
+    expect(screen.queryByRole('heading', { name: t.defaultSection })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '+ Mercearia' }))
+    expect(h.addCategory).toHaveBeenCalledWith('f1', 'Mercearia', [])
+  })
+
+  it('AC4: no suggestions section once every default name exists', () => {
+    categories = [
+      'Mercearia',
+      'Hortifrúti',
+      'Carnes',
+      'Laticínios',
+      'Limpeza',
+      'Higiene pessoal',
+    ].map((n, i) => cat(`u${i}`, n, false, i))
+    renderIt()
+    expect(screen.queryByRole('heading', { name: t.suggestions })).not.toBeInTheDocument()
+  })
+
+  it('AC5: a suggestion-created category is a normal row (rename/delete); deleted, its chip returns', () => {
+    categories = [cat('r1', 'Carnes', false, 0)]
+    const { unmount } = renderIt()
+    expect(screen.getByRole('button', { name: t.renameFor('Carnes') })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '+ Carnes' })).not.toBeInTheDocument()
+    unmount()
+    categories = []
+    renderIt()
+    expect(screen.getByRole('button', { name: '+ Carnes' })).toBeInTheDocument()
+  })
+
+  it('AC6: legacy group with the 6 defaults shows no suggestions and keeps the lock', () => {
+    categories = [
+      'Mercearia',
+      'Hortifrúti',
+      'Carnes',
+      'Laticínios',
+      'Limpeza',
+      'Higiene pessoal',
+    ].map((n, i) => cat(`d${i}`, n, true, i))
+    renderIt()
+    expect(screen.queryByRole('heading', { name: t.suggestions })).not.toBeInTheDocument()
+    expect(screen.getByRole('listitem', { name: t.defaultLocked('Carnes') })).toBeInTheDocument()
   })
 })

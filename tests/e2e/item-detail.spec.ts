@@ -1,6 +1,6 @@
 import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
-import { clearEmulators, deleteAllItems } from './support/emulator'
+import { clearEmulators, deleteAllItems, seedCategory } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
 test.beforeEach(async () => {
@@ -118,6 +118,7 @@ test('S-021 AC6: /item/xyz leads to the Lista', async ({ page }) => {
 
 test('S-043 AC3: category set on the item comes back through autocomplete', async ({ page }) => {
   await setupWithItem(page, 'leite')
+  await seedCategory('Laticínios')
   await openItem(page, 'leite')
   await page
     .getByRole('combobox', { name: strings.item.category })

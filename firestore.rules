@@ -194,16 +194,15 @@ service cloud.firestore {
         && d.order is int && d.order >= 0 && d.order <= 999;
     }
 
-    // Defaults only appear in the batch that creates the family (family absent before it).
+    // Categories are user categories only (S-092): isDefault == true is never accepted on create.
+    // Legacy defaults already stored stay readable and cannot be updated or deleted.
     // User categories cannot take a default id (ADR-0014).
     function validCategoryCreate(d, familyId, categoryId) {
       return isMemberAfter(familyId)
         && validCategory(d)
-        && ((d.isDefault == false
-            && !(categoryId in ['mercearia', 'hortifruti', 'carnes', 'laticinios', 'limpeza',
-              'higiene']))
-          || (d.isDefault == true
-            && !exists(/databases/$(database)/documents/families/$(familyId))));
+        && d.isDefault == false
+        && !(categoryId in ['mercearia', 'hortifruti', 'carnes', 'laticinios', 'limpeza',
+          'higiene']);
     }
 
     function validMemberProfile(d) {

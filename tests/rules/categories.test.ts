@@ -49,10 +49,13 @@ const user = (over: Record<string, unknown> = {}) => ({
   ...over,
 })
 
-const DEFAULTS = ['mercearia', 'hortifruti', 'carnes', 'laticinios', 'limpeza', 'higiene']
-
-/** Create-family batch as the client does it, with the 6 seeded defaults (ADR-0014). */
-function createFamilyBatch(uid: string, id: string, members: string[]) {
+/** Create-family batch as the client does it (S-092: no seeded categories); `extra` adds category docs. */
+function createFamilyBatch(
+  uid: string,
+  id: string,
+  members: string[],
+  extra: Record<string, Record<string, unknown>> = {},
+) {
   const db = asUser(env, uid)
   const b = writeBatch(db)
   b.set(doc(db, `families/${id}`), {
@@ -69,17 +72,30 @@ function createFamilyBatch(uid: string, id: string, members: string[]) {
     createdAt: serverTimestamp(),
   })
   b.update(doc(db, `users/${uid}`), { groupIds: [id] })
-  DEFAULTS.forEach((k, i) => b.set(doc(db, cat(k, id)), { name: k, isDefault: true, order: i }))
+  for (const [k, data] of Object.entries(extra)) b.set(doc(db, cat(k, id)), data)
   return b.commit()
 }
 
 describe('S-031 categories rules', () => {
-  it('S-031 AC1: create-family batch with 6 defaults accepted; denied if caller not in members', async () => {
+  it('S-092 AC1: create-family batch without categories accepted; denied if caller not in members', async () => {
     await assertFails(createFamilyBatch('carol', 'f3', ['someone-else']))
     await assertSucceeds(createFamilyBatch('carol', 'f3', ['carol']))
   })
 
-  it('S-031 AC1: defaults cannot be created standalone on an existing family', async () => {
+  it('S-092 AC1: a default category (isDefault true) in the create-family batch is denied; same shape with isDefault false is allowed', async () => {
+    const def = (k: string, i: number) => ({ name: k, isDefault: true, order: i })
+    await assertFails(
+      createFamilyBatch('carol', 'f3', ['carol'], { mercearia: def('Mercearia', 0) }),
+    )
+    await assertFails(createFamilyBatch('carol', 'f3', ['carol'], { novo: def('Novo', 0) }))
+    await assertSucceeds(
+      createFamilyBatch('carol', 'f3', ['carol'], {
+        novo: { name: 'Novo', isDefault: false, order: 0 },
+      }),
+    )
+  })
+
+  it('S-092 AC1: defaults cannot be created standalone on an existing family', async () => {
     const db = asUser(env, 'alice')
     await assertFails(setDoc(doc(db, cat('higiene')), user({ isDefault: true, order: 5 })))
   })
@@ -132,13 +148,15 @@ describe('S-031 categories rules', () => {
     await assertSucceeds(setDoc(doc(db, cat('higiene2')), user({ order: 5 })))
   })
 
-  it('S-031 AC4: update and delete of a default category are denied', async () => {
+  it('S-092 AC1: legacy defaults keep no update/delete; control: own category still allowed', async () => {
     const db = asUser(env, 'alice')
     await assertFails(updateDoc(doc(db, cat('mercearia')), { name: 'X' }))
     await assertFails(updateDoc(doc(db, cat('mercearia')), { order: 3 }))
     await assertFails(updateDoc(doc(db, cat('mercearia')), { isDefault: false }))
     await assertFails(setDoc(doc(db, cat('mercearia')), user({ name: 'Mercearia' })))
     await assertFails(deleteDoc(doc(db, cat('mercearia'))))
+    await assertSucceeds(updateDoc(doc(db, cat('mine')), { name: 'Animais' }))
+    await assertSucceeds(deleteDoc(doc(db, cat('mine'))))
   })
 
   it('S-031 AC5: invalid name, order and extra or missing keys are denied', async () => {

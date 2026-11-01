@@ -4,6 +4,7 @@ import { Button } from '@/components/m3/Button'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { addCategory, deleteCategory, renameCategory } from '@/data/categories'
+import { categorySuggestions } from '@/domain/categories'
 import { useCategories } from '@/hooks/useCategories'
 import { strings } from '@/strings/pt-BR'
 import { CategoryRow } from './CategoryRow'
@@ -22,6 +23,7 @@ export function CategoriesScreen() {
   const all = categories ?? []
   const own = all.filter((c) => !c.isDefault)
   const defaults = all.filter((c) => c.isDefault)
+  const suggestions = categories ? categorySuggestions(all) : []
   const row = (c: (typeof all)[number]) => (
     <CategoryRow
       key={c.id}
@@ -44,10 +46,32 @@ export function CategoriesScreen() {
           {t.newLabel}
         </Button>
       </div>
-      <h2 className="categories-section">{t.defaultSection}</h2>
-      <ul aria-label={t.defaultList} className="categories-list">
-        {defaults.map(row)}
-      </ul>
+      {suggestions.length > 0 && (
+        <>
+          <h2 className="categories-section">{t.suggestions}</h2>
+          <ul aria-label={t.suggestionsList} className="categories-chips">
+            {suggestions.map((name) => (
+              <li key={name}>
+                <button
+                  type="button"
+                  className="categories-chip"
+                  onClick={() => addCategory(familyId, name, all)}
+                >
+                  {t.suggestionChip(name)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {defaults.length > 0 && (
+        <>
+          <h2 className="categories-section">{t.defaultSection}</h2>
+          <ul aria-label={t.defaultList} className="categories-list">
+            {defaults.map(row)}
+          </ul>
+        </>
+      )}
       {creating && (
         <NameDialog
           title={t.newLabel}

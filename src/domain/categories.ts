@@ -1,4 +1,5 @@
 import { strings } from '../strings/pt-BR'
+import { toNameKey } from './nameKey'
 
 export interface CategoryLike {
   id: string
@@ -16,6 +17,12 @@ export const DEFAULT_CATEGORIES: readonly CategoryLike[] = [
 ]
 
 export const MAX_CATEGORY_ORDER = 999
+
+/** Default names (in default order) whose nameKey is not among the group's categories (S-092). */
+export function categorySuggestions(existing: readonly { name: string }[]): string[] {
+  const have = new Set(existing.map((c) => toNameKey(c.name)))
+  return DEFAULT_CATEGORIES.map((c) => c.name).filter((n) => !have.has(toNameKey(n)))
+}
 
 export interface CategorySection<T> {
   /** null = "Sem categoria" */

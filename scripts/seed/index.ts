@@ -84,13 +84,18 @@ export async function seedEmulators(ep: Endpoints = DEFAULT_ENDPOINTS): Promise<
         create: true,
         data: { displayName: owner.account.displayName },
       },
-      ...SEED_CATEGORIES.map((c) => ({
+    ]
+    await rest.commit(owner.s, writes)
+    // Legacy defaults (isDefault true) can no longer be created by clients (S-092): only the emulator
+    // admin token writes them, so dev:local keeps a legacy group to exercise the locked-defaults path.
+    await rest.commit(
+      { uid: owner.s.uid, token: 'owner' },
+      SEED_CATEGORIES.map((c) => ({
         path: fam(`categories/${c.id}`),
         create: true,
         data: { name: c.name, isDefault: true, order: c.order },
       })),
-    ]
-    await rest.commit(owner.s, writes)
+    )
   }
 
   // Legacy profile: only the emulator admin token can write the old shape (rules deny `familyId` on create).

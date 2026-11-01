@@ -1,7 +1,7 @@
 import { devices, expect, test, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
 import { setItemCategory } from './support/categorize'
-import { clearEmulators } from './support/emulator'
+import { clearEmulators, seedCategory } from './support/emulator'
 import { twoMembers } from './support/members'
 
 test.use({ ...devices['Pixel 7'] })
@@ -150,11 +150,7 @@ test('S-044 AC4: deleting a category moves its items to Sem categoria without re
 }) => {
   const { ana, beto } = await twoMembers(browser, ['pilha'])
   const t = strings.categories
-  await ana.goto('/categorias')
-  await ana.getByRole('button', { name: t.newLabel }).click()
-  await ana.getByLabel(t.nameLabel).fill('Pets')
-  await ana.getByRole('button', { name: t.save }).click()
-  await expect(ana.getByRole('listitem').filter({ hasText: 'Pets' })).toBeVisible()
+  await seedCategory('Pets') // groups start without categories (S-092)
   await ana.goto('/')
   await setItemCategory(ana, 'pilha', 'Pets')
   await expect(beto.getByRole('region', { name: 'Pets' })).toContainText('pilha')

@@ -54,3 +54,35 @@ export async function waitForItemCount(count: number): Promise<void> {
     })
     .toBe(count)
 }
+
+const SEED_ORDER = ['Mercearia', 'Hortifrúti', 'Carnes', 'Laticínios', 'Limpeza', 'Higiene pessoal']
+
+/**
+ * Adds a user category if absent (isDefault false) in every family via the emulator admin API. New groups
+ * start without categories (S-092), so specs that need one create it here instead of through the UI.
+ */
+export async function seedCategory(name: string): Promise<void> {
+  const base = `${FIRESTORE}/v1/projects/${PROJECT}/databases/(default)/documents`
+  const headers = { Authorization: 'Bearer owner', 'Content-Type': 'application/json' }
+  const fams = (await (await fetch(`${base}/families`, { headers })).json()) as DocList
+  const idx = SEED_ORDER.indexOf(name)
+  const fields = {
+    name: { stringValue: name },
+    isDefault: { booleanValue: false },
+    order: { integerValue: String(idx === -1 ? 10 : idx) },
+  }
+  for (const fam of fams.documents ?? []) {
+    const path = fam.name.split('/documents/')[1]!
+    const existing = (await (await fetch(`${base}/${path}/categories`, { headers })).json()) as {
+      documents?: { fields?: { name?: { stringValue?: string } } }[]
+    }
+    if (existing.documents?.some((d) => d.fields?.name?.stringValue === name)) continue
+    const id = `e2e-${name.toLowerCase().replace(/[^a-z]/g, '')}`
+    const res = await fetch(`${base}/${path}/categories/${id}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ fields }),
+    })
+    if (!res.ok) throw new Error(`PATCH ${id} failed: ${res.status}`)
+  }
+}

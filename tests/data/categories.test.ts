@@ -4,7 +4,6 @@ import type { Category } from '@/data/converters'
 import { addCategory, deleteCategory, renameCategory, watchCategories } from '@/data/categories'
 import { joinFamilyByCode } from '@/data/families'
 import { ensureUserProfile } from '@/data/users'
-import { DEFAULT_CATEGORIES } from '@/domain/categories'
 import { clearFirestore, loginAs, logout } from './support'
 import { flush, next, setup } from './itemsSupport'
 
@@ -18,26 +17,31 @@ const watch = (f: string, pred?: (v: Category[]) => boolean) =>
 const catDoc = async (f: string, id: string) =>
   (await getDoc(doc(db, 'families', f, 'categories', id))).data()
 
-describe('S-037 AC1: seed', () => {
-  it('S-037 AC1: createFamily writes the 6 defaults and watchCategories delivers them in order', async () => {
+describe('S-092 AC2: no seed', () => {
+  it('S-092 AC2: createFamily writes no category and watchCategories delivers an empty list', async () => {
     const { familyId } = await setup()
-    const list = await watch(familyId, (l) => l.length === 6)
-    expect(list.map((c) => c.id)).toEqual(DEFAULT_CATEGORIES.map((c) => c.id))
-    expect(list.every((c) => c.isDefault)).toBe(true)
-    expect(list.map((c) => c.name)).toEqual(DEFAULT_CATEGORIES.map((c) => c.name))
+    expect(await watch(familyId)).toEqual([])
+    const snap = await getDocs(collection(db, 'families', familyId, 'categories'))
+    expect(snap.size).toBe(0)
   })
 })
 
 describe('S-037 AC2: CRUD', () => {
   it('S-037 AC2: add, rename and delete are void and reach the server', async () => {
     const { familyId } = await setup()
-    const defaults = await watch(familyId, (l) => l.length === 6)
-    const r = addCategory(familyId, '  Pets  ', defaults)
+    const r = addCategory(familyId, '  Pets  ', [])
     expect(r).toBeUndefined()
     await flush()
-    const all = await watch(familyId, (l) => l.length === 7)
-    const pets = all.at(-1)!
-    expect(pets).toMatchObject({ name: 'Pets', isDefault: false, order: 6 })
+    const all = await watch(familyId, (l) => l.length === 1)
+    const pets = all[0]
+    expect(pets).toMatchObject({ name: 'Pets', isDefault: false, order: 0 })
+    addCategory(familyId, 'Mercearia', all) // suggestion tap (S-092 AC4): order = highest + 1
+    await flush()
+    expect((await watch(familyId, (l) => l.length === 2)).at(-1)).toMatchObject({
+      name: 'Mercearia',
+      isDefault: false,
+      order: 1,
+    })
 
     expect(renameCategory(familyId, pets.id, '  Animais ')).toBeUndefined()
     await flush()
@@ -50,18 +54,20 @@ describe('S-037 AC2: CRUD', () => {
 
   it('S-037 AC2: an empty or blank name is refused on the client', async () => {
     const { familyId } = await setup()
-    await watch(familyId, (l) => l.length === 6)
+    addCategory(familyId, 'Pets', [])
+    await flush()
+    const [pets] = await watch(familyId, (l) => l.length === 1)
     addCategory(familyId, '   ', [])
-    renameCategory(familyId, 'mercearia', '  ')
+    renameCategory(familyId, pets.id, '  ')
     await flush()
     const snap = await getDocs(collection(db, 'families', familyId, 'categories'))
-    expect(snap.size).toBe(6)
-    expect((await catDoc(familyId, 'mercearia'))?.name).toBe('Mercearia')
+    expect(snap.size).toBe(1)
+    expect((await catDoc(familyId, pets.id))?.name).toBe('Pets')
   })
 })
 
-describe('S-037 AC3: join does not seed', () => {
-  it('S-037 AC3: joinFamilyByCode leaves the 6 defaults untouched', async () => {
+describe('S-037 AC3: join does not seed (still none after S-092)', () => {
+  it('S-037 AC3: joinFamilyByCode adds no categories', async () => {
     const { familyId } = await setup('ana')
     const { inviteCode } = await createFamilyInfo(familyId)
     await logout()
@@ -70,7 +76,7 @@ describe('S-037 AC3: join does not seed', () => {
     await joinFamilyByCode(inviteCode)
     await flush()
     const snap = await getDocs(collection(db, 'families', familyId, 'categories'))
-    expect(snap.size).toBe(6)
+    expect(snap.size).toBe(0)
   })
 })
 

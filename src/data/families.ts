@@ -11,7 +11,6 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore'
 import { auth, db } from '@/data/firebase'
-import { DEFAULT_CATEGORIES } from '@/domain/categories'
 import { generateInviteCode, isValidInviteCode, normalizeInviteCode } from '@/domain/inviteCode'
 import { addMemberProfileToBatch } from './members'
 import { familyConverter, type Family } from './converters'
@@ -64,7 +63,7 @@ async function freshInviteCode(): Promise<string> {
   throw new Error('invite-code-collision')
 }
 
-/** Single batch: family + invite + profile.groupIds + 6 default categories (ADR-0014). Needs an existing profile (ensureUserProfile). */
+/** Single batch: family + invite + profile.groupIds; no categories (S-092). Needs an existing profile (ensureUserProfile). */
 export async function createFamily(
   name: string,
 ): Promise<{ familyId: string; inviteCode: string }> {
@@ -91,13 +90,6 @@ export async function createFamily(
     groupIds: [...ledgerOf(profile.data()), familyRef.id],
   })
   addMemberProfileToBatch(batch, familyRef.id, uid, profile.data()?.displayName ?? '')
-  for (const c of DEFAULT_CATEGORIES) {
-    batch.set(doc(db, 'families', familyRef.id, 'categories', c.id), {
-      name: c.name,
-      isDefault: true,
-      order: c.order,
-    })
-  }
   await batch.commit()
   return { familyId: familyRef.id, inviteCode }
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { strings } from '../strings/pt-BR'
 import {
   cartCount,
+  categorySuggestions,
   DEFAULT_CATEGORIES,
   groupByCategory,
   nextCategoryOrder,
@@ -94,5 +95,19 @@ describe('S-059 AC1: cartCount', () => {
       total: 3,
     })
     expect(cartCount([])).toEqual({ done: 0, total: 0 })
+  })
+})
+
+describe('S-092 AC3: categorySuggestions', () => {
+  it('returns all 6 default names in order when the group has none', () => {
+    expect(categorySuggestions([])).toEqual(DEFAULT_CATEGORIES.map((c) => c.name))
+  })
+  it('drops names whose nameKey exists (accent/case-insensitive), keeps default order', () => {
+    expect(
+      categorySuggestions([{ name: 'hortifruti' }, { name: 'LIMPEZA' }, { name: 'Pet' }]),
+    ).toEqual(['Mercearia', 'Carnes', 'Laticínios', 'Higiene pessoal'])
+  })
+  it('returns nothing when all 6 exist', () => {
+    expect(categorySuggestions(DEFAULT_CATEGORIES)).toEqual([])
   })
 })

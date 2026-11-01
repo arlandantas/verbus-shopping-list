@@ -94,18 +94,22 @@ export function ItemForm({ item, categories, onSave, onCancel, onDelete }: Props
           </option>
         ))}
       </Select>
-      <Select
-        label={strings.item.category}
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-      >
-        <option value="">{strings.noCategory}</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </Select>
+      {categories.length === 0 ? (
+        <p className="m-0 text-sm text-on-surface-variant">{strings.categories.noneForItem}</p>
+      ) : (
+        <Select
+          label={strings.item.category}
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+        >
+          <option value="">{strings.noCategory}</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </Select>
+      )}
       <TextField
         label={strings.item.note}
         value={note}
