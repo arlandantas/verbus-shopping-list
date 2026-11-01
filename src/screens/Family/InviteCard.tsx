@@ -11,7 +11,7 @@ interface Props {
 
 /** Shows the invite code and link; shares via the Web Share API or copies the link. */
 export function InviteCard({ code, familyName }: Props) {
-  const [copied, setCopied] = useState<'link' | 'code' | null>(null)
+  const [copied, setCopied] = useState<'link' | 'code' | 'failed' | null>(null)
   const link = `${window.location.origin}/convite/${code}`
   const t = strings.family.invite
 
@@ -25,13 +25,16 @@ export function InviteCard({ code, familyName }: Props) {
       }
       return
     }
-    await navigator.clipboard.writeText(link)
-    setCopied('link')
+    await copyText(link, 'link')
   }
 
-  async function copyCode() {
-    await navigator.clipboard.writeText(code)
-    setCopied('code')
+  async function copyText(text: string, ok: 'link' | 'code') {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(ok)
+    } catch {
+      setCopied('failed')
+    }
   }
 
   return (
@@ -41,7 +44,11 @@ export function InviteCard({ code, familyName }: Props) {
         <strong data-testid="invite-code" className="family-code">
           {code}
         </strong>
-        <IconButton icon="content_copy" label={t.copyCode} onClick={() => void copyCode()} />
+        <IconButton
+          icon="content_copy"
+          label={t.copyCode}
+          onClick={() => void copyText(code, 'code')}
+        />
       </div>
       <p className="family-link">
         {t.link}: <span data-testid="invite-link">{link}</span>
@@ -51,7 +58,7 @@ export function InviteCard({ code, familyName }: Props) {
       </Button>
       {copied && (
         <p role="status" className="family-status">
-          {copied === 'code' ? t.codeCopied : t.copied}
+          {copied === 'code' ? t.codeCopied : copied === 'failed' ? t.copyFailed : t.copied}
         </p>
       )}
     </section>

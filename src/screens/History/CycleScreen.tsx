@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Navigate, useParams } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { addItem } from '@/data/items'
@@ -14,8 +14,11 @@ import { cycleTotalCents } from '@/domain/history'
 import { formatBRL } from '@/domain/price'
 import { BackButton } from '@/components/BackButton'
 import { TopAppBar } from '@/components/m3/TopAppBar'
+import { ListItem } from '@/components/m3/ListItem'
+import { Snackbar } from '@/components/m3/Snackbar'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
+import './history.css'
 
 const dayMonth = (d: Date) =>
   `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
@@ -34,6 +37,7 @@ export function CycleScreen() {
     () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
     [items],
   )
+  const [toast, setToast] = useState<string | null>(null)
   const readd = (l: PurchaseLine) => {
     if (!family) return
     addItem(family.id, {
@@ -43,6 +47,7 @@ export function CycleScreen() {
       categoryId: categories?.some((c) => c.id === l.categoryId) ? l.categoryId : null,
       recurring: catalog.find((c) => c.nameKey === l.nameKey)?.recurring ?? false,
     })
+    setToast(strings.history.readded(l.name))
   }
   const mine = useMemo(() => (purchases ?? []).filter((p) => p.cycle === cycle), [purchases, cycle])
   const sums = useMemo(() => sumByCategory(lines ?? []), [lines])
@@ -56,53 +61,56 @@ export function CycleScreen() {
   const loaded = purchases !== null && lines !== null
 
   return (
-    <main className="mx-auto max-w-md pb-4">
+    <main className="history mx-auto max-w-md pb-4">
       <TopAppBar title={formatCycle(cycle)} navigation={<BackButton to="/historico" />} />
       {!loaded && <Loading />}
       {loaded && mine.length === 0 && lines.length === 0 && (
-        <p className="p-4">{strings.history.cycleEmpty}</p>
+        <p className="history-empty">{strings.history.cycleEmpty}</p>
+      )}
+      {loaded && lines.length > 0 && (
+        <section aria-label={strings.history.categorySumTitle} className="history-summary">
+          <p className="history-summary__total">
+            <span>{strings.history.total}</span>
+            <span>{formatBRL(cycleTotalCents(lines))}</span>
+          </p>
+          <ul className="history-summary__rows">
+            {sums.rows.map((r) => (
+              <li key={r.name}>
+                <span>{r.name}</span>
+                <span>{formatBRL(r.totalCents)}</span>
+              </li>
+            ))}
+          </ul>
+          {sums.unpricedCount > 0 && (
+            <p className="history-summary__note">{strings.history.unpriced(sums.unpricedCount)}</p>
+          )}
+        </section>
       )}
       {loaded && mine.length > 0 && (
-        <section aria-label={strings.history.purchasesTitle} className="px-4">
-          <h2 className="py-2 text-lg">{strings.history.purchasesTitle}</h2>
-          <ul aria-label={strings.history.purchasesLabel}>
+        <section aria-label={strings.history.purchasesTitle}>
+          <h2 className="history-heading">{strings.history.purchasesTitle}</h2>
+          <ul aria-label={strings.history.purchasesLabel} className="history-list">
             {mine.map((p) => (
-              <li key={p.id} className="flex min-h-12 items-center justify-between">
-                <span>{p.market ?? strings.history.noMarket}</span>
-                <span>{dayMonth(p.purchasedAt)}</span>
-              </li>
+              <ListItem
+                key={p.id}
+                headline={p.market ?? strings.history.noMarket}
+                trailing={dayMonth(p.purchasedAt)}
+              />
             ))}
           </ul>
         </section>
       )}
       {groups.map((g) => (
-        <section key={g.name} aria-label={g.name} className="px-4">
-          <h2 className="py-2 text-lg">{g.name}</h2>
-          <ul>
+        <section key={g.name} aria-label={g.name}>
+          <h2 className="history-heading">{g.name}</h2>
+          <ul className="history-list">
             {g.lines.map((l) => (
               <LineRow key={l.id} line={l} pending={pendingKeys.has(l.nameKey)} onAdd={readd} />
             ))}
           </ul>
         </section>
       ))}
-      {loaded && lines.length > 0 && (
-        <section aria-label={strings.history.categorySumTitle} className="px-4">
-          <h2 className="py-2 text-lg">{strings.history.categorySumTitle}</h2>
-          <ul>
-            {sums.rows.map((r) => (
-              <li key={r.name} className="flex min-h-12 items-center justify-between">
-                <span>{r.name}</span>
-                <span>{formatBRL(r.totalCents)}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="flex min-h-12 items-center justify-between font-medium">
-            <span>{strings.history.total}</span>
-            <span>{formatBRL(cycleTotalCents(lines))}</span>
-          </p>
-          {sums.unpricedCount > 0 && <p>{strings.history.unpriced(sums.unpricedCount)}</p>}
-        </section>
-      )}
+      {toast && <Snackbar message={toast} onDismiss={() => setToast(null)} />}
     </main>
   )
 }

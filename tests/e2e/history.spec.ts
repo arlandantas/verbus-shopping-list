@@ -62,12 +62,13 @@ test('S-048 AC3: re-adding a history line puts it back on the list; history is u
 
   await ana.getByRole('link', { name: strings.history.link, exact: true }).click()
   await ana.getByRole('list', { name: strings.history.monthsLabel }).getByRole('link').click()
-  const add = ana.getByRole('button', { name: strings.history.addToListFor('feijão') })
+  const add = ana.getByRole('button', { name: strings.history.readdFor('feijão') })
   await add.click()
   await expect(
     ana.getByRole('button', { name: strings.history.inListFor('feijão') }),
   ).toBeDisabled()
-  await expect(ana.getByText('feijão')).toBeVisible()
+  await expect(ana.getByText('feijão', { exact: true })).toBeVisible()
+  await expect(ana.getByRole('status')).toContainText(strings.history.readded('feijão'))
 
   await ana.goto('/')
   const item = ana.getByRole('listitem').filter({ hasText: 'feijão' })

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router'
+import { Icon } from '@/components/m3/Icon'
+import { ListItem } from '@/components/m3/ListItem'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { usePurchases } from '@/hooks/useHistory'
@@ -8,6 +9,7 @@ import { formatCycle } from '@/domain/cycle'
 import { formatBRL } from '@/domain/price'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
+import './history.css'
 
 export function HistoryScreen() {
   const { family } = useFamily()
@@ -16,18 +18,22 @@ export function HistoryScreen() {
   if (!family) return null
 
   return (
-    <main className="mx-auto max-w-md">
+    <main className="history">
       <TopAppBar title={strings.history.title} />
       {purchases === null && <Loading />}
-      {purchases !== null && months.length === 0 && <p className="p-4">{strings.history.empty}</p>}
+      {purchases !== null && months.length === 0 && (
+        <p className="history-empty">{strings.history.empty}</p>
+      )}
       {months.length > 0 && (
-        <ul aria-label={strings.history.monthsLabel} className="flex flex-col">
+        <ul aria-label={strings.history.monthsLabel} className="history-list">
           {months.map((m) => (
-            <li key={m.cycle} className="border-b">
-              <Link to={`/historico/${m.cycle}`} className="flex min-h-12 items-center px-4 py-2">
-                {`${formatCycle(m.cycle)} · ${formatBRL(m.totalCents)} · ${strings.history.itemCount(m.itemCount)}`}
-              </Link>
-            </li>
+            <ListItem
+              key={m.cycle}
+              to={`/historico/${m.cycle}`}
+              headline={formatCycle(m.cycle)}
+              supporting={`${m.totalCents > 0 ? formatBRL(m.totalCents) : strings.history.noValues} · ${strings.history.itemCount(m.itemCount)}`}
+              trailing={<Icon name="chevron_right" />}
+            />
           ))}
         </ul>
       )}

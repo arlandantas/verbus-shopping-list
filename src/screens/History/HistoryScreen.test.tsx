@@ -37,9 +37,19 @@ describe('S-047 AC1: HistoryScreen', () => {
       screen.getByRole('list', { name: strings.history.monthsLabel }),
     ).getAllByRole('listitem')
     expect(items).toHaveLength(2)
-    expect(items[0]).toHaveTextContent(`novembro de 2026 · ${formatBRL(2300)} · 3 itens`)
-    expect(items[1]).toHaveTextContent(`outubro de 2026 · ${formatBRL(500)} · 1 item`)
+    expect(items[0]).toHaveTextContent(`novembro de 2026${formatBRL(2300)} · 3 itens`)
+    expect(items[1]).toHaveTextContent(`outubro de 2026${formatBRL(500)} · 1 item`)
     expect(within(items[0]).getByRole('link')).toHaveAttribute('href', '/historico/2026-11')
+    expect(items[0].querySelector('svg')).not.toBeNull()
+  })
+
+  it('AC1: top bar title and "sem valores" for months without prices', () => {
+    h.purchases = [p('2026-10', 2, null)]
+    renderIt()
+    expect(screen.getByRole('heading', { name: strings.history.title, level: 1 })).toBeVisible()
+    expect(screen.getByRole('list', { name: strings.history.monthsLabel })).toHaveTextContent(
+      `${strings.history.noValues} · 2 itens`,
+    )
   })
 
   it('shows a pt-BR message when there are no purchases', () => {

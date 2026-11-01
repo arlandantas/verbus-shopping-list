@@ -20,7 +20,7 @@ describe('Icon', () => {
 
   it('S-051 AC4: registry contains the required icons', () => {
     const required =
-      `arrow_back close edit delete logout add share content_copy info lock expand_less expand_more checklist kitchen history group shopping_cart shopping_cart_checkout check visibility_off category storefront remove_shopping_cart`.split(
+      `arrow_back close edit delete logout add share content_copy info lock expand_less expand_more checklist kitchen history group shopping_cart shopping_cart_checkout check visibility_off category storefront remove_shopping_cart add_shopping_cart`.split(
         ' ',
       )
     for (const n of required) expect(icons).toHaveProperty(n)

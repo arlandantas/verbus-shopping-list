@@ -138,16 +138,14 @@ describe('S-047 AC5: invalid cycle', () => {
 
 const addBtn = (name: string) =>
   screen.getByRole('button', {
-    name: new RegExp(
-      `^(${strings.history.addToListFor(name)}|${strings.history.inListFor(name)})$`,
-    ),
+    name: new RegExp(`^(${strings.history.readdFor(name)}|${strings.history.inListFor(name)})$`),
   })
 
 describe('S-048 AC1: re-add a line to the current list', () => {
   it('calls addItem with the line data and the catalog recurring flag', () => {
     h.catalog = [{ nameKey: 'arroz', recurring: true }]
     renderIt()
-    fireEvent.click(screen.getByRole('button', { name: strings.history.addToListFor('arroz') }))
+    fireEvent.click(screen.getByRole('button', { name: strings.history.readdFor('arroz') }))
     expect(h.addItem).toHaveBeenCalledWith('f1', {
       name: 'arroz',
       quantity: 1,
@@ -160,7 +158,7 @@ describe('S-048 AC1: re-add a line to the current list', () => {
   it('sends categoryId null when the category no longer exists, recurring false without catalog', () => {
     h.categories = []
     renderIt()
-    fireEvent.click(screen.getByRole('button', { name: strings.history.addToListFor('arroz') }))
+    fireEvent.click(screen.getByRole('button', { name: strings.history.readdFor('arroz') }))
     expect(h.addItem).toHaveBeenCalledWith('f1', {
       name: 'arroz',
       quantity: 1,
@@ -168,6 +166,26 @@ describe('S-048 AC1: re-add a line to the current list', () => {
       categoryId: null,
       recurring: false,
     })
+  })
+})
+
+describe('S-065: M3 cycle screen', () => {
+  it('AC2: summary card with month total and per-category sums; lines show quantity', () => {
+    renderIt()
+    const card = screen.getByRole('region', { name: strings.history.categorySumTitle })
+    expect(card).toHaveClass('history-summary')
+    expect(card).toHaveTextContent(formatBRL(2300))
+    const merc = screen.getByRole('region', { name: 'Mercearia' })
+    expect(within(merc).getByText('arroz').closest('li')).toHaveTextContent('1 un')
+  })
+
+  it('AC3: re-add is an icon button and shows a snackbar confirmation', () => {
+    renderIt()
+    const btn = screen.getByRole('button', { name: strings.history.readdFor('arroz') })
+    expect(btn.querySelector('svg')).not.toBeNull()
+    expect(screen.queryByRole('status')).toBeNull()
+    fireEvent.click(btn)
+    expect(screen.getByRole('status')).toHaveTextContent(strings.history.readded('arroz'))
   })
 })
 
@@ -180,10 +198,8 @@ describe('S-048 AC2: already pending', () => {
     renderIt()
     const btn = addBtn('arroz')
     expect(btn).toBeDisabled()
-    expect(btn).toHaveTextContent(strings.history.inList)
     fireEvent.click(btn)
     expect(h.addItem).not.toHaveBeenCalled()
     expect(addBtn('leite')).toBeEnabled()
-    expect(addBtn('leite')).toHaveTextContent(strings.history.addToList)
   })
 })

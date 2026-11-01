@@ -52,6 +52,14 @@ describe('FamilyScreen (S-064 AC3)', () => {
     )
   })
 
+  it('shows an error message when the clipboard write fails', async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error('denied'))
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.family.invite.copyCode }))
+    expect(await screen.findByText(strings.family.invite.copyFailed)).toBeInTheDocument()
+  })
+
   it('lists members with names and a fallback', () => {
     renderIt()
     const list = screen.getByRole('list', { name: strings.family.membersSection })

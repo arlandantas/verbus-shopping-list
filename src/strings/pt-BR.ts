@@ -46,6 +46,7 @@ export const strings = {
       shareText: (name: string) => `Entre na família ${name} no Lista de Compras`,
       copied: 'Link copiado!',
       codeCopied: 'Código copiado!',
+      copyFailed: 'Não foi possível copiar. Copie manualmente.',
     },
   },
   invite: {
@@ -114,9 +115,9 @@ export const strings = {
     total: 'Total',
     unpriced: (n: number) => (n === 1 ? '1 item sem preço' : `${n} itens sem preço`),
     cycleEmpty: 'Nenhuma compra neste mês.',
-    addToList: 'Adicionar à lista',
-    inList: 'Já na lista',
-    addToListFor: (name: string) => `Adicionar à lista: ${name}`,
+    noValues: 'sem valores',
+    readdFor: (name: string) => `Readicionar ${name} à lista`,
+    readded: (name: string) => `${name} readicionado à lista`,
     inListFor: (name: string) => `Já na lista: ${name}`,
   },
   pantry: {
