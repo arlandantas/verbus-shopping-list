@@ -1,17 +1,48 @@
-# Roteiro de teste manual (1ª rodada)
+# Roteiro de teste manual (Material 3)
 
 Rode `pnpm dev:local` (JDK 21) e abra o endereço do Vite. Na tela de login, use o painel **Contas de teste**:
 **Ana** e **Beto** (casal, "Casa Teste", com itens) e **Carla** (sem família). Dica: abra Ana e Beto em duas janelas (uma anônima) para ver o tempo real.
+Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Família**.
 
-1. **Lista:** adicionar "3 kg feijão" e "leite"; tocar num item para ver o detalhe (quantidade, unidade, observação, categoria, recorrente). Itens agrupam por categoria.
+## Lista (única, também no mercado)
+
+1. **Adicionar:** na barra flutuante inferior, digitar "3 kg feijão" e confirmar; depois "leite". Itens entram agrupados por categoria.
 2. **Autocompletar:** digitar "fei" e escolher a sugestão (traz unidade e categoria usadas antes).
-3. **Despensa:** marcar o que falta, tornar item recorrente, remover dos recorrentes.
-4. **Modo mercado:** "Ir ao mercado", tocar nos itens (riscam e mostram quem marcou); ver a mudança na outra janela; desmarcar; desligar a rede do navegador e marcar (sincroniza ao voltar).
-5. **Preço:** no detalhe de um item comprado, informar o preço (ex.: 11,90).
-6. **Finalizar compra:** informar mercado (opcional) e finalizar; itens comprados vão ao histórico, pendentes ficam.
-7. **Histórico:** ver o mês, gasto por categoria, readicionar um item à lista.
-8. **Categorias:** Família → Categorias; criar, renomear, excluir uma própria.
-9. **Carla:** criar uma família nova, copiar o convite; entrar com o código/link de convite em outra conta.
-10. **Virada do mês:** aviso "recorrentes voltaram para a lista" aparece na 1ª abertura do mês.
+3. **Marcar:** tocar na caixa de um item: vai ao carrinho (risca, mostra quem marcou) e aparece o Snackbar com **Desfazer**; testar o desfazer. Ver a mudança na outra janela.
+4. **Categorias colapsáveis:** recolher/expandir uma categoria pelo cabeçalho (contagem visível, ex.: "2/5"); foco e teclado funcionam.
+5. **Ocultar itens no carrinho:** ligar a chave; itens marcados somem; desligar os traz de volta.
+6. **Editar item:** tocar em editar (lápis) para abrir o sheet "Editar item": renomear, quantidade, unidade, observação, categoria, recorrente.
+7. **Carrinho e valor:** no sheet, marcar **Já coloquei no carrinho** e informar o valor (máscara de centavos: digitar 1190 vira 11,90) sem mudar o estado do carrinho; o valor é independente da marcação.
 
-Anote o que estranhar (comportamento, textos, layout no celular). Reiniciar o `dev:local` apaga os dados e recarrega a semente.
+## Despensa
+
+8. Ler o texto explicativo e abrir **Entenda melhor**. Marcar o que falta; tornar item recorrente; remover dos recorrentes.
+9. Expandir/recolher a seção **Outros itens já usados**.
+
+## Finalizar compra e Histórico
+
+10. **Finalizar compra:** na Lista, finalizar; informar mercado (opcional) e confirmar. Itens no carrinho vão ao histórico, pendentes ficam.
+11. **Histórico:** ver meses, abrir um mês: compras agrupadas por compra finalizada, gasto por categoria; alternar o agrupamento (botão segmentado); readicionar um item à lista.
+12. **Editar linhas:** em uma compra passada, editar um item comprado (nome, quantidade, valor) e salvar; conferir os totais.
+
+## Categorias e Família
+
+13. Família → Categorias: as personalizadas aparecem primeiro; criar, renomear, excluir uma própria. As padrão ficam fixas (cadeado, sem editar/excluir).
+14. **Carla:** criar uma família nova, copiar o convite; entrar com o código/link em outra conta.
+15. **Sair:** Família → sair; aparece diálogo de confirmação; cancelar mantém a sessão, confirmar volta ao login.
+16. **Virada do mês:** aviso "recorrentes voltaram para a lista" na 1ª abertura do mês.
+
+## Offline, tema e tela larga
+
+17. **Offline:** desligar a rede do navegador, marcar/adicionar itens (UI responde na hora); religar e ver sincronizar na outra janela.
+18. **Escuro/claro:** alternar o tema do sistema; checar legibilidade, contraste e bordas de campos, sheet e diálogos nos dois.
+19. **Tela larga:** abrir em janela de desktop; conteúdo centralizado, abas centralizadas, barra de adicionar não estoura a largura.
+20. **Celular (360 px):** alvos de toque confortáveis com uma mão; nada cortado pelo teclado ou pelas abas.
+
+Anote o que estranhar (comportamento, textos, layout). Reiniciar o `dev:local` apaga os dados e recarrega a semente.
+
+## Publicação (GitHub Pages)
+
+O deploy roda em `.github/workflows/deploy-pages.yml`. Em Settings → Secrets and variables → Actions → **Variables**, defina:
+`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`.
+Sem elas o workflow falha na etapa "Require Firebase config". Adicione o domínio publicado em Authentication → Domínios autorizados.
