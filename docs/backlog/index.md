@@ -101,7 +101,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-086 | SEC | Build de produção sem contas de teste nem painel de login rápido | done | S-085 |
 | E-LISTS | LISTS | Épico: vários grupos por usuário ("Grupo" na UI), seletor de grupo ativo, categorias como sugestões (ADR-0024) | todo | S-086 |
 | S-087 | LISTS | Regras: vários grupos por usuário (livro-razão `groupIds`, limite 10) | done | S-079 |
-| S-088 | LISTS | Camada de dados: criar e entrar com vários grupos, listar meus grupos | todo | S-087 |
+| S-088 | LISTS | Camada de dados: criar e entrar com vários grupos, listar meus grupos | done | S-087 |
 | S-089 | LISTS | Grupo ativo: provider resolve e lembra o grupo por aparelho | todo | S-088 |
 | S-090 | LISTS | UI: seletor de grupo na Lista e "Família" vira "Grupo" | todo | S-089 |
 | S-091 | LISTS | Criar outro grupo e entrar por convite já estando em um | todo | S-090 |
