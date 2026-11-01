@@ -34,6 +34,30 @@ describe('S-066 AC2: SegmentedButton', () => {
   })
 })
 
+describe('S-066 SegmentedButton keyboard', () => {
+  it('uses roving tabindex and arrows move and select', () => {
+    const onChange = vi.fn()
+    render(
+      <SegmentedButton
+        label="g"
+        value="a"
+        onChange={onChange}
+        options={[
+          { value: 'a', label: 'A' },
+          { value: 'b', label: 'B' },
+        ]}
+      />,
+    )
+    expect(screen.getByRole('radio', { name: 'A' })).toHaveAttribute('tabindex', '0')
+    expect(screen.getByRole('radio', { name: 'B' })).toHaveAttribute('tabindex', '-1')
+    fireEvent.keyDown(screen.getByRole('radio', { name: 'A' }), { key: 'ArrowRight' })
+    expect(onChange).toHaveBeenLastCalledWith('b')
+    expect(screen.getByRole('radio', { name: 'B' })).toHaveFocus()
+    fireEvent.keyDown(screen.getByRole('radio', { name: 'A' }), { key: 'ArrowLeft' })
+    expect(onChange).toHaveBeenLastCalledWith('b')
+  })
+})
+
 describe('Button', () => {
   it('S-052 AC1: variants, optional left icon, disabled', () => {
     for (const v of ['filled', 'tonal', 'outlined', 'text'] as const) {

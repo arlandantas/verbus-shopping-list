@@ -223,6 +223,7 @@ describe('S-066 AC3/AC4: group by purchase', () => {
     renderIt()
     expect(screen.getByRole('radio', { name: strings.history.byCategory })).toBeChecked()
     fireEvent.click(screen.getByRole('radio', { name: strings.history.byPurchase }))
+    expect(screen.getByText(strings.history.total).parentElement).toHaveTextContent(formatBRL(5230))
     const cards = screen.getAllByRole('region')
     expect(cards[0]).toHaveTextContent('sex, 20 de nov')
     expect(cards[0]).toHaveTextContent(strings.history.noMarket)

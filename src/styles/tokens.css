@@ -5,6 +5,7 @@
   --md-sys-color-primary-container: #e1e0ff;
   --md-sys-color-on-primary-container: #07006c;
   --md-sys-color-secondary-container: #e1e0f9;
+  --md-sys-color-on-secondary-container: #1b1a2c;
   --md-sys-color-surface: #fbf8ff;
   --md-sys-color-surface-container-low: #f5f2fa;
   --md-sys-color-surface-container: #efedf4;
@@ -45,6 +46,7 @@
     --md-sys-color-primary-container: #3535ad;
     --md-sys-color-on-primary-container: #e1e0ff;
     --md-sys-color-secondary-container: #444559;
+    --md-sys-color-on-secondary-container: #e1e0f9;
     --md-sys-color-surface: #121318;
     --md-sys-color-surface-container-low: #1b1b21;
     --md-sys-color-surface-container: #1f1f25;

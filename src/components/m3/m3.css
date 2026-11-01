@@ -70,7 +70,7 @@
 }
 .m3-btn--tonal {
   background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-surface);
+  color: var(--md-sys-color-on-secondary-container);
 }
 .m3-btn--outlined {
   border: 1px solid var(--md-sys-color-outline);
@@ -100,7 +100,7 @@
   background: var(--md-sys-color-primary);
 }
 .m3-icon-btn--tonal {
-  color: var(--md-sys-color-on-surface);
+  color: var(--md-sys-color-on-secondary-container);
   background: var(--md-sys-color-secondary-container);
 }
 .m3-icon-btn--standard[aria-pressed='true'] {
@@ -166,6 +166,7 @@
 }
 .m3-nav__item[aria-current='page'] .m3-nav__pill {
   background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
 }
 
 /* ListItem */

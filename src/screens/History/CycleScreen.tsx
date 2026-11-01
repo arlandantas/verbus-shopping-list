@@ -84,6 +84,12 @@ export function CycleScreen() {
         />
       )}
       {loaded && lines.length > 0 && byPurchase && (
+        <p className="history-month-total">
+          <span>{strings.history.total}</span>
+          <span>{formatBRL(cycleTotalCents(lines))}</span>
+        </p>
+      )}
+      {loaded && lines.length > 0 && byPurchase && (
         <PurchaseCards lines={lines} purchases={mine} pendingKeys={pendingKeys} onAdd={readd} />
       )}
       {loaded && lines.length > 0 && !byPurchase && (
