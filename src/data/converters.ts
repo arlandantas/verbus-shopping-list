@@ -156,3 +156,71 @@ export const catalogConverter: FirestoreDataConverter<CatalogEntry> = {
     }
   },
 }
+
+export interface Purchase {
+  id: string
+  cycle: string
+  market: string | null
+  itemCount: number
+  totalCents: number | null
+  purchasedAt: Date
+  hasPendingWrites: boolean
+}
+
+export interface PurchaseLine {
+  id: string
+  purchaseId: string
+  cycle: string
+  name: string
+  nameKey: string
+  quantity: number
+  unit: Unit
+  categoryId: string | null
+  categoryName: string | null
+  priceCents: number | null
+  market: string | null
+  markedBy: string | null
+  purchasedAt: Date
+}
+
+export const purchaseConverter: FirestoreDataConverter<Purchase> = {
+  toFirestore: () => {
+    throw new Error('purchaseConverter is read-only')
+  },
+  fromFirestore(snap, options) {
+    const d = snap.data(options)
+    return {
+      id: snap.id,
+      cycle: d.cycle,
+      market: d.market ?? null,
+      itemCount: d.itemCount,
+      totalCents: d.totalCents ?? null,
+      purchasedAt: toDate(d.purchasedAt) ?? new Date(),
+      hasPendingWrites: snap.metadata.hasPendingWrites,
+    }
+  },
+}
+
+export const purchaseLineConverter: FirestoreDataConverter<PurchaseLine> = {
+  toFirestore: () => {
+    throw new Error('purchaseLineConverter is read-only')
+  },
+  fromFirestore(snap, options) {
+    const d = snap.data(options)
+    return {
+      id: snap.id,
+      purchaseId: d.purchaseId,
+      cycle: d.cycle,
+      name: d.name,
+      nameKey: d.nameKey,
+      quantity: d.quantity,
+      unit: d.unit,
+      categoryId: d.categoryId ?? null,
+      categoryName: d.categoryName ?? null,
+      priceCents: d.priceCents ?? null,
+      market: d.market ?? null,
+      markedBy: d.markedBy ?? null,
+      purchasedAt: toDate(d.purchasedAt) ?? new Date(),
+    }
+  },
+}
