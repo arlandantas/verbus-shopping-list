@@ -52,6 +52,11 @@ export const strings = {
     error: 'Não foi possível entrar na família. Tente novamente.',
     back: 'Voltar',
   },
+  cycle: {
+    returned: (n: number) =>
+      n === 1 ? '1 recorrente voltou para a lista' : `${n} recorrentes voltaram para a lista`,
+    ok: 'OK',
+  },
   list: {
     addLabel: 'Novo item',
     addPlaceholder: 'Ex.: 3 kg feijão',

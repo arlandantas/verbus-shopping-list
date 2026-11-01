@@ -8,6 +8,7 @@ export async function newMember(
   browser: Browser,
   email: string,
   displayName: string,
+  now?: Date,
 ): Promise<Page> {
   const res = await fetch(AUTH_KEY, {
     method: 'POST',
@@ -15,10 +16,16 @@ export async function newMember(
     body: JSON.stringify({ email, password: 'secret123', displayName, returnSecureToken: true }),
   })
   if (!res.ok) throw new Error(`signUp failed: ${res.status}`)
+  return signIn(browser, email, now)
+}
+
+/** New browser context (optionally with a fixed clock; timers stay real) signed in as an existing user. */
+export async function signIn(browser: Browser, email: string, now?: Date): Promise<Page> {
   const context = await browser.newContext({
     ...devices['Pixel 7'],
     baseURL: 'http://127.0.0.1:4173',
   })
+  if (now) await context.clock.setFixedTime(now)
   const page = await context.newPage()
   await page.goto('/')
   await page.getByLabel(strings.login.email).fill(email)
@@ -28,8 +35,8 @@ export async function newMember(
 }
 
 /** Ana creates "Casa" with the given items; Beto joins. Each has its own browser context. */
-export async function twoMembers(browser: Browser, items: string[]) {
-  const ana = await newMember(browser, 'ana@example.com', 'Ana')
+export async function twoMembers(browser: Browser, items: string[], now?: Date) {
+  const ana = await newMember(browser, 'ana@example.com', 'Ana', now)
   await expect(ana).toHaveURL(/\/familia$/)
   await ana.getByLabel(strings.family.nameLabel).fill('Casa')
   await ana.getByRole('button', { name: strings.family.create }).click()
@@ -42,7 +49,7 @@ export async function twoMembers(browser: Browser, items: string[]) {
     await expect(ana.getByRole('listitem').filter({ hasText: name })).toBeVisible()
   }
   await waitForItemCount(items.length) // item writes reached the emulator
-  const beto = await newMember(browser, 'beto@example.com', 'Beto')
+  const beto = await newMember(browser, 'beto@example.com', 'Beto', now)
   await expect(beto).toHaveURL(/\/familia$/)
   await beto.getByLabel(strings.family.join.codeLabel).fill(code)
   await beto.getByRole('button', { name: strings.family.join.submit }).click()

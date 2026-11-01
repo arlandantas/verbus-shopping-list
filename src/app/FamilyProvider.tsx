@@ -8,13 +8,19 @@ import { watchUser } from '@/data/users'
 import { reportWriteError } from '@/data/writeErrors'
 import { cycleOf } from '@/domain/cycle'
 
-export type FamilyState =
+export type FamilyState = {
+  /** How many recurring items the month turn just returned (ADR-0013); 0 when none or dismissed. */
+  recurringAdded: number
+  dismissRecurringNotice: () => void
+} & (
   | { status: 'loading'; family: null }
   | { status: 'none'; family: null }
   | { status: 'ready'; family: Family }
   | { status: 'error'; family: null; retry: () => void }
+)
 
-const LOADING: FamilyState = { status: 'loading', family: null }
+const NO_NOTICE = { recurringAdded: 0, dismissRecurringNotice: () => undefined }
+const LOADING: FamilyState = { ...NO_NOTICE, status: 'loading', family: null }
 const FamilyContext = createContext<FamilyState>(LOADING)
 
 /** Resolves the signed-in user's family from users/{uid}.familyId. Mount only when signed in, keyed by uid so state resets per user. */
@@ -26,6 +32,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   const [family, setFamily] = useState<Family | null>(null)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
+  const [recurringAdded, setRecurringAdded] = useState(0)
 
   useEffect(() => {
     if (!uid) return
@@ -50,7 +57,11 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!uid || !readyFamilyId) return
     const open = () => {
-      openCycleIfNeeded(readyFamilyId, cycleOf(new Date())).catch(reportWriteError)
+      openCycleIfNeeded(readyFamilyId, cycleOf(new Date()))
+        .then((r) => {
+          if (r.added > 0) setRecurringAdded(r.added)
+        })
+        .catch(reportWriteError)
     }
     open()
     window.addEventListener('online', open)
@@ -62,10 +73,11 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     setAttempt((n) => n + 1)
   }
 
+  const notice = { recurringAdded, dismissRecurringNotice: () => setRecurringAdded(0) }
   let state: FamilyState = LOADING
-  if (familyId === null) state = { status: 'none', family: null }
-  else if (familyId && family?.id === familyId) state = { status: 'ready', family }
-  else if (familyId && failed) state = { status: 'error', family: null, retry }
+  if (familyId === null) state = { ...notice, status: 'none', family: null }
+  else if (familyId && family?.id === familyId) state = { ...notice, status: 'ready', family }
+  else if (familyId && failed) state = { ...notice, status: 'error', family: null, retry }
   return <FamilyContext.Provider value={state}>{children}</FamilyContext.Provider>
 }
 

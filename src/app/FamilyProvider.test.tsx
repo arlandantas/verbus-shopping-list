@@ -42,6 +42,8 @@ function Probe() {
   return (
     <>
       <p>{`${state.status}:${state.family?.name ?? '-'}`}</p>
+      <p>{`added:${state.recurringAdded}`}</p>
+      <button onClick={state.dismissRecurringNotice}>dismiss-notice</button>
       {state.status === 'error' && <button onClick={state.retry}>retry</button>}
     </>
   )
@@ -143,5 +145,29 @@ describe('FamilyProvider', () => {
       window.dispatchEvent(new Event('online'))
     })
     expect(openCycleIfNeeded).toHaveBeenCalledTimes(2)
+  })
+
+  it('S-049 AC1: exposes how many recurring items returned, and dismiss resets it', async () => {
+    openCycleIfNeeded.mockResolvedValueOnce({ added: 2 })
+    render(
+      <FamilyProvider>
+        <Probe />
+      </FamilyProvider>,
+    )
+    expect(screen.getByText('added:0')).toBeInTheDocument()
+    act(() => emitUser(profile('f5')))
+    await act(async () =>
+      emitFamily({
+        id: 'f5',
+        name: 'Casa',
+        members: ['u1'],
+        ownerId: 'u1',
+        inviteCode: 'ABCD2345',
+        createdAt: new Date(),
+      }),
+    )
+    expect(await screen.findByText('added:2')).toBeInTheDocument()
+    act(() => screen.getByText('dismiss-notice').click())
+    expect(screen.getByText('added:0')).toBeInTheDocument()
   })
 })

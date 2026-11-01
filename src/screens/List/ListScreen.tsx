@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
 import { CategorySections } from '@/components/CategorySections'
+import { CycleNotice } from '@/components/CycleNotice'
 import { CheckoutLink } from '@/components/CheckoutLink'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
@@ -17,7 +18,7 @@ import { useCatalog } from './useCatalog'
 import { useItems } from './useItems'
 
 export function ListScreen() {
-  const { family } = useFamily()
+  const { family, recurringAdded, dismissRecurringNotice } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
   const catalog = useCatalog(familyId)
@@ -66,6 +67,7 @@ export function ListScreen() {
           </Link>
         </nav>
       </header>
+      <CycleNotice added={recurringAdded} onDismiss={dismissRecurringNotice} />
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
       {items?.some((i) => i.status === 'bought') && (
         <div className="px-4 pb-2">
