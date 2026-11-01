@@ -1,4 +1,4 @@
-/* Material 3 tokens. Scheme from Material Theme Builder, seed #1816a6 (provisional, ADR-0018). */
+/* Material 3 tokens. Hand-approximated from seed #1816a6 (provisional, ADR-0018); regenerate with Material Theme Builder when the final seed is chosen. */
 :root {
   --md-sys-color-primary: #4d4fc1;
   --md-sys-color-on-primary: #ffffff;
