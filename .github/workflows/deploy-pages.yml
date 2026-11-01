@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
 # Publishes the static build. Base path is derived from the repo name (see Build step).
-# Needs repository variables (Settings > Secrets and variables > Actions > Variables):
+# Needs variables of the "production" environment (Settings > Environments > production > Variables):
 # VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_APP_ID.
 # These web-config values are public by design; real protection is firestore.rules.
 
@@ -23,6 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment: production
     env:
       VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
       VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -34,7 +35,7 @@ jobs:
       - name: Require Firebase config
         run: |
           for v in VITE_FIREBASE_API_KEY VITE_FIREBASE_AUTH_DOMAIN VITE_FIREBASE_PROJECT_ID VITE_FIREBASE_APP_ID; do
-            if [ -z "${!v}" ]; then echo "::error::Missing repository variable $v"; exit 1; fi
+            if [ -z "${!v}" ]; then echo "::error::Missing production environment variable $v"; exit 1; fi
           done
 
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
