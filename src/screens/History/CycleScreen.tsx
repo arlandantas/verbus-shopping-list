@@ -1,6 +1,12 @@
 import { useMemo } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
+import { addItem } from '@/data/items'
+import type { PurchaseLine } from '@/data/converters'
+import { useCategories } from '@/hooks/useCategories'
+import { useCatalog } from '@/screens/List/useCatalog'
+import { useItems } from '@/screens/List/useItems'
+import { LineRow } from './LineRow'
 import { useCycleLines, usePurchases } from '@/hooks/useHistory'
 import { isCycle, formatCycle } from '@/domain/cycle'
 import { sumByCategory } from '@/domain/categories'
@@ -17,6 +23,24 @@ export function CycleScreen() {
   const { family } = useFamily()
   const purchases = usePurchases(valid ? family?.id : undefined)
   const lines = useCycleLines(family?.id, valid ? cycle : undefined)
+  const familyId = family?.id ?? ''
+  const items = useItems(familyId)
+  const catalog = useCatalog(familyId)
+  const categories = useCategories(family?.id)
+  const pendingKeys = useMemo(
+    () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
+    [items],
+  )
+  const readd = (l: PurchaseLine) => {
+    if (!family) return
+    addItem(family.id, {
+      name: l.name,
+      quantity: l.quantity,
+      unit: l.unit,
+      categoryId: categories?.some((c) => c.id === l.categoryId) ? l.categoryId : null,
+      recurring: catalog.find((c) => c.nameKey === l.nameKey)?.recurring ?? false,
+    })
+  }
   const mine = useMemo(() => (purchases ?? []).filter((p) => p.cycle === cycle), [purchases, cycle])
   const sums = useMemo(() => sumByCategory(lines ?? []), [lines])
   if (!valid) return <Navigate to="/historico" replace />
@@ -58,12 +82,7 @@ export function CycleScreen() {
           <h2 className="py-2 text-lg">{g.name}</h2>
           <ul>
             {g.lines.map((l) => (
-              <li key={l.id} className="flex min-h-12 items-center justify-between">
-                <span>{l.name}</span>
-                <span>
-                  {l.priceCents === null ? strings.history.noPrice : formatBRL(l.priceCents)}
-                </span>
-              </li>
+              <LineRow key={l.id} line={l} pending={pendingKeys.has(l.nameKey)} onAdd={readd} />
             ))}
           </ul>
         </section>

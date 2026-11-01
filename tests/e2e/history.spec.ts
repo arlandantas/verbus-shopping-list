@@ -38,7 +38,6 @@ test('S-047 AC4: checkout then history shows the month read-only with correct su
     `${strings.history.total}${formatBRL(850)}`,
   )
   await expect(ana.getByRole('textbox')).toHaveCount(0)
-  await expect(ana.getByRole('button')).toHaveCount(0)
 })
 
 test('S-047 AC5: invalid cycle redirects to /historico', async ({ browser }) => {
@@ -46,4 +45,34 @@ test('S-047 AC5: invalid cycle redirects to /historico', async ({ browser }) => 
   await ana.goto('/historico/xyz')
   await expect(ana).toHaveURL(/\/historico$/)
   await expect(ana.getByText(strings.history.empty)).toBeVisible()
+})
+
+test('S-048 AC3: re-adding a history line puts it back on the list; history is unchanged', async ({
+  browser,
+}) => {
+  const { ana } = await twoMembers(browser, [])
+  await ana.goto('/')
+  await ana.getByLabel(strings.list.addLabel).fill('2 kg feijão')
+  await ana.getByLabel(strings.list.addLabel).press('Enter')
+  await expect(ana.getByRole('listitem').filter({ hasText: 'feijão' })).toContainText('2 kg')
+  await ana.getByRole('link', { name: strings.market.enter }).click()
+  await row(ana, 'feijão').click()
+  await expect(row(ana, 'feijão')).toHaveAttribute('aria-pressed', 'true')
+  await ana.getByRole('link', { name: strings.checkout.link }).click()
+  await ana.getByRole('button', { name: strings.checkout.finish, exact: true }).click()
+  await expect(ana).toHaveURL(/\/$/)
+
+  await ana.getByRole('link', { name: strings.history.link }).click()
+  await ana.getByRole('list', { name: strings.history.monthsLabel }).getByRole('link').click()
+  const add = ana.getByRole('button', { name: strings.history.addToListFor('feijão') })
+  await add.click()
+  await expect(
+    ana.getByRole('button', { name: strings.history.inListFor('feijão') }),
+  ).toBeDisabled()
+  await expect(ana.getByText('feijão')).toBeVisible()
+
+  await ana.goto('/')
+  const item = ana.getByRole('listitem').filter({ hasText: 'feijão' })
+  await expect(item).toContainText('2 kg')
+  await expect(item).toHaveCount(1)
 })

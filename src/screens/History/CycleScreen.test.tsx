@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { formatBRL as brl } from '@/domain/price'
 
@@ -10,7 +11,15 @@ import { CycleScreen } from './CycleScreen'
 const h = vi.hoisted(() => ({
   purchases: [] as unknown[] | null,
   lines: [] as unknown[] | null,
+  items: [] as unknown[],
+  catalog: [] as unknown[],
+  categories: [] as unknown[] | null,
+  addItem: vi.fn(),
 }))
+vi.mock('@/data/items', () => ({ addItem: h.addItem }))
+vi.mock('@/screens/List/useItems', () => ({ useItems: () => h.items }))
+vi.mock('@/screens/List/useCatalog', () => ({ useCatalog: () => h.catalog }))
+vi.mock('@/hooks/useCategories', () => ({ useCategories: () => h.categories }))
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({ family: { id: 'f1', name: 'Casa' } }),
 }))
@@ -31,6 +40,8 @@ const purchase = (id: string, market: string | null, day: number, cycle = '2026-
 const line = (name: string, categoryName: string | null, priceCents: number | null) => ({
   id: name,
   name,
+  nameKey: name.toLowerCase(),
+  categoryId: categoryName ? `cat-${categoryName}` : null,
   categoryName,
   priceCents,
   quantity: 1,
@@ -59,6 +70,10 @@ beforeEach(() => {
     line('leite', 'Laticínios', 1300),
     line('vassoura', null, null),
   ]
+  h.items = []
+  h.catalog = []
+  h.categories = [{ id: 'cat-Mercearia', name: 'Mercearia', isDefault: true, order: 1 }]
+  h.addItem.mockReset()
 })
 
 describe('S-047 AC2: CycleScreen', () => {
@@ -87,7 +102,6 @@ describe('S-047 AC2: CycleScreen', () => {
       within(screen.getByRole('region', { name: strings.noCategory })).getByText('vassoura'),
     ).toBeInTheDocument()
     expect(screen.queryByRole('textbox')).toBeNull()
-    expect(screen.queryByRole('button')).toBeNull()
   })
 })
 
@@ -119,5 +133,57 @@ describe('S-047 AC5: invalid cycle', () => {
   it('redirects to /historico', () => {
     renderIt('/historico/abc')
     expect(screen.getByText('months')).toBeInTheDocument()
+  })
+})
+
+const addBtn = (name: string) =>
+  screen.getByRole('button', {
+    name: new RegExp(
+      `^(${strings.history.addToListFor(name)}|${strings.history.inListFor(name)})$`,
+    ),
+  })
+
+describe('S-048 AC1: re-add a line to the current list', () => {
+  it('calls addItem with the line data and the catalog recurring flag', () => {
+    h.catalog = [{ nameKey: 'arroz', recurring: true }]
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.history.addToListFor('arroz') }))
+    expect(h.addItem).toHaveBeenCalledWith('f1', {
+      name: 'arroz',
+      quantity: 1,
+      unit: 'un',
+      categoryId: 'cat-Mercearia',
+      recurring: true,
+    })
+  })
+
+  it('sends categoryId null when the category no longer exists, recurring false without catalog', () => {
+    h.categories = []
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.history.addToListFor('arroz') }))
+    expect(h.addItem).toHaveBeenCalledWith('f1', {
+      name: 'arroz',
+      quantity: 1,
+      unit: 'un',
+      categoryId: null,
+      recurring: false,
+    })
+  })
+})
+
+describe('S-048 AC2: already pending', () => {
+  it('shows "Já na lista" disabled and does not add', () => {
+    h.items = [
+      { nameKey: 'arroz', status: 'pending' },
+      { nameKey: 'leite', status: 'bought' },
+    ]
+    renderIt()
+    const btn = addBtn('arroz')
+    expect(btn).toBeDisabled()
+    expect(btn).toHaveTextContent(strings.history.inList)
+    fireEvent.click(btn)
+    expect(h.addItem).not.toHaveBeenCalled()
+    expect(addBtn('leite')).toBeEnabled()
+    expect(addBtn('leite')).toHaveTextContent(strings.history.addToList)
   })
 })

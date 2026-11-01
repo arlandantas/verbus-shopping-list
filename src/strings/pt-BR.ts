@@ -107,6 +107,10 @@ export const strings = {
     total: 'Total',
     unpriced: (n: number) => (n === 1 ? '1 item sem preço' : `${n} itens sem preço`),
     cycleEmpty: 'Nenhuma compra neste mês.',
+    addToList: 'Adicionar à lista',
+    inList: 'Já na lista',
+    addToListFor: (name: string) => `Adicionar à lista: ${name}`,
+    inListFor: (name: string) => `Já na lista: ${name}`,
   },
   pantry: {
     title: 'Despensa',
