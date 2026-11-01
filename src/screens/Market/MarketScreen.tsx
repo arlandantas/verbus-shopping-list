@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
 import { CategorySections } from '@/components/CategorySections'
+import { CheckoutLink } from '@/components/CheckoutLink'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import { toggleItemStatus } from '@/data/items'
@@ -36,6 +37,11 @@ export function MarketScreen() {
         </p>
       )}
       {allDone && <p className="px-4 pb-2 text-lg text-green-800">{strings.market.allDone}</p>}
+      {done > 0 && (
+        <div className="px-4 pb-2">
+          <CheckoutLink />
+        </div>
+      )}
       {categories && (
         <CategorySections
           large

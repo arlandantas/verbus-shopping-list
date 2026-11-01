@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { useLocation } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { FamilyProvider, useFamily } from '@/app/FamilyProvider'
+import { CheckoutScreen } from '@/screens/Checkout/CheckoutScreen'
 import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
 import { ItemScreen } from '@/screens/Item/ItemScreen'
@@ -54,6 +55,7 @@ function FamilyRoutes(): ReactNode {
       <Route path="/familia" element={<FamilyScreen />} />
       {status === 'ready' && <Route path="/" element={<ListScreen />} />}
       {status === 'ready' && <Route path="/mercado" element={<MarketScreen />} />}
+      {status === 'ready' && <Route path="/finalizar" element={<CheckoutScreen />} />}
       {status === 'ready' && <Route path="/despensa" element={<PantryScreen />} />}
       {status === 'ready' && <Route path="/categorias" element={<CategoriesScreen />} />}
       {status === 'ready' && <Route path="/item/:id" element={<ItemScreen />} />}

@@ -76,6 +76,20 @@ export const strings = {
     allDone: 'Lista completa! Tudo no carrinho.',
     empty: 'Nada na lista. Volte e adicione itens.',
   },
+  checkout: {
+    link: 'Finalizar compra',
+    title: 'Finalizar compra',
+    back: 'Voltar',
+    summary: (bought: number, pending: number) =>
+      `${bought === 1 ? '1 item comprado' : `${bought} itens comprados`}` +
+      (pending > 0
+        ? `. ${pending === 1 ? '1 item pendente continua' : `${pending} itens pendentes continuam`} na lista.`
+        : '.'),
+    marketLabel: 'Mercado (opcional)',
+    pricesTitle: 'Preços pagos (opcional)',
+    priceFor: (name: string) => `Preço de ${name}`,
+    finish: 'Finalizar',
+  },
   pantry: {
     title: 'Despensa',
     link: 'Despensa',

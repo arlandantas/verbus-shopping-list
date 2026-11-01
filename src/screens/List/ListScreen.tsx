@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
 import { CategorySections } from '@/components/CategorySections'
+import { CheckoutLink } from '@/components/CheckoutLink'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import type { CatalogEntry, Item } from '@/data/converters'
@@ -63,6 +64,11 @@ export function ListScreen() {
         </nav>
       </header>
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
+      {items?.some((i) => i.status === 'bought') && (
+        <div className="px-4 pb-2">
+          <CheckoutLink />
+        </div>
+      )}
       {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}
       {items && categories && (
         <CategorySections

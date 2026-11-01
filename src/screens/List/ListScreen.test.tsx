@@ -98,3 +98,23 @@ describe('S-028 AC1: ListScreen uses the shared toggleItemStatus', () => {
     itemsState.items = []
   })
 })
+
+describe('S-046 AC1: Finalizar compra on the list screen', () => {
+  const mk = (status: string) => ({ id: 'i1', name: 'arroz', quantity: 1, unit: 'un', status })
+  it('hidden without bought items', () => {
+    itemsState.items = [mk('pending')]
+    renderIt()
+    expect(screen.queryByRole('link', { name: strings.checkout.link })).toBeNull()
+    itemsState.items = []
+  })
+
+  it('shown, linking to /finalizar, with a bought item', () => {
+    itemsState.items = [mk('bought')]
+    renderIt()
+    expect(screen.getByRole('link', { name: strings.checkout.link })).toHaveAttribute(
+      'href',
+      '/finalizar',
+    )
+    itemsState.items = []
+  })
+})
