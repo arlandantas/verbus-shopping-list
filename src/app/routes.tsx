@@ -7,7 +7,6 @@ import { AppShell } from '@/app/AppShell'
 import { CheckoutScreen } from '@/screens/Checkout/CheckoutScreen'
 import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
-import { ItemScreen } from '@/screens/Item/ItemScreen'
 import { CycleScreen } from '@/screens/History/CycleScreen'
 import { HistoryScreen } from '@/screens/History/HistoryScreen'
 import { MarketScreen } from '@/screens/Market/MarketScreen'
@@ -66,7 +65,7 @@ function FamilyRoutes(): ReactNode {
           <Route path="/historico/:cycle" element={<CycleScreen />} />
           <Route path="/despensa" element={<PantryScreen />} />
           <Route path="/categorias" element={<CategoriesScreen />} />
-          <Route path="/item/:id" element={<ItemScreen />} />
+          <Route path="/item/:id" element={<Navigate to="/" replace />} />
         </Route>
       ) : (
         <Route path="/familia" element={<FamilyScreen />} />

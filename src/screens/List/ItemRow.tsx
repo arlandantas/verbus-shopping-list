@@ -1,18 +1,20 @@
-import { Link } from 'react-router'
 import type { Item } from '@/data/converters'
 import { formatQuantity } from '@/domain/itemText'
 import { formatBRL } from '@/domain/price'
+import { IconButton } from '@/components/m3/IconButton'
 import { MarkedBy } from '@/components/MarkedBy'
 import { strings } from '@/strings/pt-BR'
 
 export function ItemRow({
   item,
   onToggle,
+  onEdit,
   names,
   uid,
 }: {
   item: Item
   onToggle: (item: Item) => void
+  onEdit: (item: Item) => void
   names: Record<string, string> | null
   uid: string | undefined
 }) {
@@ -27,21 +29,21 @@ export function ItemRow({
         aria-label={label}
         className="h-12 w-12 shrink-0 accent-green-700"
       />
-      <Link
-        to={`/item/${item.id}`}
+      <div
         className={`flex min-h-12 flex-1 flex-col justify-center py-2 text-base ${bought ? 'text-gray-600 line-through' : ''}`}
       >
         {item.name}
         {item.note && <span className="text-sm text-gray-700 no-underline">{item.note}</span>}
-      </Link>
+      </div>
       <MarkedBy status={item.status} markedBy={item.markedBy} names={names} uid={uid} />
       <span className="text-sm text-gray-700">{formatQuantity(item.quantity, item.unit)}</span>
-      {bought && item.priceCents != null && (
+      {item.priceCents != null && (
         <span className="text-sm text-gray-700">{formatBRL(item.priceCents)}</span>
       )}
       {item.hasPendingWrites && (
         <span className="text-xs text-amber-800">{strings.list.pendingSync}</span>
       )}
+      <IconButton icon="edit" label={strings.list.edit(item.name)} onClick={() => onEdit(item)} />
     </li>
   )
 }

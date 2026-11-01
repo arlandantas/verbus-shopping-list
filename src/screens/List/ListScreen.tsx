@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
@@ -6,6 +6,7 @@ import { IconButton } from '@/components/m3/IconButton'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { CategorySections } from '@/components/CategorySections'
 import { CycleNotice } from '@/components/CycleNotice'
+import { EditItemSheet } from '@/components/EditItemSheet'
 import { CheckoutLink } from '@/components/CheckoutLink'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
@@ -28,11 +29,13 @@ export function ListScreen() {
   const names = useMemberNames(family?.id)
   const uid = useAuth().user?.uid
   const navigate = useNavigate()
+  const [editingId, setEditingId] = useState<string | null>(null)
   const pendingKeys = useMemo(
     () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
     [items],
   )
   if (!family) return null
+  const editing = items?.find((i) => i.id === editingId)
 
   const onAdd = (text: string) => {
     const parsed = parseItemText(text)
@@ -76,8 +79,23 @@ export function ListScreen() {
           items={items}
           categories={categories}
           renderItem={(item) => (
-            <ItemRow key={item.id} item={item} onToggle={onToggle} names={names} uid={uid} />
+            <ItemRow
+              key={item.id}
+              item={item}
+              onToggle={onToggle}
+              onEdit={(i) => setEditingId(i.id)}
+              names={names}
+              uid={uid}
+            />
           )}
+        />
+      )}
+      {editing && categories && (
+        <EditItemSheet
+          familyId={familyId}
+          item={editing}
+          categories={categories}
+          onClose={() => setEditingId(null)}
         />
       )}
     </main>

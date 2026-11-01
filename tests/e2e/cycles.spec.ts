@@ -18,7 +18,7 @@ const notice = (page: Page) => page.getByRole('status').filter({ hasText: /recor
 async function buyRecurringInNovember(browser: Browser) {
   const { ana, beto } = await twoMembers(browser, ['arroz'], NOVEMBER)
   await ana.goto('/')
-  await ana.getByRole('link', { name: 'arroz' }).click()
+  await ana.getByRole('button', { name: strings.list.edit('arroz') }).click()
   await ana.getByLabel(strings.item.recurring).check()
   await ana.getByRole('button', { name: strings.item.save }).click()
   await expect(ana).toHaveURL(/\/$/)

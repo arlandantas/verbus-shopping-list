@@ -10,6 +10,7 @@ test.beforeEach(async () => {
 const field = (page: Page) => page.getByLabel(strings.list.addLabel)
 const row = (page: Page, name: string) => page.getByRole('listitem').filter({ hasText: name })
 const qty = (page: Page) => page.getByLabel(strings.item.quantity)
+const sheet = (page: Page) => page.getByRole('dialog', { name: strings.item.sheetTitle })
 const save = (page: Page) => page.getByRole('button', { name: strings.item.save })
 
 async function setupWithItem(page: Page, text = '3 kg feijão') {
@@ -26,17 +27,22 @@ async function setupWithItem(page: Page, text = '3 kg feijão') {
   await expect(row(page, text.split(' ').pop()!)).toBeVisible()
 }
 
-const openItem = (page: Page) => page.getByRole('link', { name: 'feijão' }).click()
+const openItem = (page: Page, name = 'feijão') =>
+  page.getByRole('button', { name: strings.list.edit(name) }).click()
+const price = (page: Page) => page.getByLabel(strings.item.price)
+const cart = (page: Page) => page.getByLabel(strings.item.inCart)
 
-test('S-021 AC1: tapping the name opens /item/:id with current values; checkbox only marks', async ({
+test('S-021 AC1: edit button opens the sheet with current values; checkbox only marks', async ({
   page,
 }) => {
   await setupWithItem(page)
   await page.getByRole('checkbox', { name: strings.list.markBought('feijão') }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(sheet(page)).toHaveCount(0)
   await page.getByRole('checkbox', { name: strings.list.markPending('feijão') }).click()
   await openItem(page)
-  await expect(page).toHaveURL(/\/item\/[^/]+$/)
+  await expect(sheet(page)).toBeVisible()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByLabel(strings.item.name)).toHaveValue('feijão')
   await expect(qty(page)).toHaveValue('3')
   await expect(page.getByLabel(strings.item.unit)).toHaveValue('kg')
 })
@@ -49,7 +55,7 @@ test('S-021 AC2: edits save and show in the list', async ({ page }) => {
   await page.getByLabel(strings.item.note).fill('Camil')
   await page.getByLabel(strings.item.recurring).check()
   await save(page).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(sheet(page)).toHaveCount(0)
   await expect(row(page, 'feijão')).toContainText('1,5 kg')
   await expect(row(page, 'feijão')).toContainText('Camil')
 })
@@ -74,10 +80,11 @@ test('S-021 AC4: Apagar asks for confirmation and removes the item', async ({ pa
   await setupWithItem(page)
   await openItem(page)
   await page.getByRole('button', { name: strings.item.delete }).click()
-  await expect(page).toHaveURL(/\/item\//)
+  await expect(row(page, 'feijão')).toHaveCount(1)
   await page.getByRole('button', { name: strings.item.confirm }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(sheet(page)).toHaveCount(0)
   await expect(page.getByRole('listitem')).toHaveCount(0)
+  await expect(page).toHaveURL(/\/$/)
 })
 
 test('S-021 AC5: offline save returns at once and persists after reconnect', async ({
@@ -90,7 +97,7 @@ test('S-021 AC5: offline save returns at once and persists after reconnect', asy
   await qty(page).fill('4')
   await page.getByLabel(strings.item.note).fill('Tio João')
   await save(page).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(sheet(page)).toHaveCount(0)
   await expect(row(page, 'feijão')).toContainText('Tio João')
   await context.setOffline(false)
   await expect(row(page, 'feijão').getByText(strings.list.pendingSync)).toHaveCount(0)
@@ -99,22 +106,21 @@ test('S-021 AC5: offline save returns at once and persists after reconnect', asy
   await expect(row(page, 'feijão')).toContainText('Tio João')
 })
 
-test('S-021 AC6: unknown id shows "Item não encontrado" with a Voltar button', async ({ page }) => {
+test('S-021 AC6: /item/xyz leads to the Lista', async ({ page }) => {
   await setupWithItem(page)
   await page.goto('/item/nao-existe')
-  await expect(page.getByText(strings.item.notFound)).toBeVisible()
-  await page.getByRole('button', { name: strings.back }).click()
   await expect(page).toHaveURL(/\/$/)
+  await expect(field(page)).toBeVisible()
 })
 
 test('S-043 AC3: category set on the item comes back through autocomplete', async ({ page }) => {
   await setupWithItem(page, 'leite')
-  await page.getByRole('link', { name: 'leite' }).click()
+  await openItem(page, 'leite')
   await page
     .getByRole('combobox', { name: strings.item.category })
     .selectOption({ label: 'Laticínios' })
   await save(page).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(sheet(page)).toHaveCount(0)
   await expect(row(page, 'leite')).toBeVisible()
   await expect(row(page, 'leite').getByText(strings.list.pendingSync)).toHaveCount(0)
   await deleteAllItems()
@@ -122,7 +128,7 @@ test('S-043 AC3: category set on the item comes back through autocomplete', asyn
   await field(page).fill('lei')
   await page.getByRole('option', { name: /leite/ }).click()
   await expect(row(page, 'leite')).toBeVisible()
-  await page.getByRole('link', { name: 'leite' }).click()
+  await openItem(page, 'leite')
   await expect(
     page.getByRole('combobox', { name: strings.item.category }).locator('option:checked'),
   ).toHaveText('Laticínios')
@@ -135,17 +141,81 @@ test('S-043 AC4: free-text add does not ask for a category', async ({ page }) =>
   await expect(row(page, 'arroz')).toBeVisible()
 })
 
-test('S-045 AC3: price on a bought item shows in the list; unchecking clears it', async ({
+test('S-057 AC4 (ADR-0022): price on a pending item shows in the list and survives mark/unmark', async ({
   page,
 }) => {
   await setupWithItem(page, 'café')
-  await expect(page.getByLabel(strings.item.price)).toHaveCount(0)
-  await page.getByRole('checkbox', { name: strings.list.markBought('café') }).click()
-  await page.getByRole('link', { name: 'café' }).click()
-  await page.getByLabel(strings.item.price).fill('18,90')
+  await openItem(page, 'café')
+  await expect(price(page)).toHaveValue('')
+  await price(page).fill('18,90')
   await save(page).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(sheet(page)).toHaveCount(0)
   await expect(row(page, 'café')).toContainText(/R\$\s18,90/)
+  await expect(page.getByRole('checkbox', { name: strings.list.markBought('café') })).toBeVisible()
+  await page.getByRole('checkbox', { name: strings.list.markBought('café') }).click()
   await page.getByRole('checkbox', { name: strings.list.markPending('café') }).click()
-  await expect(row(page, 'café')).not.toContainText('R$')
+  await expect(row(page, 'café')).toContainText(/R\$\s18,90/)
+  await openItem(page, 'café')
+  await expect(price(page)).toHaveValue('18,90')
+  await expect(cart(page)).not.toBeChecked()
+})
+
+test('S-057: "Já coloquei no carrinho" marks the item without touching the value', async ({
+  page,
+}) => {
+  await setupWithItem(page, 'café')
+  await openItem(page, 'café')
+  await price(page).fill('5,00')
+  await cart(page).check()
+  await save(page).click()
+  await expect(page.getByRole('checkbox', { name: strings.list.markPending('café') })).toBeVisible()
+  await expect(row(page, 'café')).toContainText(/R\$\s5,00/)
+})
+
+test('S-057: Cancelar, Esc and the scrim close the sheet without saving', async ({ page }) => {
+  await setupWithItem(page)
+  await openItem(page)
+  await qty(page).fill('9')
+  await page.getByRole('button', { name: strings.item.cancel }).click()
+  await expect(sheet(page)).toHaveCount(0)
+  await expect(row(page, 'feijão')).toContainText('3 kg')
+  await openItem(page)
+  await page.keyboard.press('Escape')
+  await expect(sheet(page)).toHaveCount(0)
+  await openItem(page)
+  await page.getByTestId('scrim').click({ position: { x: 5, y: 5 } })
+  await expect(sheet(page)).toHaveCount(0)
+  await expect(row(page, 'feijão')).toContainText('3 kg')
+})
+
+test('S-057 AC7: renaming shows in the list and in suggestions', async ({ page }) => {
+  await setupWithItem(page, 'arroz')
+  await openItem(page, 'arroz')
+  await page.getByLabel(strings.item.name).fill('arroz integral')
+  await save(page).click()
+  await expect(sheet(page)).toHaveCount(0)
+  await expect(row(page, 'arroz integral')).toBeVisible()
+  await deleteAllItems()
+  await expect(page.getByRole('listitem')).toHaveCount(0)
+  await field(page).fill('arroz')
+  await expect(page.getByRole('option', { name: /arroz integral/ })).toBeVisible()
+})
+
+test('S-057 AC7: a renamed recurring item shows the new name in the Despensa, the old one is gone', async ({
+  page,
+}) => {
+  await setupWithItem(page, 'arroz')
+  await openItem(page, 'arroz')
+  await page.getByLabel(strings.item.recurring).check()
+  await save(page).click()
+  await expect(sheet(page)).toHaveCount(0)
+  await openItem(page, 'arroz')
+  await page.getByLabel(strings.item.name).fill('arroz integral')
+  await save(page).click()
+  await expect(sheet(page)).toHaveCount(0)
+  await expect(row(page, 'arroz integral')).toBeVisible()
+  await page.getByRole('link', { name: strings.pantry.link, exact: true }).click()
+  const recurring = page.getByRole('list', { name: strings.pantry.listLabel })
+  await expect(recurring.getByRole('listitem').filter({ hasText: 'arroz integral' })).toBeVisible()
+  await expect(recurring.getByRole('listitem')).toHaveCount(1)
 })

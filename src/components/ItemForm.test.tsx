@@ -1,12 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { Item } from '@/data/converters'
-import { setItemPrice } from '@/data/items'
 import { strings } from '@/strings/pt-BR'
 import { ItemForm, parseQuantity } from './ItemForm'
-
-vi.mock('@/data/items', () => ({ setItemPrice: vi.fn() }))
-beforeEach(() => vi.mocked(setItemPrice).mockClear())
 
 const item: Item = {
   id: 'i1',
@@ -39,11 +35,53 @@ describe('S-021 AC3: parseQuantity', () => {
   })
 })
 
+describe('S-057 AC3: name validation', () => {
+  it('empty or blank name disables Salvar with a message', () => {
+    render(
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    )
+    for (const v of ['', '   ']) {
+      fireEvent.change(screen.getByLabelText(strings.item.name), { target: { value: v } })
+      expect(save()).toBeDisabled()
+      expect(screen.getByText(strings.item.nameEmpty)).toBeVisible()
+    }
+  })
+  it('a changed name is sent trimmed', () => {
+    const onSave = vi.fn()
+    render(
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={onSave}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    )
+    fireEvent.change(screen.getByLabelText(strings.item.name), {
+      target: { value: ' feijão preto ' },
+    })
+    fireEvent.click(save())
+    expect(onSave).toHaveBeenCalledWith({ name: 'feijão preto' })
+  })
+})
+
 describe('S-021 AC2/AC3: ItemForm', () => {
   it('shows current values and sends only changed fields', () => {
     const onSave = vi.fn()
     render(
-      <ItemForm familyId="f1" item={item} categories={[]} onSave={onSave} onDelete={vi.fn()} />,
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={onSave}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
     )
     expect(qty()).toHaveValue('3')
     fireEvent.change(qty(), { target: { value: '1,5' } })
@@ -55,7 +93,13 @@ describe('S-021 AC2/AC3: ItemForm', () => {
 
   it('disables Salvar with a message for invalid quantity; limits note to 120', () => {
     render(
-      <ItemForm familyId="f1" item={item} categories={[]} onSave={vi.fn()} onDelete={vi.fn()} />,
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
     )
     for (const v of ['', '0', '10000']) {
       fireEvent.change(qty(), { target: { value: v } })
@@ -63,17 +107,6 @@ describe('S-021 AC2/AC3: ItemForm', () => {
       expect(screen.getByText(strings.item.quantityInvalid)).toBeVisible()
     }
     expect(screen.getByLabelText(strings.item.note)).toHaveAttribute('maxlength', '120')
-  })
-
-  it('S-021 AC4: Apagar asks for confirmation before deleting', () => {
-    const onDelete = vi.fn()
-    render(
-      <ItemForm familyId="f1" item={item} categories={[]} onSave={vi.fn()} onDelete={onDelete} />,
-    )
-    fireEvent.click(screen.getByRole('button', { name: strings.item.delete }))
-    expect(onDelete).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: strings.item.confirm }))
-    expect(onDelete).toHaveBeenCalled()
   })
 })
 
@@ -87,10 +120,10 @@ describe('S-043 AC1/AC2: category select', () => {
   it('S-043 AC1: lists Sem categoria + categories in order; orphan id shows Sem categoria', () => {
     render(
       <ItemForm
-        familyId="f1"
         item={{ ...item, categoryId: 'apagada' }}
         categories={cats}
         onSave={vi.fn()}
+        onCancel={vi.fn()}
         onDelete={vi.fn()}
       />,
     )
@@ -106,7 +139,13 @@ describe('S-043 AC1/AC2: category select', () => {
   it('S-043 AC2: saving a chosen category sends categoryId; orphan untouched sends nothing', () => {
     const onSave = vi.fn()
     render(
-      <ItemForm familyId="f1" item={item} categories={cats} onSave={onSave} onDelete={vi.fn()} />,
+      <ItemForm
+        item={item}
+        categories={cats}
+        onSave={onSave}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
     )
     fireEvent.change(sel(), { target: { value: 'laticinios' } })
     fireEvent.click(save())
@@ -117,72 +156,15 @@ describe('S-043 AC1/AC2: category select', () => {
     const onSave = vi.fn()
     render(
       <ItemForm
-        familyId="f1"
         item={{ ...item, categoryId: 'mercearia' }}
         categories={cats}
         onSave={onSave}
+        onCancel={vi.fn()}
         onDelete={vi.fn()}
       />,
     )
     fireEvent.change(sel(), { target: { value: '' } })
     fireEvent.click(save())
     expect(onSave).toHaveBeenCalledWith({ categoryId: null })
-  })
-})
-
-describe('S-045 AC1/AC2: price field', () => {
-  const bought: Item = { ...item, status: 'bought', priceCents: null }
-  const price = () => screen.getByLabelText(strings.item.price)
-  const renderBought = (over: Partial<Item> = {}, onSave = vi.fn()) =>
-    render(
-      <ItemForm
-        familyId="f1"
-        item={{ ...bought, ...over }}
-        categories={[]}
-        onSave={onSave}
-        onDelete={vi.fn()}
-      />,
-    )
-
-  it('S-045 AC2: hidden while the item is pending', () => {
-    render(
-      <ItemForm familyId="f1" item={item} categories={[]} onSave={vi.fn()} onDelete={vi.fn()} />,
-    )
-    expect(screen.queryByLabelText(strings.item.price)).toBeNull()
-  })
-
-  it('S-045 AC2: shown when bought; Salvar calls setItemPrice with cents', () => {
-    const onSave = vi.fn()
-    renderBought({}, onSave)
-    expect(price()).toHaveValue('')
-    fireEvent.change(price(), { target: { value: '18,90' } })
-    fireEvent.click(save())
-    expect(setItemPrice).toHaveBeenCalledWith('f1', 'i1', 1890)
-    expect(onSave).toHaveBeenCalled()
-  })
-
-  it('S-045 AC2: prefilled from the current price; unchanged price is not rewritten', () => {
-    renderBought({ priceCents: 1890 })
-    expect(price()).toHaveValue('18,90')
-    fireEvent.click(save())
-    expect(setItemPrice).not.toHaveBeenCalled()
-  })
-
-  it('S-045 AC1: clearing the field saves null', () => {
-    renderBought({ priceCents: 1890 })
-    fireEvent.change(price(), { target: { value: '' } })
-    fireEvent.click(save())
-    expect(setItemPrice).toHaveBeenCalledWith('f1', 'i1', null)
-  })
-
-  it('S-045 AC1: invalid price shows an error and does not save', () => {
-    const onSave = vi.fn()
-    renderBought({}, onSave)
-    fireEvent.change(price(), { target: { value: 'abc' } })
-    expect(screen.getByText(strings.item.priceInvalid)).toBeVisible()
-    expect(save()).toBeDisabled()
-    fireEvent.submit(price().closest('form')!)
-    expect(setItemPrice).not.toHaveBeenCalled()
-    expect(onSave).not.toHaveBeenCalled()
   })
 })
