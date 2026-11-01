@@ -7,6 +7,9 @@ import { useCategories } from '@/hooks/useCategories'
 import { useCatalog } from '@/screens/List/useCatalog'
 import { useItems } from '@/screens/List/useItems'
 import { LineRow } from './LineRow'
+import { PurchaseCards } from './PurchaseCards'
+import { useHistoryGroup } from './useHistoryGroup'
+import { SegmentedButton } from '@/components/m3/SegmentedButton'
 import { useCycleLines, usePurchases } from '@/hooks/useHistory'
 import { isCycle, formatCycle } from '@/domain/cycle'
 import { sumByCategory } from '@/domain/categories'
@@ -37,6 +40,7 @@ export function CycleScreen() {
     () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
     [items],
   )
+  const [group, setGroup] = useHistoryGroup()
   const [toast, setToast] = useState<string | null>(null)
   const readd = (l: PurchaseLine) => {
     if (!family) return
@@ -54,6 +58,7 @@ export function CycleScreen() {
   if (!valid) return <Navigate to="/historico" replace />
   if (!family) return null
 
+  const byPurchase = group === 'purchase'
   const groups = sums.rows.map((r) => ({
     name: r.name,
     lines: (lines ?? []).filter((l) => (l.categoryName ?? strings.noCategory) === r.name),
@@ -68,6 +73,20 @@ export function CycleScreen() {
         <p className="history-empty">{strings.history.cycleEmpty}</p>
       )}
       {loaded && lines.length > 0 && (
+        <SegmentedButton
+          label={strings.history.groupLabel}
+          value={group}
+          onChange={setGroup}
+          options={[
+            { value: 'category', label: strings.history.byCategory },
+            { value: 'purchase', label: strings.history.byPurchase },
+          ]}
+        />
+      )}
+      {loaded && lines.length > 0 && byPurchase && (
+        <PurchaseCards lines={lines} purchases={mine} pendingKeys={pendingKeys} onAdd={readd} />
+      )}
+      {loaded && lines.length > 0 && !byPurchase && (
         <section aria-label={strings.history.categorySumTitle} className="history-summary">
           <p className="history-summary__total">
             <span>{strings.history.total}</span>
@@ -86,7 +105,7 @@ export function CycleScreen() {
           )}
         </section>
       )}
-      {loaded && mine.length > 0 && (
+      {loaded && mine.length > 0 && !byPurchase && (
         <section aria-label={strings.history.purchasesTitle}>
           <h2 className="history-heading">{strings.history.purchasesTitle}</h2>
           <ul aria-label={strings.history.purchasesLabel} className="history-list">
@@ -100,16 +119,17 @@ export function CycleScreen() {
           </ul>
         </section>
       )}
-      {groups.map((g) => (
-        <section key={g.name} aria-label={g.name}>
-          <h2 className="history-heading">{g.name}</h2>
-          <ul className="history-list">
-            {g.lines.map((l) => (
-              <LineRow key={l.id} line={l} pending={pendingKeys.has(l.nameKey)} onAdd={readd} />
-            ))}
-          </ul>
-        </section>
-      ))}
+      {!byPurchase &&
+        groups.map((g) => (
+          <section key={g.name} aria-label={g.name}>
+            <h2 className="history-heading">{g.name}</h2>
+            <ul className="history-list">
+              {g.lines.map((l) => (
+                <LineRow key={l.id} line={l} pending={pendingKeys.has(l.nameKey)} onAdd={readd} />
+              ))}
+            </ul>
+          </section>
+        ))}
       {toast && <Snackbar message={toast} onDismiss={() => setToast(null)} />}
     </main>
   )

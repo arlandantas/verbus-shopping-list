@@ -58,3 +58,43 @@ export function knownMarkets(purchases: readonly PurchaseLike[]): string[] {
   }
   return out
 }
+
+export interface PurchaseGroup<L> {
+  /** Purchase id; null for lines whose purchase is not in the cache. */
+  id: string | null
+  purchasedAt: Date | null
+  market: string | null
+  /** Sum of the informed line prices; null when none has a price. */
+  totalCents: number | null
+  itemCount: number
+  lines: L[]
+}
+
+/** One group per purchase, newest first; lines of unknown purchases go last (partial cache). */
+export function groupByPurchase<L extends { purchaseId: string; priceCents: number | null }>(
+  lines: readonly L[],
+  purchases: readonly { id: string; market: string | null; purchasedAt: Date }[],
+): PurchaseGroup<L>[] {
+  const build = (id: string | null, rest: Partial<PurchaseGroup<L>>, mine: L[]) => ({
+    id,
+    purchasedAt: null,
+    market: null,
+    ...rest,
+    totalCents: mine.some((l) => l.priceCents !== null) ? cycleTotalCents(mine) : null,
+    itemCount: mine.length,
+    lines: mine,
+  })
+  const known = new Set(purchases.map((p) => p.id))
+  const groups = [...purchases]
+    .sort((a, b) => b.purchasedAt.getTime() - a.purchasedAt.getTime())
+    .map((p) =>
+      build(
+        p.id,
+        { purchasedAt: p.purchasedAt, market: p.market },
+        lines.filter((l) => l.purchaseId === p.id),
+      ),
+    )
+  const orphans = lines.filter((l) => !known.has(l.purchaseId))
+  if (orphans.length > 0) groups.push(build(null, {}, orphans))
+  return groups
+}

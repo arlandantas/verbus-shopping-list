@@ -203,3 +203,53 @@ describe('S-048 AC2: already pending', () => {
     expect(addBtn('leite')).toBeEnabled()
   })
 })
+
+describe('S-066 AC3/AC4: group by purchase', () => {
+  beforeEach(() => localStorage.clear())
+  const pl = (name: string, purchaseId: string, priceCents: number | null) => ({
+    ...line(name, 'Mercearia', priceCents),
+    purchaseId,
+  })
+  const setup = () => {
+    h.purchases = [
+      { ...purchase('a', 'Mercado A', 14), purchasedAt: new Date(2026, 10, 14, 10) },
+      { ...purchase('b', null, 20), purchasedAt: new Date(2026, 10, 20, 10) },
+    ]
+    h.lines = [pl('arroz', 'a', 5230), pl('feijão', 'b', null), pl('sal', 'zzz', null)]
+  }
+
+  it('defaults to category and switches to cards, newest first', () => {
+    setup()
+    renderIt()
+    expect(screen.getByRole('radio', { name: strings.history.byCategory })).toBeChecked()
+    fireEvent.click(screen.getByRole('radio', { name: strings.history.byPurchase }))
+    const cards = screen.getAllByRole('region')
+    expect(cards[0]).toHaveTextContent('sex, 20 de nov')
+    expect(cards[0]).toHaveTextContent(strings.history.noMarket)
+    expect(cards[0]).toHaveTextContent(strings.history.noValues)
+    expect(cards[1]).toHaveTextContent('sáb, 14 de nov')
+    expect(cards[1]).toHaveTextContent('Mercado A')
+    expect(cards[1]).toHaveTextContent(formatBRL(5230))
+    expect(cards[1]).toHaveTextContent('arroz')
+    expect(cards[2]).toHaveTextContent(strings.history.unknownPurchase)
+    expect(screen.queryByRole('region', { name: strings.history.categorySumTitle })).toBeNull()
+  })
+
+  it('keeps re-add on each line', () => {
+    setup()
+    localStorage.setItem('verbus.ui.historyGroup', 'purchase')
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.history.readdFor('arroz') }))
+    expect(h.addItem).toHaveBeenCalled()
+  })
+
+  it('persists the choice and restores it', () => {
+    setup()
+    const first = renderIt()
+    fireEvent.click(screen.getByRole('radio', { name: strings.history.byPurchase }))
+    expect(localStorage.getItem('verbus.ui.historyGroup')).toBe('purchase')
+    first.unmount()
+    renderIt('/historico/2026-11')
+    expect(screen.getByRole('radio', { name: strings.history.byPurchase })).toBeChecked()
+  })
+})

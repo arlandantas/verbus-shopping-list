@@ -1,13 +1,38 @@
 import '@testing-library/jest-dom/vitest'
 import { readFileSync } from 'node:fs'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
+import { SegmentedButton } from './SegmentedButton'
 import { Button } from './Button'
 import { IconButton } from './IconButton'
 import { TopAppBar } from './TopAppBar'
 import { NavigationBar } from './NavigationBar'
 
 const css = readFileSync('src/components/m3/m3.css', 'utf8')
+
+describe('S-066 AC2: SegmentedButton', () => {
+  it('is a radiogroup with the selected option checked and reports changes', () => {
+    const onChange = vi.fn()
+    render(
+      <SegmentedButton
+        label="Agrupar por"
+        value="a"
+        onChange={onChange}
+        options={[
+          { value: 'a', label: 'Por categoria' },
+          { value: 'b', label: 'Por compra' },
+        ]}
+      />,
+    )
+    expect(screen.getByRole('radiogroup', { name: 'Agrupar por' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'Por categoria' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+    fireEvent.click(screen.getByRole('radio', { name: 'Por compra' }))
+    expect(onChange).toHaveBeenCalledWith('b')
+  })
+})
 
 describe('Button', () => {
   it('S-052 AC1: variants, optional left icon, disabled', () => {

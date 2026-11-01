@@ -75,3 +75,41 @@ test('S-048 AC3: re-adding a history line puts it back on the list; history is u
   await expect(item).toContainText('2 kg')
   await expect(item).toHaveCount(1)
 })
+
+test('S-066 AC5: two purchases in a month show as cards; category sums still hold', async ({
+  browser,
+}) => {
+  const { ana } = await twoMembers(browser, ['arroz', 'leite'])
+  await row(ana, 'arroz').click()
+  await expect(row(ana, 'arroz')).toBeChecked()
+  await ana.getByRole('link', { name: strings.checkout.link }).click()
+  await ana.getByLabel(strings.checkout.priceFor('arroz')).fill('5,00')
+  await ana.getByLabel(strings.checkout.marketLabel).fill('Mercado A')
+  await ana.getByRole('button', { name: strings.checkout.finish, exact: true }).click()
+  await expect(ana).toHaveURL(/\/$/)
+  await row(ana, 'leite').click()
+  await expect(row(ana, 'leite')).toBeChecked()
+  await ana.getByRole('link', { name: strings.checkout.link }).click()
+  await ana.getByRole('button', { name: strings.checkout.finish, exact: true }).click()
+  await expect(ana).toHaveURL(/\/$/)
+
+  await ana.getByRole('link', { name: strings.history.link, exact: true }).click()
+  await ana.getByRole('list', { name: strings.history.monthsLabel }).getByRole('link').click()
+  await expect(ana.getByRole('region', { name: strings.history.categorySumTitle })).toContainText(
+    formatBRL(500),
+  )
+  await ana.getByRole('radio', { name: strings.history.byPurchase }).click()
+  const cards = ana.getByRole('region').filter({ hasText: /\d{1,2} de / })
+  await expect(cards).toHaveCount(2)
+  await expect(cards.nth(0)).toContainText(strings.history.noMarket)
+  await expect(cards.nth(0)).toContainText(strings.history.noValues)
+  await expect(cards.nth(0)).toContainText('leite')
+  await expect(cards.nth(1)).toContainText('Mercado A')
+  await expect(cards.nth(1)).toContainText(formatBRL(500))
+  await expect(cards.nth(1)).toContainText('arroz')
+
+  await ana.getByRole('radio', { name: strings.history.byCategory }).click()
+  await expect(ana.getByRole('region', { name: strings.history.categorySumTitle })).toContainText(
+    formatBRL(500),
+  )
+})
