@@ -99,13 +99,11 @@ test('S-021 AC5: offline save returns at once and persists after reconnect', asy
   await expect(row(page, 'feijão')).toContainText('Tio João')
 })
 
-test('S-021 AC6: unknown id shows "Item não encontrado" with a link to the list', async ({
-  page,
-}) => {
+test('S-021 AC6: unknown id shows "Item não encontrado" with a Voltar button', async ({ page }) => {
   await setupWithItem(page)
   await page.goto('/item/nao-existe')
   await expect(page.getByText(strings.item.notFound)).toBeVisible()
-  await page.getByRole('link', { name: strings.item.toList }).click()
+  await page.getByRole('button', { name: strings.back }).click()
   await expect(page).toHaveURL(/\/$/)
 })
 

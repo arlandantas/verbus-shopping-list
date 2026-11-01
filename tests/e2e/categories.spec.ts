@@ -60,7 +60,7 @@ test('S-042 AC4: Categorias link on Família opens /categorias; Voltar icon retu
 }) => {
   await signUpWithFamily(page)
   await openFromFamily(page)
-  await page.getByRole('button', { name: t.back }).click()
+  await page.getByRole('button', { name: strings.back }).click()
   await expect(page).toHaveURL(/\/familia$/)
 })
 

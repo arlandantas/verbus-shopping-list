@@ -87,7 +87,6 @@ export const strings = {
   checkout: {
     link: 'Finalizar compra',
     title: 'Finalizar compra',
-    back: 'Voltar',
     summary: (bought: number, pending: number) =>
       `${bought === 1 ? '1 item comprado' : `${bought} itens comprados`}` +
       (pending > 0
@@ -101,8 +100,6 @@ export const strings = {
   history: {
     title: 'Histórico',
     link: 'Histórico',
-    back: 'Voltar',
-    backToHistory: 'Voltar ao histórico',
     empty: 'Nenhuma compra finalizada ainda. Finalize uma compra para ver o histórico aqui.',
     monthsLabel: 'Meses',
     itemCount: (n: number) => (n === 1 ? '1 item' : `${n} itens`),
@@ -149,15 +146,12 @@ export const strings = {
     confirmDelete: (name: string) => `Apagar ${name}?`,
     confirm: 'Confirmar',
     cancel: 'Cancelar',
-    back: 'Voltar à lista',
     quantityInvalid: 'Informe uma quantidade maior que 0 e até 9999.',
     notFound: 'Item não encontrado',
-    toList: 'Voltar para a lista',
   },
   categories: {
     title: 'Categorias',
     link: 'Categorias',
-    back: 'Voltar',
     listLabel: 'Categorias da família',
     newLabel: 'Nova categoria',
     add: 'Adicionar categoria',

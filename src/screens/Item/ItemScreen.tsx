@@ -1,8 +1,10 @@
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { deleteItem, updateItemDetails, type ItemPatch } from '@/data/items'
 import { useCategories } from '@/hooks/useCategories'
 import { useItems } from '@/screens/List/useItems'
+import { BackButton } from '@/components/BackButton'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 import { ItemForm } from './ItemForm'
@@ -18,11 +20,8 @@ export function ItemScreen() {
   const item = items.find((i) => i.id === id)
   if (!item)
     return (
-      <main className="mx-auto flex max-w-md flex-col gap-4 p-4">
-        <p>{strings.item.notFound}</p>
-        <Link to="/" className="flex min-h-12 items-center underline">
-          {strings.item.toList}
-        </Link>
+      <main className="mx-auto max-w-md">
+        <TopAppBar title={strings.item.notFound} navigation={<BackButton to="/" />} />
       </main>
     )
 
@@ -36,12 +35,7 @@ export function ItemScreen() {
   }
   return (
     <main className="mx-auto max-w-md">
-      <header className="flex min-h-12 items-center gap-3 px-4 pt-2">
-        <Link to="/" className="flex min-h-12 items-center underline">
-          {strings.item.back}
-        </Link>
-        <h1 className="text-xl">{item.name}</h1>
-      </header>
+      <TopAppBar title={item.name} navigation={<BackButton to="/" />} />
       <ItemForm
         familyId={familyId}
         item={item}
