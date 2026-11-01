@@ -83,3 +83,8 @@ export function sumByCategory(
   rows.sort((a, b) => b.totalCents - a.totalCents || a.name.localeCompare(b.name, 'pt-BR'))
   return { rows, totalCents, unpricedCount }
 }
+
+/** "in cart / total" for one category section. */
+export function cartCount(items: readonly { status: string }[]): { done: number; total: number } {
+  return { done: items.filter((i) => i.status === 'bought').length, total: items.length }
+}

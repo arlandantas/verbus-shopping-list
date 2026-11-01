@@ -229,3 +229,55 @@ describe('S-049 AC1: ListScreen shows the returned-recurring notice', () => {
     expect(screen.queryByRole('status')).toBeNull()
   })
 })
+
+describe('S-059 AC3/AC4: hide switch and persisted prefs', () => {
+  const mk = (id: string, status: string, categoryId: string | null = null) => ({
+    id,
+    name: id,
+    nameKey: id,
+    quantity: 1,
+    unit: 'un',
+    categoryId,
+    status,
+    recurring: false,
+    note: null,
+    priceCents: null,
+    markedBy: null,
+  })
+  beforeEach(() => window.localStorage.clear())
+
+  it('has no switch on an empty list', () => {
+    itemsState.items = []
+    renderIt()
+    expect(screen.queryByRole('switch')).toBeNull()
+  })
+
+  it('hides bought items, persists and restores the switch and collapsed categories', () => {
+    itemsState.items = [mk('a', 'bought'), mk('b', 'pending')]
+    const first = renderIt()
+    fireEvent.click(screen.getByRole('switch', { name: strings.market.hideInCart }))
+    expect(screen.getByText(strings.market.hiddenCount(1))).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Sem categoria/ }))
+    expect(window.localStorage.getItem('verbus.ui.hideBought')).toBe('true')
+    expect(window.localStorage.getItem('verbus.ui.collapsed')).toBe('["none"]')
+    first.unmount()
+    renderIt()
+    expect(screen.getByRole('switch', { name: strings.market.hideInCart })).toBeChecked()
+    expect(screen.getByRole('button', { name: /Sem categoria/ })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+  })
+
+  it('falls back to defaults on corrupt storage', () => {
+    itemsState.items = [mk('b', 'pending')]
+    window.localStorage.setItem('verbus.ui.hideBought', 'zzz')
+    window.localStorage.setItem('verbus.ui.collapsed', '{"x":1}')
+    renderIt()
+    expect(screen.getByRole('switch', { name: strings.market.hideInCart })).not.toBeChecked()
+    expect(screen.getByRole('button', { name: /Sem categoria/ })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+  })
+})

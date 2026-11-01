@@ -82,3 +82,12 @@ test('S-058 AC8: marking arroz and tapping Desfazer leaves it pending on both de
   await pending(ana, 'arroz')
   await pending(beto, 'arroz')
 })
+
+test('S-059 AC6: a mark by another member updates the category count without reload', async ({
+  browser,
+}) => {
+  const { ana, beto } = await twoMembers(browser, ['leite', 'arroz'])
+  await expect(beto.getByRole('button', { name: /Sem categoria/ })).toContainText('0/2')
+  await row(ana, 'leite').click()
+  await expect(beto.getByRole('button', { name: /Sem categoria/ })).toContainText('1/2')
+})

@@ -126,3 +126,43 @@ test('S-045 AC4: the value is entered only through the sheet, never in the row',
   await page.getByRole('button', { name: strings.list.edit('arroz') }).click()
   await expect(page.getByLabel(strings.item.price)).toBeVisible()
 })
+
+const hide = (page: Page) => page.getByRole('switch', { name: strings.market.hideInCart })
+
+const toggleHide = (page: Page) => page.getByText(strings.market.hideInCart).click()
+
+test('S-059 AC5: hide bought items shows the count, can be undone and survives reload', async ({
+  page,
+}) => {
+  await setup(page, ['arroz', 'feijão', 'macarrão'])
+  for (const n of ['arroz', 'feijão', 'macarrão']) await setItemCategory(page, n, 'Mercearia')
+  await box(page, /arroz/).click()
+  await box(page, /feijão/).click()
+  await toggleHide(page)
+  await expect(page.getByText(strings.market.hiddenCount(2))).toBeVisible()
+  await expect(box(page, /arroz/)).toHaveCount(0)
+  await expect(box(page, /feijão/)).toHaveCount(0)
+  await expect(box(page, /macarrão/)).toBeVisible()
+  await page.reload()
+  await expect(hide(page)).toBeChecked()
+  await expect(page.getByText(strings.market.hiddenCount(2))).toBeVisible()
+  await toggleHide(page)
+  await expect(box(page, /arroz/)).toBeVisible()
+  await expect(page.getByText(strings.market.hiddenCount(2))).toHaveCount(0)
+})
+
+test('S-059 AC6: collapsing a category hides its rows and persists after reload', async ({
+  page,
+}) => {
+  await setup(page, ['arroz', 'leite'])
+  await setItemCategory(page, 'arroz', 'Mercearia')
+  await setItemCategory(page, 'leite', 'Laticínios')
+  const lat = page.getByRole('button', { name: /Laticínios/ })
+  await lat.click()
+  await expect(lat).toHaveAttribute('aria-expanded', 'false')
+  await expect(box(page, /leite/)).toHaveCount(0)
+  await expect(box(page, /arroz/)).toBeVisible()
+  await page.reload()
+  await expect(lat).toHaveAttribute('aria-expanded', 'false')
+  await expect(box(page, /leite/)).toHaveCount(0)
+})

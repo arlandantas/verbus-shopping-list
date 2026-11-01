@@ -8,6 +8,8 @@ import { TopAppBar } from '@/components/m3/TopAppBar'
 import { CategorySections } from '@/components/CategorySections'
 import { CycleNotice } from '@/components/CycleNotice'
 import { EditItemSheet } from '@/components/EditItemSheet'
+import { Switch } from '@/components/m3/Switch'
+import { useLocalPref } from '@/hooks/useLocalPref'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import type { CatalogEntry, Item } from '@/data/converters'
@@ -20,6 +22,10 @@ import { ItemRow } from './ItemRow'
 import { useCatalog } from './useCatalog'
 import { useItems } from './useItems'
 
+const isBool = (v: unknown): v is boolean => typeof v === 'boolean'
+const isStrings = (v: unknown): v is string[] =>
+  Array.isArray(v) && v.every((x) => typeof x === 'string')
+
 export function ListScreen() {
   const { family, recurringAdded, dismissRecurringNotice } = useFamily()
   const familyId = family?.id ?? ''
@@ -30,6 +36,8 @@ export function ListScreen() {
   const uid = useAuth().user?.uid
   const [editingId, setEditingId] = useState<string | null>(null)
   const [undo, setUndo] = useState<{ itemId: string; key: number } | null>(null)
+  const [collapsed, setCollapsed] = useLocalPref<string[]>('verbus.ui.collapsed', [], isStrings)
+  const [hideBought, setHideBought] = useLocalPref('verbus.ui.hideBought', false, isBool)
   const pendingKeys = useMemo(
     () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
     [items],
@@ -79,11 +87,27 @@ export function ListScreen() {
       )}
       <CycleNotice added={recurringAdded} onDismiss={dismissRecurringNotice} />
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
+      {list.length > 0 && (
+        <div className="px-4 py-2">
+          <Switch
+            label={strings.market.hideInCart}
+            checked={hideBought}
+            onChange={(e) => setHideBought(e.target.checked)}
+          />
+        </div>
+      )}
       {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}
       {items && categories && (
         <CategorySections
           items={items}
           categories={categories}
+          collapsed={collapsed}
+          hideBought={hideBought}
+          onToggleCollapsed={(id) =>
+            setCollapsed(
+              collapsed.includes(id) ? collapsed.filter((c) => c !== id) : [...collapsed, id],
+            )
+          }
           renderItem={(item) => (
             <ItemRow
               key={item.id}

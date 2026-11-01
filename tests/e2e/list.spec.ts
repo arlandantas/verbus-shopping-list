@@ -121,7 +121,7 @@ test('S-019 AC6: empty list shows a pt-BR message; header has family name and /f
   await expect(page).toHaveURL(/\/familia$/)
 })
 
-const headings = (page: Page) => page.getByRole('heading', { level: 2 }).allTextContents()
+const headings = (page: Page) => page.locator('h2 > button > span:first-child').allTextContents()
 
 test('S-044 AC2: the list groups Mercearia, Laticínios, Sem categoria', async ({ page }) => {
   await setupFamily(page)

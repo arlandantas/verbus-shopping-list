@@ -81,6 +81,8 @@ export const strings = {
   market: {
     counter: (done: number, total: number) => `${done} de ${total} no carrinho`,
     allDone: 'Lista completa! Tudo no carrinho.',
+    hideInCart: 'Ocultar itens no carrinho',
+    hiddenCount: (n: number) => (n === 1 ? '1 item já adicionado' : `${n} itens já adicionados`),
   },
   checkout: {
     link: 'Finalizar compra',

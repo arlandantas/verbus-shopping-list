@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { strings } from '../strings/pt-BR'
-import { DEFAULT_CATEGORIES, groupByCategory, nextCategoryOrder, sumByCategory } from './categories'
+import {
+  cartCount,
+  DEFAULT_CATEGORIES,
+  groupByCategory,
+  nextCategoryOrder,
+  sumByCategory,
+} from './categories'
 
 const cat = (id: string, name: string, order: number) => ({ id, name, order })
 
@@ -78,5 +84,15 @@ describe('S-036 AC4: sumByCategory', () => {
 
   it('handles empty input', () => {
     expect(sumByCategory([])).toEqual({ rows: [], totalCents: 0, unpricedCount: 0 })
+  })
+})
+
+describe('S-059 AC1: cartCount', () => {
+  it('counts bought items over total', () => {
+    expect(cartCount([{ status: 'bought' }, { status: 'pending' }, { status: 'bought' }])).toEqual({
+      done: 2,
+      total: 3,
+    })
+    expect(cartCount([])).toEqual({ done: 0, total: 0 })
   })
 })
