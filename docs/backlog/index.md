@@ -59,7 +59,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-049 | M5 | Virada do mês: aviso e E2E dos recorrentes | done | S-041, S-046 |
 | E-UX | UX | Épico: redesign Material 3 (feedback da 1ª rodada; ADR-0018..0022). Prioridade atual | todo | — |
 | S-051 | UX | Tokens Material 3, tema claro/escuro e ícones | done | — |
-| S-052 | UX | Componentes base: Button, IconButton, TopAppBar, NavigationBar | todo | S-051 |
+| S-052 | UX | Componentes base: Button, IconButton, TopAppBar, NavigationBar | done | S-051 |
 | S-053 | UX | Shell com abas inferiores e barras superiores | todo | S-052 |
 | S-054 | UX | Componentes de formulário: TextField, MoneyField, Select, Checkbox, Switch | todo | S-051 |
 | S-055 | UX | Componentes sobrepostos: BottomSheet, Dialog e Snackbar | todo | S-052 |
