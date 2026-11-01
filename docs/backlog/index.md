@@ -60,7 +60,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | E-UX | UX | Épico: redesign Material 3 (feedback da 1ª rodada; ADR-0018..0022). Prioridade atual | todo | — |
 | S-051 | UX | Tokens Material 3, tema claro/escuro e ícones | done | — |
 | S-052 | UX | Componentes base: Button, IconButton, TopAppBar, NavigationBar | done | S-051 |
-| S-053 | UX | Shell com abas inferiores e barras superiores | todo | S-052 |
+| S-053 | UX | Shell com abas inferiores e barras superiores | done | S-052 |
 | S-054 | UX | Componentes de formulário: TextField, MoneyField, Select, Checkbox, Switch | todo | S-051 |
 | S-055 | UX | Componentes sobrepostos: BottomSheet, Dialog e Snackbar | todo | S-052 |
 | S-056 | UX | Dados e regras: renomear item e valor independente do carrinho (ADR-0022) | todo | — |
