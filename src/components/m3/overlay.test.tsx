@@ -296,3 +296,105 @@ afterEach(async () => {
   cleanup()
   await new Promise((r) => setTimeout(r, 50))
 })
+
+describe('S-057 review: overlay history stack', () => {
+  // earlier tests leave overlay entries behind; start from a clean entry
+  beforeEach(() => history.pushState(null, ''))
+  const settle = () =>
+    act(async () => {
+      await new Promise((r) => setTimeout(r, 30))
+    })
+
+  function Stacked({ onSheet, onDialog }: { onSheet: () => void; onDialog: () => void }) {
+    const [sheet, setSheet] = useState(true)
+    const [dialog, setDialog] = useState(false)
+    return (
+      <>
+        <button onClick={() => setDialog(true)}>abrir dialog</button>
+        <button
+          onClick={() => {
+            setDialog(false)
+            setSheet(false)
+          }}
+        >
+          fechar tudo
+        </button>
+        <BottomSheet
+          open={sheet}
+          title="Sheet"
+          onClose={() => {
+            onSheet()
+            setSheet(false)
+          }}
+        >
+          x
+        </BottomSheet>
+        <Dialog
+          open={dialog}
+          title="Dialog"
+          onClose={() => {
+            onDialog()
+            setDialog(false)
+          }}
+        >
+          y
+        </Dialog>
+      </>
+    )
+  }
+
+  it('Android back with a Dialog over a Sheet closes only the Dialog', async () => {
+    const onSheet = vi.fn()
+    const onDialog = vi.fn()
+    render(<Stacked onSheet={onSheet} onDialog={onDialog} />)
+    await settle()
+    fireEvent.click(screen.getByText('abrir dialog'))
+    await settle()
+    act(() => history.back())
+    await settle()
+    expect(onDialog).toHaveBeenCalledTimes(1)
+    expect(onSheet).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBeInTheDocument()
+    act(() => history.back())
+    await settle()
+    expect(onSheet).toHaveBeenCalledTimes(1)
+  })
+
+  it('closing both at once (item vanished) leaves no orphan entry and back is not dead', async () => {
+    const onSheet = vi.fn()
+    const onDialog = vi.fn()
+    render(<Stacked onSheet={onSheet} onDialog={onDialog} />)
+    await settle()
+    fireEvent.click(screen.getByText('abrir dialog'))
+    await settle()
+    expect(history.state?.m3overlay).toBeGreaterThan(0)
+    fireEvent.click(screen.getByText('fechar tudo'))
+    await settle()
+    expect(history.state?.m3overlay).toBeUndefined()
+    expect(onSheet).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    // a later overlay still closes with back
+    const onClose = vi.fn()
+    render(
+      <BottomSheet open title="Outro" onClose={onClose}>
+        z
+      </BottomSheet>,
+    )
+    await settle()
+    act(() => history.back())
+    await settle()
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('closing the parent closes the children and unwinds every entry', async () => {
+    const onDialog = vi.fn()
+    render(<Stacked onSheet={vi.fn()} onDialog={onDialog} />)
+    await settle()
+    fireEvent.click(screen.getByText('abrir dialog'))
+    await settle()
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }))
+    await settle()
+    expect(onDialog).toHaveBeenCalledTimes(1)
+    expect(history.state?.m3overlay).toBeUndefined()
+  })
+})

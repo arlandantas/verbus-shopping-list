@@ -23,8 +23,7 @@ export function EditItemSheet({ familyId, item, categories, onClose }: Props) {
   const onConfirmDelete = () => {
     deleteItem(familyId, item.id)
     setConfirming(false)
-    // let the dialog release its history entry before the sheet releases its own
-    setTimeout(onClose, 50)
+    onClose()
   }
   return (
     <>

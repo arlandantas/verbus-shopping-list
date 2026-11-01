@@ -124,7 +124,6 @@ describe('S-057 AC4: price and cart are independent (ADR-0022)', () => {
 
 describe('S-057 AC5: Apagar asks for confirmation', () => {
   it('cancel returns to the sheet; confirm deletes and closes', () => {
-    vi.useFakeTimers()
     const onClose = open()
     fireEvent.click(screen.getByRole('button', { name: strings.item.delete }))
     const dlg = screen.getByRole('dialog', { name: strings.item.confirmDelete('feijão') })
@@ -140,8 +139,6 @@ describe('S-057 AC5: Apagar asks for confirmation', () => {
       ),
     )
     expect(deleteItem).toHaveBeenCalledWith('f1', 'i1')
-    vi.runAllTimers()
     expect(onClose).toHaveBeenCalled()
-    vi.useRealTimers()
   })
 })

@@ -9,7 +9,16 @@ const FOCUSABLE =
 const FIELDS = 'input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
 let overlaySeq = 0
-let selfPops = 0
+/** Open overlays, bottom first. Each owns one history entry, so depth in history = stack order. */
+const stack: { token: number; close: () => void }[] = []
+
+/** Drops `token` and every overlay above it; returns how many history entries to unwind. */
+function release(token: number): { count: number; above: (() => void)[] } {
+  const at = stack.findIndex((o) => o.token === token)
+  if (at < 0) return { count: 0, above: [] }
+  const dropped = stack.splice(at)
+  return { count: dropped.length, above: dropped.slice(1).map((o) => o.close) }
+}
 
 export type OverlayProps = {
   open: boolean
@@ -41,29 +50,29 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
 
-    let popped = false
     const token = ++overlaySeq
+    stack.push({ token, close: () => closeRef.current() })
     history.pushState({ m3overlay: token }, '')
-    const onPop = () => {
-      if (selfPops > 0) {
-        selfPops = 0
-        return
-      }
-      popped = true
+    const onPop = (e: PopStateEvent) => {
+      // The entry we landed on tells how deep we are: overlays above it were popped by navigation.
+      // Landing on an overlay entry that is no longer open is the echo of our own unwind: ignore.
+      const landed = (e.state as { m3overlay?: number } | null)?.m3overlay ?? 0
+      if (landed !== 0 && !stack.some((o) => o.token === landed)) return
+      if (token <= landed) return
+      const { count, above } = release(token)
+      if (count === 0) return
       closeRef.current()
+      above.forEach((close) => close())
     }
     window.addEventListener('popstate', onPop)
 
     return () => {
       window.removeEventListener('popstate', onPop)
-      const own = (history.state as { m3overlay?: number } | null)?.m3overlay === token
-      if (!popped && own) {
-        selfPops++
-        // popstate may never fire (e.g. no entry to traverse); don't leak the counter
-        setTimeout(() => {
-          selfPops = Math.max(0, selfPops - 1)
-        }, 20)
-        history.back()
+      const { count, above } = release(token)
+      if (count > 0) {
+        if (count === 1) history.back()
+        else history.go(-count)
+        above.forEach((close) => close())
       }
       document.body.style.overflow = prevOverflow
       opener?.focus?.()
