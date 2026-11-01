@@ -4,8 +4,13 @@ import { MemoryRouter } from 'react-router'
 import { InviteScreen } from './InviteScreen'
 import { strings } from '@/strings/pt-BR'
 
-vi.mock('@/hooks/useOnlineStatus', () => ({ useOnlineStatus: () => false }))
-vi.mock('@/app/FamilyProvider', () => ({ useFamily: () => ({ status: 'none', family: null }) }))
+let online = false
+vi.mock('@/hooks/useOnlineStatus', () => ({ useOnlineStatus: () => online }))
+let familyStatus = 'none'
+const setActiveGroup = vi.fn()
+vi.mock('@/app/FamilyProvider', () => ({
+  useFamily: () => ({ status: familyStatus, family: null, setActiveGroup }),
+}))
 vi.mock('@/data/families', () => ({
   joinFamilyByCode: vi.fn(),
   getInvitePreview: () => Promise.resolve({ familyId: 'f', familyName: 'Casa' }),
@@ -34,5 +39,21 @@ describe('InviteScreen offline', () => {
     const btn = await waitFor(() => screen.getByRole('button', { name: strings.invite.confirm }))
     expect(btn).toHaveClass('m3-btn--filled')
     expect(screen.getByRole('heading', { name: strings.invite.title('Casa') })).toBeInTheDocument()
+  })
+  it('S-089: a user who already has a group still previews the invite and joins, activating the new group', async () => {
+    familyStatus = 'ready'
+    online = true
+    const { joinFamilyByCode } = await import('@/data/families')
+    vi.mocked(joinFamilyByCode).mockResolvedValueOnce({ familyId: 'f' })
+    render(
+      <MemoryRouter>
+        <InviteScreen />
+      </MemoryRouter>,
+    )
+    const btn = await waitFor(() => screen.getByRole('button', { name: strings.invite.confirm }))
+    btn.click()
+    await waitFor(() => expect(setActiveGroup).toHaveBeenCalledWith('f'))
+    familyStatus = 'none'
+    online = false
   })
 })

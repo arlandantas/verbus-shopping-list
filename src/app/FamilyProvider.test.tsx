@@ -8,6 +8,7 @@ let emitUser: (u: UserProfile | null) => void = () => undefined
 let emitGroups: (g: Family[]) => void = () => undefined
 let failGroups: () => void = () => undefined
 const watchMyGroups = vi.fn()
+const unsubscribeGroups = vi.fn()
 const ensureMemberProfile = vi.fn()
 const openCycleIfNeeded = vi.fn<(...args: unknown[]) => Promise<unknown>>(() =>
   Promise.resolve({ added: 0 }),
@@ -33,7 +34,7 @@ vi.mock('@/data/families', () => ({
     watchMyGroups(uid)
     emitGroups = cb
     failGroups = onError ?? (() => undefined)
-    return () => undefined
+    return unsubscribeGroups
   },
 }))
 
@@ -137,6 +138,23 @@ describe('FamilyProvider', () => {
     act(() => screen.getByText('switch-g1').click())
     expect(ensureMemberProfile).toHaveBeenCalledTimes(2)
     expect(openCycleIfNeeded).toHaveBeenCalledTimes(2)
+  })
+
+  it('S-089: switching keeps one groups listener, which is released on unmount', () => {
+    watchMyGroups.mockClear()
+    unsubscribeGroups.mockClear()
+    const { unmount } = render(
+      <FamilyProvider>
+        <Probe />
+      </FamilyProvider>,
+    )
+    act(() => emitUser(profile()))
+    act(() => emitGroups([group('g1', 0), group('g2', 1)]))
+    act(() => screen.getByText('switch-g2').click())
+    expect(watchMyGroups).toHaveBeenCalledTimes(1)
+    expect(unsubscribeGroups).not.toHaveBeenCalled()
+    unmount()
+    expect(unsubscribeGroups).toHaveBeenCalledTimes(1)
   })
 
   it('S-041 AC4: re-opens the cycle on the online event', () => {

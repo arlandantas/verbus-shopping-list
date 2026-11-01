@@ -35,12 +35,11 @@ export function InviteScreen() {
   const [joined, setJoined] = useState(joinPending)
   const [busy, setBusy] = useState(false)
   const [joinError, setJoinError] = useState<string | null>(null)
-  const alreadyInFamily = family.status === 'ready' && !joined
 
   useEffect(() => clearReturnTo(), [])
 
   useEffect(() => {
-    if (family.status !== 'none') return
+    if (family.status !== 'none' && family.status !== 'ready') return
     let cancelled = false
     getInvitePreview(code).then(
       (p) => !cancelled && setPreview({ state: 'ready', familyName: p.familyName }),
@@ -53,11 +52,11 @@ export function InviteScreen() {
   }, [code, family.status])
 
   useEffect(() => {
-    if (joined && family.status === 'ready') {
+    if (joined && !busy && family.status === 'ready') {
       joinPending = false
       void navigate('/', { replace: true })
     }
-  }, [joined, family.status, navigate])
+  }, [joined, busy, family.status, navigate])
 
   async function confirm() {
     if (!online) return
@@ -66,7 +65,8 @@ export function InviteScreen() {
     joinPending = true // before the write: the optimistic profile update flips family.status first
     setJoined(true)
     try {
-      await joinFamilyByCode(code)
+      const { familyId } = await joinFamilyByCode(code)
+      family.setActiveGroup(familyId)
     } catch (e) {
       if (e instanceof AlreadyMember) {
         family.setActiveGroup(e.familyId) // stays "joined": the effect below goes home on the group
@@ -85,13 +85,7 @@ export function InviteScreen() {
   }
 
   let body: ReactNode
-  if (alreadyInFamily) {
-    body = (
-      <p role="alert" className="auth-note">
-        {strings.invite.alreadyInFamily}
-      </p>
-    )
-  } else if (preview.state === 'notFound') {
+  if (preview.state === 'notFound') {
     body = (
       <p role="alert" className="auth-note">
         {strings.invite.notFound}

@@ -88,7 +88,7 @@ test('S-012 AC3: unknown code shows "Convite não encontrado" and changes nothin
   await expect(page.getByLabel(strings.family.nameLabel)).toBeVisible()
 })
 
-test('S-012 AC4: a user who already has a family sees a notice and is not switched', async ({
+test('S-089: a member of group A opens the invite for group B, previews, confirms and B becomes active', async ({
   page,
   browser,
 }) => {
@@ -100,11 +100,12 @@ test('S-012 AC4: a user who already has a family sees a notice and is not switch
   const otherCode = await createFamily(b, 'Outra')
 
   await page.goto(`/convite/${otherCode}`)
-  await expect(page.getByText(strings.invite.alreadyInFamily)).toBeVisible()
-  await expect(page.getByRole('button', { name: strings.invite.confirm })).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: strings.invite.title('Outra') })).toBeVisible()
+  await page.getByRole('button', { name: strings.invite.confirm }).click()
+  await expect(page).toHaveURL(/\/$/)
   await page.goto('/familia')
-  await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
-  await expect(page.getByText(strings.family.members(1))).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Outra' })).toBeVisible()
+  await expect(page.getByText(strings.family.members(2))).toBeVisible()
   await b.context().close()
 })
 
