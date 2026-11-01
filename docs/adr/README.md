@@ -29,3 +29,4 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0023](0023-security-hardening-resumed.md) | Endurecimento de segurança retomado (emenda a 0017) | aceito |
 | [0024](0024-multi-group-membership.md) | Vários grupos por usuário; categorias como sugestões (emenda 0003, 0014; substitui S-014) | aceito |
 | [0025](0025-confirm-accepted-risks-0016.md) | Riscos da 0016 confirmados sob a 0023 | aceito |
+| [0026](0026-csp-meta-tag.md) | CSP por meta tag no GitHub Pages (origens liberadas, riscos aceitos) | aceito |

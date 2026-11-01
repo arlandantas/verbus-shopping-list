@@ -7,6 +7,7 @@ import { copyFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { loadEnv, type Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
+import { cspPlugin } from './vite/csp'
 
 /** Dev-server hint: warns when emulator mode is on but the Auth emulator (9099) is unreachable. */
 function emulatorWarning(): Plugin {
@@ -52,6 +53,7 @@ export default defineConfig({
   plugins: [
     emulatorWarning(),
     spa404(),
+    cspPlugin(),
     react(),
     tailwindcss(),
     VitePWA({
