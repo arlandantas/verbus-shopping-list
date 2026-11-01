@@ -14,4 +14,5 @@ Um arquivo por feature. Histórias referenciam só os arquivos de que precisam.
 | 60-categories-price.md | Categorias, preço, mercado |
 | 70-data-model.md | Modelo Firestore |
 | 80-tech-requirements.md | PWA, offline, segurança, UI |
+| 85-security.md | Modelo de ameaça, regras adversariais, CSP e higiene de repositório (E-SEC) |
 | 90-nfce.md | Leitura de NFC-e por QR Code (V0.1/V1) |

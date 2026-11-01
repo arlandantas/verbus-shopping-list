@@ -3,6 +3,7 @@
 Uma linha por história. Status: `todo` · `doing` · `done` · `blocked`.
 Detalhe da história: `stories/S-NNN.md`. Linhas `E-Mx` são épicos: o Arquiteto os detalha em histórias antes de iniciar o marco.
 Ordem = ordem de execução. Tudo até S-068 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
+E-SEC/E-M6 (ADR-0023): regras S-075..S-079 → PWA S-080..S-083 → web S-084..S-086; tudo sem input do usuário.
 E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) → lista/mercado (S-058..S-060) → demais telas (S-061..S-065) → histórico por compra (S-066) → editar histórico (S-067, S-068).
 
 | ID | Marco | Título | Status | Deps |
@@ -83,7 +84,19 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-072 | UX | Shell: abas centralizadas, barra de adicionar flutuante, avisos empilhados | done | S-070 |
 | S-073 | UX | Confirmar sair da conta | done | S-069 |
 | S-074 | UX | Despensa: "Outros itens já usados" como seção colapsável | done | S-070 |
-| E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |
-| E-SEC | — | Épico: endurecimento de segurança (só após a 1ª rodada de testes do usuário; ADR-0017, ADR-0016) | todo | — |
+| E-SEC | SEC | Épico: endurecimento de segurança (retomado pela ADR-0023; spec 85). Regras primeiro, web por último | todo | — |
+| S-075 | SEC | Regras: isolamento entre famílias e enumeração (suíte adversarial) | todo | — |
+| S-076 | SEC | Regras: convites e entrar na família (suíte adversarial) | todo | S-075 |
+| S-077 | SEC | Trocar o código de convite (rotação) | todo | S-076 |
+| S-078 | SEC | Regras: escalada de papel e de campos, limites de tamanho | todo | S-075 |
+| S-079 | SEC | Regras: preços, compras, linhas e ciclos (suíte adversarial) | todo | S-078 |
+| E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA (spec 80) | todo | S-005 |
+| S-080 | M6 | Aviso "Adicionar à Tela de Início" no iOS | todo | — |
+| S-081 | M6 | Manifest e metas Apple coerentes com o tema e o base path | todo | S-080 |
+| S-082 | M6 | Fallback offline sob base path e rotas profundas | todo | S-081 |
+| S-083 | M6 | Atualização do app com aviso, sem recarregar sozinho | todo | S-082 |
+| S-084 | SEC | CSP por meta tag compatível com Firebase (hospedagem estática) | todo | S-083 |
+| S-085 | SEC | CI: varredura de segredos e auditoria de dependências | todo | — |
+| S-086 | SEC | Build de produção sem contas de teste nem painel de login rápido | todo | S-085 |
 | E-LISTS | — | Épico futuro: várias listas por família (mercado, roupas, desejos) com acesso por lista; exige ADR de modelo de dados e regras antes das histórias | todo | E-UX |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |

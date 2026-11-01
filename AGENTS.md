@@ -61,8 +61,8 @@ Role output ≤150 words: result, files touched, open issues. No file dumps.
 Atomic commits: one coherent idea each (a story, or a docs/config theme), no micro-commits.
 Conventional style in English: `feat: ...`, `docs: ...`, `chore: ...`; stories use `S-NNN: ...`.
 
-## Current phase (ADR-0017)
-MVP first: no adversarial security reviews or hardening stories until the user finishes the first manual test round. Per-feature rules tests still ship with each story. Known findings go to epic E-SEC.
+## Current phase (ADR-0023, amends ADR-0017)
+Security hardening resumed: E-SEC stories run now; adversarial review applies again to stories touching `firestore.rules`. Spec: `docs/spec/85-security.md`.
 
 ## Non-negotiables
 
