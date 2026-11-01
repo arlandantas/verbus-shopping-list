@@ -72,7 +72,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-062 | UX | Categorias: personalizadas primeiro, padrão com cadeado | done | S-053, S-054, S-055 |
 | S-063 | UX | Finalizar compra: redesign M3 | done | S-054, S-058 |
 | S-064 | UX | Família, convite e login: redesign M3 | done | S-053, S-054 |
-| S-065 | UX | Histórico: redesign M3 (meses e mês) | todo | S-053, S-055 |
+| S-065 | UX | Histórico: redesign M3 (meses e mês) | done | S-053, S-055 |
 | S-066 | UX | Histórico: agrupar por compra finalizada | todo | S-065 |
 | S-067 | UX | Regras e dados: editar linhas de compras passadas (ADR-0021) | todo | S-066 |
 | S-068 | UX | Histórico: editar item comprado | todo | S-067 |
