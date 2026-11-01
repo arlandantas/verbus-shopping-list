@@ -9,11 +9,11 @@ const ROW =
 
 let navigating = false
 
-/** Bottom sheet to switch the active group (ADR-0024). Create/join entries land on the Grupo tab (S-091 adds the flows). */
+/** Bottom sheet to switch the active group (ADR-0024). Create/join entries open the matching form on the Grupo tab (S-091). */
 export function GroupSwitcher({ onClose }: { onClose: () => void }) {
   const { family, groups, setActiveGroup } = useFamily()
   const navigate = useNavigate()
-  const go = () => {
+  const go = (action: 'create' | 'join') => {
     if (navigating) return
     navigating = true
     // The sheet unwinds its own history entry asynchronously (and unmounts us): navigate after
@@ -22,7 +22,7 @@ export function GroupSwitcher({ onClose }: { onClose: () => void }) {
       window.removeEventListener('popstate', run)
       clearTimeout(timer)
       navigating = false
-      void navigate('/grupo')
+      void navigate('/grupo', { state: { action } })
     }
     const timer = setTimeout(run, 500)
     window.addEventListener('popstate', run)
@@ -56,13 +56,13 @@ export function GroupSwitcher({ onClose }: { onClose: () => void }) {
           )
         })}
         <li>
-          <button type="button" className={ROW} onClick={go}>
+          <button type="button" className={ROW} onClick={() => go('create')}>
             <Icon name="add" />
             {strings.groups.createNew}
           </button>
         </li>
         <li>
-          <button type="button" className={ROW} onClick={go}>
+          <button type="button" className={ROW} onClick={() => go('join')}>
             <Icon name="group" />
             {strings.groups.joinWithCode}
           </button>

@@ -30,7 +30,7 @@ Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Grupo**.
 13. Grupo → Categorias: as personalizadas aparecem primeiro; criar, renomear, excluir uma própria. As padrão ficam fixas (cadeado, sem editar/excluir).
 14. **Carla:** criar um grupo novo, copiar o convite; entrar com o código/link em outra conta.
 15. **Sair:** Grupo → sair; aparece diálogo de confirmação; cancelar mantém a sessão, confirmar volta ao login.
-16. **Trocar de grupo:** na Lista, tocar no título (ou na seta) abre o sheet com os grupos, o ativo marcado; escolher outro mostra os itens dele (Lista, Despensa, Histórico). Com um só grupo o título também abre o sheet. "Criar novo grupo" e "Entrar com código" levam à aba Grupo. Recarregar mantém o grupo escolhido.
+16. **Trocar de grupo:** na Lista, tocar no título (ou na seta) abre o sheet com os grupos, o ativo marcado; escolher outro mostra os itens dele (Lista, Despensa, Histórico). Com um só grupo o título também abre o sheet. "Criar novo grupo" e "Entrar com código" levam à aba Grupo já com o formulário correspondente aberto. Recarregar mantém o grupo escolhido.
     **Mais grupos (S-091):** na aba Grupo, "Criar novo grupo" e "Entrar em outro grupo" abrem os formulários; sucesso ativa o novo grupo e volta à Lista. Abrir o convite de um grupo em que já está troca para ele com "Você já está neste grupo". Com 10 grupos aparece "Limite de 10 grupos atingido" e as ações ficam desabilitadas.
 17. **Virada do mês:** aviso "recorrentes voltaram para a lista" na 1ª abertura do mês.
 

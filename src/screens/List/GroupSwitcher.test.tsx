@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { act, fireEvent, render, waitFor, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { strings } from '@/strings/pt-BR'
 import { GroupSwitcher } from './GroupSwitcher'
 
@@ -16,12 +16,16 @@ vi.mock('@/app/FamilyProvider', () => ({
   }),
 }))
 
+function Loc() {
+  const action = (useLocation().state as { action?: string } | null)?.action
+  return <p>aba grupo {action}</p>
+}
 const renderIt = (onClose = vi.fn()) => {
   const view = render(
     <MemoryRouter initialEntries={['/']}>
       <Routes>
         <Route path="/" element={<GroupSwitcher onClose={onClose} />} />
-        <Route path="/grupo" element={<p>aba grupo</p>} />
+        <Route path="/grupo" element={<Loc />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -49,7 +53,21 @@ describe('GroupSwitcher', () => {
     renderIt()
     fireEvent.click(screen.getByRole('button', { name: strings.groups.createNew }))
     act(() => window.dispatchEvent(new PopStateEvent('popstate'))) // the sheet's own history unwind
-    await waitFor(() => expect(screen.getByText('aba grupo')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/aba grupo/)).toBeInTheDocument())
+  })
+
+  it('S-091: create and join entries pass the matching action to /grupo', async () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.joinWithCode }))
+    pop()
+    await waitFor(() => expect(screen.getByText('aba grupo join')).toBeInTheDocument())
+  })
+
+  it('S-091: create entry passes action create', async () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.createNew }))
+    pop()
+    await waitFor(() => expect(screen.getByText('aba grupo create')).toBeInTheDocument())
   })
 
   it('S-090: double tap on create closes once and navigates once', async () => {
@@ -61,7 +79,7 @@ describe('GroupSwitcher', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
     expect(add.mock.calls.filter(([t]) => t === 'popstate')).toHaveLength(1)
     pop()
-    await waitFor(() => expect(screen.getByText('aba grupo')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/aba grupo/)).toBeInTheDocument())
     add.mockRestore()
   })
 
@@ -82,6 +100,6 @@ describe('GroupSwitcher', () => {
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
     expect(onClose).toHaveBeenCalled()
     pop()
-    expect(screen.queryByText('aba grupo')).not.toBeInTheDocument()
+    expect(screen.queryByText(/aba grupo/)).not.toBeInTheDocument()
   })
 })

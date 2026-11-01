@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { MAX_GROUPS_PER_USER } from '@/data/families'
@@ -20,12 +20,16 @@ import '../auth.css'
 export function FamilyScreen() {
   const family = useFamily()
   const navigate = useNavigate()
+  const location = useLocation()
   const atLimit = family.groups.length >= MAX_GROUPS_PER_USER
   const done = (id: string) => {
     family.setActiveGroup(id)
     void navigate('/')
   }
-  const [action, setAction] = useState<'create' | 'join' | null>(null)
+  const [action, setAction] = useState<'create' | 'join' | null>(() => {
+    const a = (location.state as { action?: unknown } | null)?.action
+    return a === 'create' || a === 'join' ? a : null
+  })
   const [confirmOut, setConfirmOut] = useState(false)
   const t = strings.family
   const names = useMemberNames(family.status === 'ready' ? family.family.id : undefined)

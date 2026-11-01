@@ -27,9 +27,9 @@ vi.mock('@/app/FamilyProvider', () => ({
   }),
 }))
 
-function renderIt() {
+function renderIt(state?: unknown) {
   return render(
-    <MemoryRouter initialEntries={['/grupo']}>
+    <MemoryRouter initialEntries={[{ pathname: '/grupo', state }]}>
       <Routes>
         <Route path="/grupo" element={<FamilyScreen />} />
         <Route path="/" element={<p>lista page</p>} />
@@ -143,5 +143,21 @@ describe('FamilyScreen extra groups (S-091)', () => {
     expect(screen.getByText(strings.invite.groupLimit)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: strings.groups.createNew })).toBeDisabled()
     expect(screen.getByRole('button', { name: strings.groups.joinAnother })).toBeDisabled()
+  })
+})
+
+describe('FamilyScreen route action (S-091)', () => {
+  it('S-091: state.action join/create opens the matching form; none opens neither', () => {
+    fam.groups = [{ id: 'f1' }]
+    const { unmount } = renderIt({ action: 'join' })
+    expect(screen.getByLabelText(strings.family.join.codeLabel)).toBeInTheDocument()
+    expect(screen.queryByLabelText(strings.family.nameLabel)).not.toBeInTheDocument()
+    unmount()
+    const second = renderIt({ action: 'create' })
+    expect(screen.getByLabelText(strings.family.nameLabel)).toBeInTheDocument()
+    second.unmount()
+    renderIt()
+    expect(screen.queryByLabelText(strings.family.nameLabel)).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(strings.family.join.codeLabel)).not.toBeInTheDocument()
   })
 })
