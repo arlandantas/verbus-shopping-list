@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { createFamily } from '@/data/families'
@@ -43,6 +43,9 @@ export function FamilyScreen() {
         <h1 className="min-h-12 text-xl">{family.family.name}</h1>
         <p>{t.members(family.family.members.length)}</p>
         <InviteCard code={family.family.inviteCode} familyName={family.family.name} />
+        <Link to="/categorias" className={`${button} flex items-center justify-center bg-gray-200`}>
+          {strings.categories.link}
+        </Link>
         <button
           type="button"
           onClick={() => void navigate('/')}
