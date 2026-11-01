@@ -15,7 +15,10 @@ App web instalável (PWA) para listas de compras compartilhadas em um núcleo fa
 - Leitura de QR Code da NFC-e com vínculo por IA (V0.1/V1) → `90-nfce.md`.
 - Comparativo de preços mês a mês e por mercado (V1).
 - Sugestão de itens que costumam acabar; notificações push.
-- Várias listas por família com acesso por lista (épico E-LISTS) e servidor MCP para agentes de IA/chatbot (épico E-MCP).
+- Servidor MCP para agentes de IA/chatbot (épico E-MCP).
+
+## Pós-MVP planejado
+- Vários grupos por usuário (épico E-LISTS, ADR-0024): na UI "Grupo"; cada grupo tem sua lista, Despensa, histórico e categorias; seletor do grupo ativo na Lista. Listas separadas (mercado, roupas, desejos) viram grupos distintos.
 
 ## Riscos
 - iOS pode limpar dados locais de PWAs pouco usados → a nuvem é a fonte da verdade.

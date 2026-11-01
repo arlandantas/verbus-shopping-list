@@ -10,13 +10,13 @@
 5. Alvos de toque ≥48 px; contraste AA nos dois temas.
 
 ## Navegação
-1. Abas inferiores fixas com ícone e rótulo, visíveis em todas as telas depois de entrar na família:
-   - **Lista** (`/`): lista do mês, adicionar, marcar no carrinho, finalizar compra.
+1. Abas inferiores fixas com ícone e rótulo, visíveis em todas as telas depois de entrar em um grupo:
+   - **Lista** (`/`): seletor do grupo ativo no título (ADR-0024), lista do mês, adicionar, marcar no carrinho, finalizar compra.
    - **Despensa** (`/despensa`): recorrentes.
    - **Histórico** (`/historico`, `/historico/:mes`).
-   - **Família** (`/familia`): convite, acesso a Categorias, sair.
+   - **Grupo** (`/grupo`; `/familia` redireciona): convite, criar/entrar em outro grupo, acesso a Categorias, sair.
 2. Subtelas (Categorias, mês do histórico, Finalizar compra) têm barra superior com voltar e mantêm a aba-mãe ativa.
-3. Login, criar/entrar na família e abrir convite: sem abas.
+3. Login, criar/entrar em grupo e abrir convite: sem abas.
 4. Links antigos `/mercado` e `/item/:id` levam à Lista.
 
 ## Componentes reaproveitáveis

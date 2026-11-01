@@ -4,6 +4,7 @@ Uma linha por história. Status: `todo` · `doing` · `done` · `blocked`.
 Detalhe da história: `stories/S-NNN.md`. Linhas `E-Mx` são épicos: o Arquiteto os detalha em histórias antes de iniciar o marco.
 Ordem = ordem de execução. Tudo até S-068 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
 E-SEC/E-M6 (ADR-0023): regras S-075..S-079 → PWA S-080..S-083 → web S-084..S-086; tudo sem input do usuário.
+E-LISTS (ADR-0024): S-087..S-092 rodam no fim, depois de S-086 (não logo após S-079): S-087 reescreve `users`/`families` em `firestore.rules` e as suítes de S-076..S-079, S-088 mexe no seed que S-086 também toca, e o portão de lançamento da ADR-0023 não deve atrasar. Tudo sem input do usuário.
 E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) → lista/mercado (S-058..S-060) → demais telas (S-061..S-065) → histórico por compra (S-066) → editar histórico (S-067, S-068).
 
 | ID | Marco | Título | Status | Deps |
@@ -20,7 +21,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-010 | M1 | Login (Google e e-mail/senha) e sessão | done | S-004, S-009 |
 | S-011 | M1 | Criar família e compartilhar convite | done | S-010 |
 | S-012 | M1 | Entrar na família por código ou link | done | S-011 |
-| S-014 | M1 | Regras: uma família por usuário | done | S-008 |
+| S-014 | M1 | Regras: uma família por usuário (substituída pela ADR-0024 em S-087) | done | S-008 |
 | S-015 | M2 | Regras: `items` | done | S-014 |
 | S-016 | M2 | Regras: `catalog` (fonte do autocompletar) | done | S-015 |
 | S-017 | M2 | Domínio: texto livre, `nameKey` e unidades | done | S-001 |
@@ -98,5 +99,11 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-084 | SEC | CSP por meta tag compatível com Firebase (hospedagem estática) | todo | S-083 |
 | S-085 | SEC | CI: varredura de segredos e auditoria de dependências | todo | — |
 | S-086 | SEC | Build de produção sem contas de teste nem painel de login rápido | todo | S-085 |
-| E-LISTS | — | Épico futuro: várias listas por família (mercado, roupas, desejos) com acesso por lista; exige ADR de modelo de dados e regras antes das histórias | todo | E-UX |
+| E-LISTS | LISTS | Épico: vários grupos por usuário ("Grupo" na UI), seletor de grupo ativo, categorias como sugestões (ADR-0024) | todo | S-086 |
+| S-087 | LISTS | Regras: vários grupos por usuário (livro-razão `groupIds`, limite 10) | todo | S-079 |
+| S-088 | LISTS | Camada de dados: criar e entrar com vários grupos, listar meus grupos | todo | S-087 |
+| S-089 | LISTS | Grupo ativo: provider resolve e lembra o grupo por aparelho | todo | S-088 |
+| S-090 | LISTS | UI: seletor de grupo na Lista e "Família" vira "Grupo" | todo | S-089 |
+| S-091 | LISTS | Criar outro grupo e entrar por convite já estando em um | todo | S-090 |
+| S-092 | LISTS | Categorias: sem semente, sugestões com um toque | todo | S-091 |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |
