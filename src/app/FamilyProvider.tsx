@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '@/app/AuthProvider'
-import type { Family } from '@/data/converters'
+import type { Family, UserProfile } from '@/data/converters'
 import { openCycleIfNeeded } from '@/data/cycles'
-import { watchFamily } from '@/data/families'
+import { watchMyGroups } from '@/data/families'
 import { ensureMemberProfile } from '@/data/members'
 import { watchUser } from '@/data/users'
 import { reportWriteError } from '@/data/writeErrors'
@@ -12,6 +12,10 @@ export type FamilyState = {
   /** How many recurring items the month turn just returned (ADR-0013); 0 when none or dismissed. */
   recurringAdded: number
   dismissRecurringNotice: () => void
+  /** All groups the user belongs to, oldest first (ADR-0024). */
+  groups: Family[]
+  /** Switches the active group and remembers it on this device. */
+  setActiveGroup: (id: string) => void
 } & (
   | { status: 'loading'; family: null }
   | { status: 'none'; family: null }
@@ -19,65 +23,113 @@ export type FamilyState = {
   | { status: 'error'; family: null; retry: () => void }
 )
 
-const NO_NOTICE = { recurringAdded: 0, dismissRecurringNotice: () => undefined }
+const NO_NOTICE = {
+  recurringAdded: 0,
+  dismissRecurringNotice: () => undefined,
+  groups: [] as Family[],
+  setActiveGroup: () => undefined,
+}
 const LOADING: FamilyState = { ...NO_NOTICE, status: 'loading', family: null }
 const FamilyContext = createContext<FamilyState>(LOADING)
 
-/** Resolves the signed-in user's family from users/{uid}.familyId. Mount only when signed in, keyed by uid so state resets per user. */
+const storageKey = (uid: string) => `activeGroup:${uid}`
+function readStored(uid: string | undefined): string | null {
+  if (!uid) return null
+  try {
+    return localStorage.getItem(storageKey(uid))
+  } catch {
+    return null
+  }
+}
+
+/** Resolves the signed-in user's active group among watchMyGroups (ADR-0024). Mount only when signed in. */
 export function FamilyProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const uid = user?.uid
-  const [familyId, setFamilyId] = useState<string | null | undefined>(undefined)
-  const [displayName, setDisplayName] = useState('')
-  const [family, setFamily] = useState<Family | null>(null)
+  const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined)
+  const [groups, setGroups] = useState<Family[] | undefined>(undefined)
+  const [preferred, setPreferred] = useState<string | null>(() => readStored(uid))
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const [recurringAdded, setRecurringAdded] = useState(0)
+  const ensured = useRef(new Set<string>())
+  const opened = useRef(new Set<string>())
 
   useEffect(() => {
     if (!uid) return
-    return watchUser(uid, (profile) => {
-      setFamilyId(profile ? profile.familyId : undefined)
-      setDisplayName(profile?.displayName ?? '')
-    })
+    return watchUser(uid, setProfile)
   }, [uid])
 
   useEffect(() => {
-    if (!familyId) return
-    return watchFamily(familyId, setFamily, () => setFailed(true))
-  }, [familyId, attempt])
+    if (!uid) return
+    return watchMyGroups(uid, setGroups, () => setFailed(true))
+  }, [uid, attempt])
 
-  const readyFamilyId = familyId && family?.id === familyId ? familyId : undefined
-  useEffect(() => {
-    if (uid && readyFamilyId && displayName)
-      void ensureMemberProfile(readyFamilyId, uid, displayName)
-  }, [uid, readyFamilyId, displayName])
+  const displayName = profile?.displayName ?? ''
+  const resolved = groups && profile ? groups : undefined
+  const active =
+    resolved &&
+    (resolved.find((g) => g.id === preferred) ??
+      resolved.find((g) => g.id === profile?.familyId) ??
+      resolved[0] ??
+      null)
+  const activeId = active?.id
 
-  // ADR-0013: first online open of the month returns the recurring items (background, once per family).
   useEffect(() => {
-    if (!uid || !readyFamilyId) return
+    if (!uid || !activeId || !displayName || ensured.current.has(`${uid}/${activeId}`)) return
+    ensured.current.add(`${uid}/${activeId}`)
+    void ensureMemberProfile(activeId, uid, displayName)
+  }, [uid, activeId, displayName])
+
+  // ADR-0013: first online open of the month returns the recurring items (once per group per session, plus on reconnect).
+  useEffect(() => {
+    if (!uid || !activeId) return
+    let current = true
     const open = () => {
-      openCycleIfNeeded(readyFamilyId, cycleOf(new Date()))
+      openCycleIfNeeded(activeId, cycleOf(new Date()))
         .then((r) => {
-          if (r.added > 0) setRecurringAdded(r.added)
+          if (current && r.added > 0) setRecurringAdded(r.added)
         })
         .catch(reportWriteError)
     }
-    open()
+    if (!opened.current.has(`${uid}/${activeId}`)) {
+      opened.current.add(`${uid}/${activeId}`)
+      open()
+    }
     window.addEventListener('online', open)
-    return () => window.removeEventListener('online', open)
-  }, [uid, readyFamilyId])
+    return () => {
+      current = false
+      window.removeEventListener('online', open)
+    }
+  }, [uid, activeId])
 
   const retry = () => {
     setFailed(false)
     setAttempt((n) => n + 1)
   }
+  const setActiveGroup = (id: string) => {
+    if (id === activeId) return
+    setRecurringAdded(0)
+    setPreferred(id)
+    if (uid) {
+      try {
+        localStorage.setItem(storageKey(uid), id)
+      } catch {
+        // storage unavailable: the choice lasts for this session only
+      }
+    }
+  }
 
-  const notice = { recurringAdded, dismissRecurringNotice: () => setRecurringAdded(0) }
+  const common = {
+    recurringAdded,
+    dismissRecurringNotice: () => setRecurringAdded(0),
+    groups: resolved ?? [],
+    setActiveGroup,
+  }
   let state: FamilyState = LOADING
-  if (familyId === null) state = { ...notice, status: 'none', family: null }
-  else if (familyId && family?.id === familyId) state = { ...notice, status: 'ready', family }
-  else if (familyId && failed) state = { ...notice, status: 'error', family: null, retry }
+  if (active === null) state = { ...common, status: 'none', family: null }
+  else if (active) state = { ...common, status: 'ready', family: active }
+  else if (failed) state = { ...common, status: 'error', family: null, retry }
   return <FamilyContext.Provider value={state}>{children}</FamilyContext.Provider>
 }
 

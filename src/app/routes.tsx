@@ -49,7 +49,7 @@ function FamilyRoutes(): ReactNode {
       </main>
     )
   return (
-    <Routes>
+    <Routes key={family.family?.id}>
       <Route
         path="/entrar"
         element={<AfterLogin fallback={status === 'ready' ? '/' : '/familia'} />}

@@ -68,16 +68,16 @@ export function InviteScreen() {
     try {
       await joinFamilyByCode(code)
     } catch (e) {
+      if (e instanceof AlreadyMember) {
+        family.setActiveGroup(e.familyId) // stays "joined": the effect below goes home on the group
+        return
+      }
       joinPending = false
       setJoined(false)
       if (e instanceof InviteNotFound) setPreview({ state: 'notFound' })
       else
         setJoinError(
-          e instanceof AlreadyMember
-            ? strings.invite.alreadyInFamily
-            : e instanceof GroupLimitReached
-              ? strings.invite.groupLimit
-              : strings.invite.error,
+          e instanceof GroupLimitReached ? strings.invite.groupLimit : strings.invite.error,
         )
     } finally {
       setBusy(false)

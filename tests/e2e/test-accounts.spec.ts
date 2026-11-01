@@ -30,3 +30,10 @@ test('S-050 AC6: the account without a family lands on create/join', async ({ pa
   await expect(page).toHaveURL(/\/familia$/)
   await expect(page.getByLabel(strings.family.nameLabel)).toBeVisible()
 })
+
+test('S-089: legacy-profile account (Beto) also lands on the list', async ({ page }) => {
+  await page.goto('/entrar')
+  await page.getByRole('button', { name: new RegExp(account('beto').displayName) }).click()
+  await expect(page.getByLabel(strings.list.addLabel)).toBeVisible()
+  await expect(page).not.toHaveURL(/\/familia$/)
+})
