@@ -47,9 +47,9 @@ Ordem = ordem de execução. Tudo até S-049 roda só com emuladores (sem input 
 | S-039 | M5 | Camada de dados: `checkout` (finalizar compra) | done | S-033, S-035, S-037 |
 | S-040 | M5 | Camada de dados: leitura do histórico e mercados usados | done | S-039 |
 | S-041 | M5 | Camada de dados: abrir o ciclo e devolver recorrentes | done | S-034, S-035 |
-| S-042 | M5 | Tela Categorias (criar, renomear, excluir) | todo | S-037 |
-| S-050 | M5 | Contas de teste locais e login rápido (emulador) | todo | S-012 |
-| S-043 | M5 | Categoria no detalhe do item e no autocompletar | todo | S-037 |
+| S-042 | M5 | Tela Categorias (criar, renomear, excluir) | done | S-037 |
+| S-050 | M5 | Contas de teste locais e login rápido (emulador) | done | S-012 |
+| S-043 | M5 | Categoria no detalhe do item e no autocompletar | done | S-037 |
 | S-044 | M5 | Agrupar por categoria na Lista e no Modo mercado | todo | S-037 |
 | S-045 | M5 | Preço no detalhe do item comprado | todo | S-038, S-043, S-035 |
 | S-046 | M5 | Tela Finalizar compra | todo | S-040, S-044, S-045 |
