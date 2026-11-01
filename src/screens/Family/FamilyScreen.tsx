@@ -1,29 +1,32 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
-import { createFamily } from '@/data/families'
-import { useOnlineStatus } from '@/hooks/useOnlineStatus'
+import { MAX_GROUPS_PER_USER } from '@/data/families'
 import { Dialog } from '@/components/m3/Dialog'
 import { Button } from '@/components/m3/Button'
 import { Icon } from '@/components/m3/Icon'
 import { IconButton } from '@/components/m3/IconButton'
 import { ListItem } from '@/components/m3/ListItem'
-import { TextField } from '@/components/m3/TextField'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 import { InviteCard } from './InviteCard'
+import { CreateForm } from './CreateForm'
 import { JoinForm } from './JoinForm'
 import '../auth.css'
 
 export function FamilyScreen() {
   const family = useFamily()
-  const online = useOnlineStatus()
-  const [name, setName] = useState('')
-  const [busy, setBusy] = useState(false)
+  const navigate = useNavigate()
+  const atLimit = family.groups.length >= MAX_GROUPS_PER_USER
+  const done = (id: string) => {
+    family.setActiveGroup(id)
+    void navigate('/')
+  }
+  const [action, setAction] = useState<'create' | 'join' | null>(null)
   const [confirmOut, setConfirmOut] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const t = strings.family
   const names = useMemberNames(family.status === 'ready' ? family.family.id : undefined)
 
@@ -39,21 +42,6 @@ export function FamilyScreen() {
     window.addEventListener('popstate', run)
     setTimeout(run, 500) // fallback if no history entry was unwound
     setConfirmOut(false)
-  }
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    const trimmed = name.trim()
-    if (!trimmed || !online) return
-    setBusy(true)
-    setError(null)
-    try {
-      await createFamily(trimmed) // the family snapshot switches the screen to the invite view
-    } catch {
-      setError(t.createError)
-    } finally {
-      setBusy(false)
-    }
   }
 
   let body
@@ -85,29 +73,35 @@ export function FamilyScreen() {
             to="/categorias"
           />
         </ul>
+        {atLimit && (
+          <p role="alert" className="auth-error">
+            {strings.invite.groupLimit}
+          </p>
+        )}
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="tonal"
+            disabled={atLimit}
+            onClick={() => setAction(action === 'create' ? null : 'create')}
+          >
+            {strings.groups.createNew}
+          </Button>
+          <Button
+            variant="tonal"
+            disabled={atLimit}
+            onClick={() => setAction(action === 'join' ? null : 'join')}
+          >
+            {strings.groups.joinAnother}
+          </Button>
+        </div>
+        {!atLimit && action === 'create' && <CreateForm onCreated={done} />}
+        {!atLimit && action === 'join' && <JoinForm onJoined={done} />}
       </>
     )
   } else {
     body = (
       <>
-        <form onSubmit={(e) => void onSubmit(e)} className="auth-form">
-          <TextField
-            label={t.nameLabel}
-            name="familyName"
-            maxLength={60}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          {!online && <p className="auth-warning">{t.offlineWarning}</p>}
-          {error && (
-            <p role="alert" className="auth-error">
-              {error}
-            </p>
-          )}
-          <Button type="submit" disabled={busy || !online || !name.trim()}>
-            {busy ? t.creating : t.create}
-          </Button>
-        </form>
+        <CreateForm />
         <JoinForm />
       </>
     )

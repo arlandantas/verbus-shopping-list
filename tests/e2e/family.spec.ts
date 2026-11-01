@@ -99,3 +99,15 @@ test('S-011 AC5: offline, create is disabled with a pt-BR warning', async ({ pag
   await expect(page.getByRole('button', { name: strings.family.create })).toBeDisabled()
   await expect(page.getByText(strings.family.offlineWarning)).toBeVisible()
 })
+
+test('S-091 AC1/AC2: a user with a group creates another from the Grupo tab and lands on its list', async ({
+  page,
+}) => {
+  await signUp(page)
+  await createFamily(page)
+  await page.getByRole('button', { name: strings.groups.createNew }).click()
+  await page.getByLabel(strings.family.nameLabel).fill('Sítio')
+  await page.getByRole('button', { name: strings.family.create }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByRole('heading', { name: 'Sítio' })).toBeVisible()
+})

@@ -69,6 +69,7 @@ export const strings = {
     active: 'Grupo ativo',
     createNew: 'Criar novo grupo',
     joinWithCode: 'Entrar com código',
+    joinAnother: 'Entrar em outro grupo',
   },
   invite: {
     title: (name: string) => `Entrar em ${name}?`,
@@ -77,7 +78,7 @@ export const strings = {
     notFound: 'Convite não encontrado',
     offlineWarning: 'Você está offline. Conecte-se à internet para entrar no grupo.',
     alreadyMember: 'Você já está neste grupo',
-    groupLimit: 'Você chegou ao limite de 10 grupos.',
+    groupLimit: 'Limite de 10 grupos atingido',
     error: 'Não foi possível entrar no grupo. Tente novamente.',
     back: 'Voltar',
   },

@@ -8,7 +8,7 @@ import { strings } from '@/strings/pt-BR'
 import '../auth.css'
 
 /** Join an existing family by typing the invite code; the family snapshot switches the screen. */
-export function JoinForm() {
+export function JoinForm({ onJoined }: { onJoined?: (familyId: string) => void } = {}) {
   const { setActiveGroup } = useFamily()
   const [code, setCode] = useState('')
   const online = useOnlineStatus()
@@ -24,12 +24,15 @@ export function JoinForm() {
     setError(null)
     setInfo(null)
     try {
-      await joinFamilyByCode(code)
+      const { familyId } = await joinFamilyByCode(code)
+      setActiveGroup(familyId)
+      onJoined?.(familyId)
     } catch (err) {
       if (err instanceof InviteNotFound) setError(t.notFound)
       else if (err instanceof AlreadyMember) {
         setActiveGroup(err.familyId)
         setInfo(strings.invite.alreadyMember)
+        onJoined?.(err.familyId)
       } else if (err instanceof GroupLimitReached) setError(strings.invite.groupLimit)
       else setError(t.error)
     } finally {

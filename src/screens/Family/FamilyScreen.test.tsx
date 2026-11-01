@@ -7,7 +7,9 @@ import { strings } from '@/strings/pt-BR'
 
 const h = vi.hoisted(() => ({ signOut: vi.fn() }))
 vi.mock('@/data/auth', () => ({ signOut: h.signOut }))
+const fam = vi.hoisted(() => ({ groups: [{ id: 'f1' }] as { id: string }[], setActive: vi.fn() }))
 vi.mock('@/data/families', () => ({
+  MAX_GROUPS_PER_USER: 10,
   createFamily: vi.fn(),
   joinFamilyByCode: vi.fn(),
   InviteNotFound: class extends Error {},
@@ -19,6 +21,8 @@ vi.mock('@/hooks/useMemberNames', () => ({ useMemberNames: () => ({ u1: 'Ana' })
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({
     status: 'ready',
+    groups: fam.groups,
+    setActiveGroup: fam.setActive,
     family: { id: 'f1', name: 'Casa', inviteCode: 'ABC123', members: ['u1', 'u2'] },
   }),
 }))
@@ -28,6 +32,7 @@ function renderIt() {
     <MemoryRouter initialEntries={['/grupo']}>
       <Routes>
         <Route path="/grupo" element={<FamilyScreen />} />
+        <Route path="/" element={<p>lista page</p>} />
         <Route path="/categorias" element={<p>cats page</p>} />
       </Routes>
     </MemoryRouter>,
@@ -95,5 +100,48 @@ describe('FamilyScreen (S-064 AC3)', () => {
     renderIt()
     fireEvent.click(screen.getByRole('link', { name: strings.categories.link }))
     expect(screen.getByText('cats page')).toBeInTheDocument()
+  })
+})
+
+describe('FamilyScreen extra groups (S-091)', () => {
+  beforeEach(() => {
+    fam.groups = [{ id: 'f1' }]
+    fam.setActive.mockClear()
+  })
+  it('S-091 AC1: shows create/join actions that open the existing forms', async () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.createNew }))
+    expect(screen.getByLabelText(strings.family.nameLabel)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.joinAnother }))
+    expect(screen.getByLabelText(strings.family.join.codeLabel)).toBeInTheDocument()
+  })
+  it('S-091 AC2: creating a group activates it and returns to the list', async () => {
+    const { createFamily } = await import('@/data/families')
+    vi.mocked(createFamily).mockResolvedValueOnce({ familyId: 'f9', inviteCode: 'X' })
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.createNew }))
+    fireEvent.change(screen.getByLabelText(strings.family.nameLabel), { target: { value: 'Novo' } })
+    fireEvent.click(screen.getByRole('button', { name: strings.family.create }))
+    await waitFor(() => expect(fam.setActive).toHaveBeenCalledWith('f9'))
+    expect(await screen.findByText('lista page')).toBeInTheDocument()
+  })
+  it('S-091 AC2: joining by code activates the group and returns to the list', async () => {
+    const { joinFamilyByCode } = await import('@/data/families')
+    vi.mocked(joinFamilyByCode).mockResolvedValueOnce({ familyId: 'f8' })
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.joinAnother }))
+    fireEvent.change(screen.getByLabelText(strings.family.join.codeLabel), {
+      target: { value: 'ABCD2345' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: strings.family.join.submit }))
+    await waitFor(() => expect(fam.setActive).toHaveBeenCalledWith('f8'))
+    expect(await screen.findByText('lista page')).toBeInTheDocument()
+  })
+  it('S-091 AC5: with 10 groups the actions are disabled and the limit notice shows', () => {
+    fam.groups = Array.from({ length: 10 }, (_, i) => ({ id: `g${i}` }))
+    renderIt()
+    expect(screen.getByText(strings.invite.groupLimit)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: strings.groups.createNew })).toBeDisabled()
+    expect(screen.getByRole('button', { name: strings.groups.joinAnother })).toBeDisabled()
   })
 })

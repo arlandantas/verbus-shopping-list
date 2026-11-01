@@ -15,7 +15,13 @@ vi.mock('@/data/families', () => ({
   joinFamilyByCode: vi.fn(),
   getInvitePreview: () => Promise.resolve({ familyId: 'f', familyName: 'Casa' }),
   InviteNotFound: class extends Error {},
-  AlreadyMember: class extends Error {},
+  AlreadyMember: class extends Error {
+    familyId: string
+    constructor(familyId: string) {
+      super()
+      this.familyId = familyId
+    }
+  },
   GroupLimitReached: class extends Error {},
 }))
 
@@ -55,5 +61,38 @@ describe('InviteScreen offline', () => {
     await waitFor(() => expect(setActiveGroup).toHaveBeenCalledWith('f'))
     familyStatus = 'none'
     online = false
+  })
+})
+
+describe('InviteScreen errors (S-091)', () => {
+  async function confirmWith(err: Error) {
+    familyStatus = 'ready'
+    online = true
+    const { joinFamilyByCode } = await import('@/data/families')
+    vi.mocked(joinFamilyByCode).mockRejectedValueOnce(err)
+    render(
+      <MemoryRouter>
+        <InviteScreen />
+      </MemoryRouter>,
+    )
+    const btn = await waitFor(() => screen.getByRole('button', { name: strings.invite.confirm }))
+    btn.click()
+  }
+  afterEach(() => {
+    familyStatus = 'none'
+    online = false
+    setActiveGroup.mockClear()
+  })
+  it('S-091 AC4: AlreadyMember switches to that group without an error', async () => {
+    const { AlreadyMember } = await import('@/data/families')
+    await confirmWith(new AlreadyMember('gX'))
+    await waitFor(() => expect(setActiveGroup).toHaveBeenCalledWith('gX'))
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+  it('S-091 AC5: GroupLimitReached shows the limit message', async () => {
+    const { GroupLimitReached } = await import('@/data/families')
+    await confirmWith(new GroupLimitReached())
+    expect(await screen.findByRole('alert')).toHaveTextContent(strings.invite.groupLimit)
+    expect(setActiveGroup).not.toHaveBeenCalled()
   })
 })

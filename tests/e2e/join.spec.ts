@@ -130,3 +130,30 @@ test('S-077 AC5: rotating the code shows a new one and the old one stops working
   await expect(b.getByRole('button', { name: strings.invite.confirm })).toBeVisible()
   await b.context().close()
 })
+
+test('S-091 AC6: A joins B by link, B is active, back to A via the switcher, items stay isolated', async ({
+  page,
+  browser,
+}) => {
+  await signUp(page, 'ana@example.com')
+  await createFamily(page, 'Casa')
+  await page.getByRole('link', { name: strings.nav.list, exact: true }).click()
+  await page.getByLabel(strings.list.addLabel).fill('arroz')
+  await page.getByLabel(strings.list.addLabel).press('Enter')
+  await expect(page.getByRole('checkbox', { name: /arroz/ })).toBeVisible()
+
+  const b = await newPage(browser)
+  await signUp(b, 'beto@example.com')
+  const otherCode = await createFamily(b, 'Outra')
+
+  await page.goto(`/convite/${otherCode}`)
+  await page.getByRole('button', { name: strings.invite.confirm }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByRole('heading', { name: 'Outra' })).toBeVisible()
+  await expect(page.getByRole('checkbox', { name: /arroz/ })).toHaveCount(0)
+
+  await page.getByRole('button', { name: strings.groups.switchLabel }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Casa' }).click()
+  await expect(page.getByRole('checkbox', { name: /arroz/ })).toBeVisible()
+  await b.context().close()
+})
