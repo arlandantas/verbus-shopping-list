@@ -14,7 +14,11 @@ export function TopAppBar({ title, subtitle, navigation, actions }: Props) {
       {navigation}
       <div className="m3-top-bar__titles">
         <h1 className="m3-top-bar__title">{title}</h1>
-        {subtitle && <p className="m3-top-bar__subtitle">{subtitle}</p>}
+        {subtitle && (
+          <p className="m3-top-bar__subtitle" aria-live="polite">
+            {subtitle}
+          </p>
+        )}
       </div>
       {actions && <div className="m3-top-bar__actions">{actions}</div>}
     </header>

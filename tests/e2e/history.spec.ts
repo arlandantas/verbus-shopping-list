@@ -9,15 +9,14 @@ test.beforeEach(async () => {
   await clearEmulators()
 })
 
-const row = (page: Page, name: string) => page.getByRole('button', { name: new RegExp(name) })
+const row = (page: Page, name: string) => page.getByRole('checkbox', { name: new RegExp(name) })
 
 test('S-047 AC4: checkout then history shows the month read-only with correct sums', async ({
   browser,
 }) => {
   const { ana } = await twoMembers(browser, ['arroz', 'leite'])
   for (const n of ['arroz', 'leite']) await row(ana, n).click()
-  for (const n of ['arroz', 'leite'])
-    await expect(row(ana, n)).toHaveAttribute('aria-pressed', 'true')
+  for (const n of ['arroz', 'leite']) await expect(row(ana, n)).toBeChecked()
   await ana.getByRole('link', { name: strings.checkout.link }).click()
   await ana.getByLabel(strings.checkout.priceFor('arroz')).fill('5,00')
   await ana.getByLabel(strings.checkout.priceFor('leite')).fill('3,50')
@@ -55,9 +54,8 @@ test('S-048 AC3: re-adding a history line puts it back on the list; history is u
   await ana.getByLabel(strings.list.addLabel).fill('2 kg feijão')
   await ana.getByLabel(strings.list.addLabel).press('Enter')
   await expect(ana.getByRole('listitem').filter({ hasText: 'feijão' })).toContainText('2 kg')
-  await ana.getByRole('button', { name: strings.market.enter }).click()
   await row(ana, 'feijão').click()
-  await expect(row(ana, 'feijão')).toHaveAttribute('aria-pressed', 'true')
+  await expect(row(ana, 'feijão')).toBeChecked()
   await ana.getByRole('link', { name: strings.checkout.link }).click()
   await ana.getByRole('button', { name: strings.checkout.finish, exact: true }).click()
   await expect(ana).toHaveURL(/\/$/)

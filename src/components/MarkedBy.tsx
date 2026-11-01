@@ -20,5 +20,5 @@ export function MarkedBy({
       : markedBy && names[markedBy]
         ? strings.markedBy.by(names[markedBy])
         : strings.markedBy.someone
-  return <span className="text-sm text-gray-700 no-underline">{text}</span>
+  return <span>{text}</span>
 }

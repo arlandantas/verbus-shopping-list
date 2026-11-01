@@ -56,9 +56,5 @@ export async function twoMembers(browser: Browser, items: string[], now?: Date) 
   await expect(beto.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await beto.goto('/')
   await expect(beto.getByLabel(strings.list.addLabel)).toBeVisible()
-  for (const p of [ana, beto]) {
-    await p.getByRole('button', { name: strings.market.enter }).click()
-    await expect(p).toHaveURL(/\/mercado$/)
-  }
   return { ana, beto }
 }

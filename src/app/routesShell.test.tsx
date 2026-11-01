@@ -17,7 +17,6 @@ vi.mock('@/screens/Family/FamilyScreen', () => ({ FamilyScreen: () => <p>familia
 vi.mock('@/screens/Invite/InviteScreen', () => ({ InviteScreen: () => <p>convite</p> }))
 vi.mock('@/screens/List/ListScreen', () => ({ ListScreen: () => <p>lista</p> }))
 vi.mock('@/screens/Pantry/PantryScreen', () => ({ PantryScreen: () => null }))
-vi.mock('@/screens/Market/MarketScreen', () => ({ MarketScreen: () => null }))
 vi.mock('@/screens/Checkout/CheckoutScreen', () => ({ CheckoutScreen: () => null }))
 vi.mock('@/screens/Categories/CategoriesScreen', () => ({ CategoriesScreen: () => null }))
 vi.mock('@/screens/History/HistoryScreen', () => ({ HistoryScreen: () => null }))

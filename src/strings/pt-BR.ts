@@ -67,8 +67,8 @@ export const strings = {
     add: 'Adicionar',
     empty: 'Sua lista está vazia. Adicione o primeiro item acima.',
     pendingSync: 'pendente de sincronização',
-    markBought: (name: string) => `Marcar ${name} como comprado`,
-    markPending: (name: string) => `Devolver ${name} para pendentes`,
+    addedToCart: 'Item adicionado ao carrinho',
+    undo: 'Desfazer',
     edit: (name: string) => `Editar ${name}`,
     writeError: 'Não foi possível salvar a alteração. Tente novamente.',
     suggestionsLabel: 'Sugestões',
@@ -79,12 +79,8 @@ export const strings = {
     by: (name: string) => `por ${name}`,
   },
   market: {
-    enter: 'Ir ao mercado',
-    exit: 'Sair',
-    title: 'Mercado',
     counter: (done: number, total: number) => `${done} de ${total} no carrinho`,
     allDone: 'Lista completa! Tudo no carrinho.',
-    empty: 'Nada na lista. Volte e adicione itens.',
   },
   checkout: {
     link: 'Finalizar compra',

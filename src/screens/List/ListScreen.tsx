@@ -1,17 +1,17 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
-import { IconButton } from '@/components/m3/IconButton'
+import { Snackbar } from '@/components/m3/Snackbar'
+import { Icon } from '@/components/m3/Icon'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { CategorySections } from '@/components/CategorySections'
 import { CycleNotice } from '@/components/CycleNotice'
 import { EditItemSheet } from '@/components/EditItemSheet'
-import { CheckoutLink } from '@/components/CheckoutLink'
 import { useCategories } from '@/hooks/useCategories'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import type { CatalogEntry, Item } from '@/data/converters'
-import { addItem, toggleItemStatus } from '@/data/items'
+import { addItem, setItemStatus, toggleItemStatus } from '@/data/items'
 import { toNameKey } from '@/domain/nameKey'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
 import { strings } from '@/strings/pt-BR'
@@ -28,8 +28,8 @@ export function ListScreen() {
   const categories = useCategories(family?.id)
   const names = useMemberNames(family?.id)
   const uid = useAuth().user?.uid
-  const navigate = useNavigate()
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [undo, setUndo] = useState<{ itemId: string; key: number } | null>(null)
   const pendingKeys = useMemo(
     () => new Set((items ?? []).filter((i) => i.status === 'pending').map((i) => i.nameKey)),
     [items],
@@ -52,27 +52,33 @@ export function ListScreen() {
       recurring: entry.recurring,
     })
   }
-  const onToggle = (item: Item) => toggleItemStatus(familyId, item)
+  const onToggle = (item: Item) => {
+    toggleItemStatus(familyId, item)
+    if (item.status === 'pending') setUndo({ itemId: item.id, key: Date.now() + Math.random() })
+    else setUndo(null)
+  }
+  const list = items ?? []
+  const done = list.filter((i) => i.status === 'bought').length
 
   return (
     <main className="mx-auto max-w-md">
       <TopAppBar
         title={family.name}
+        subtitle={list.length > 0 ? strings.market.counter(done, list.length) : undefined}
         actions={
-          <IconButton
-            icon="shopping_cart"
-            label={strings.market.enter}
-            onClick={() => void navigate('/mercado')}
-          />
+          done > 0 ? (
+            <Link to="/finalizar" className="m3-top-bar__action">
+              <Icon name="shopping_cart_checkout" />
+              {strings.checkout.link}
+            </Link>
+          ) : undefined
         }
       />
+      {list.length > 0 && done === list.length && (
+        <p className="px-4 pb-2 text-green-800">{strings.market.allDone}</p>
+      )}
       <CycleNotice added={recurringAdded} onDismiss={dismissRecurringNotice} />
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
-      {items?.some((i) => i.status === 'bought') && (
-        <div className="px-4 pb-2">
-          <CheckoutLink />
-        </div>
-      )}
       {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}
       {items && categories && (
         <CategorySections
@@ -88,6 +94,15 @@ export function ListScreen() {
               uid={uid}
             />
           )}
+        />
+      )}
+      {undo && (
+        <Snackbar
+          key={undo.key}
+          message={strings.list.addedToCart}
+          actionLabel={strings.list.undo}
+          onAction={() => setItemStatus(familyId, undo.itemId, 'pending')}
+          onDismiss={() => setUndo(null)}
         />
       )}
       {editing && categories && (

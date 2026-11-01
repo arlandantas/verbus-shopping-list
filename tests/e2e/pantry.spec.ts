@@ -84,7 +84,7 @@ test('S-024 AC3: tapping Falta again returns to Tenho em casa and removes the pe
 test('S-024 AC4: bought recurring shows No carrinho and is not tappable', async ({ page }) => {
   await signUpWithFamily(page)
   await addRecurring(page)
-  await page.getByRole('checkbox', { name: strings.list.markBought('feijão') }).click()
+  await page.getByRole('checkbox', { name: 'feijão' }).click()
   await openPantry(page)
   const row = pantryRow(page, 'feijão')
   await expect(row).toContainText(strings.pantry.inCart)

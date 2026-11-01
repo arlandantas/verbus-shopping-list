@@ -66,17 +66,13 @@ test('S-019 AC3: toggling the checkbox checks an item (struck through) and back'
   await field(page).press('Enter')
   await expect(row(page, 'arroz')).toBeVisible()
 
-  await page.getByRole('checkbox', { name: strings.list.markBought('arroz') }).click()
+  await page.getByRole('checkbox', { name: 'arroz' }).click()
   const label = row(page, 'arroz').getByText('arroz')
-  await expect(
-    page.getByRole('checkbox', { name: strings.list.markPending('arroz') }),
-  ).toBeChecked()
+  await expect(page.getByRole('checkbox', { name: 'arroz' })).toBeChecked()
   await expect(label).toHaveCSS('text-decoration-line', 'line-through')
 
-  await page.getByRole('checkbox', { name: strings.list.markPending('arroz') }).click()
-  await expect(
-    page.getByRole('checkbox', { name: strings.list.markBought('arroz') }),
-  ).not.toBeChecked()
+  await page.getByRole('checkbox', { name: 'arroz' }).click()
+  await expect(page.getByRole('checkbox', { name: 'arroz' })).not.toBeChecked()
   await expect(label).not.toHaveCSS('text-decoration-line', 'line-through')
 })
 
@@ -127,7 +123,7 @@ test('S-019 AC6: empty list shows a pt-BR message; header has family name and /f
 
 const headings = (page: Page) => page.getByRole('heading', { level: 2 }).allTextContents()
 
-test('S-044 AC2: list and market group Mercearia, Laticínios, Sem categoria', async ({ page }) => {
+test('S-044 AC2: the list groups Mercearia, Laticínios, Sem categoria', async ({ page }) => {
   await setupFamily(page)
   for (const name of ['pilha', 'leite', 'arroz']) {
     await field(page).fill(name)
@@ -141,9 +137,6 @@ test('S-044 AC2: list and market group Mercearia, Laticínios, Sem categoria', a
   await expect(
     page.getByRole('region', { name: 'Laticínios' }).getByRole('listitem'),
   ).toContainText(['leite'])
-  await page.getByRole('button', { name: strings.market.enter }).click()
-  await expect(page).toHaveURL(/\/mercado$/)
-  await expect.poll(() => headings(page)).toEqual(expected)
   await expect(
     page.getByRole('region', { name: 'Sem categoria' }).getByRole('listitem'),
   ).toContainText(['pilha'])
@@ -160,7 +153,6 @@ test('S-044 AC4: deleting a category moves its items to Sem categoria without re
   await expect(ana.getByRole('listitem').filter({ hasText: 'Pets' })).toBeVisible()
   await ana.goto('/')
   await setItemCategory(ana, 'pilha', 'Pets')
-  await beto.getByRole('link', { name: strings.market.exit }).click()
   await expect(beto.getByRole('region', { name: 'Pets' })).toContainText('pilha')
 
   await ana.goto('/categorias')

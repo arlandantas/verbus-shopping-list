@@ -9,7 +9,6 @@ import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
 import { CycleScreen } from '@/screens/History/CycleScreen'
 import { HistoryScreen } from '@/screens/History/HistoryScreen'
-import { MarketScreen } from '@/screens/Market/MarketScreen'
 import { PantryScreen } from '@/screens/Pantry/PantryScreen'
 import { ListScreen } from '@/screens/List/ListScreen'
 import { LoginScreen } from '@/screens/Login/LoginScreen'
@@ -59,7 +58,7 @@ function FamilyRoutes(): ReactNode {
         <Route element={<AppShell />}>
           <Route path="/familia" element={<FamilyScreen />} />
           <Route path="/" element={<ListScreen />} />
-          <Route path="/mercado" element={<MarketScreen />} />
+          <Route path="/mercado" element={<Navigate to="/" replace />} />
           <Route path="/finalizar" element={<CheckoutScreen />} />
           <Route path="/historico" element={<HistoryScreen />} />
           <Route path="/historico/:cycle" element={<CycleScreen />} />

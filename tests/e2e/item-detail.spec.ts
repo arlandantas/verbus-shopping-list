@@ -36,9 +36,9 @@ test('S-021 AC1: edit button opens the sheet with current values; checkbox only 
   page,
 }) => {
   await setupWithItem(page)
-  await page.getByRole('checkbox', { name: strings.list.markBought('feijão') }).click()
+  await page.getByRole('checkbox', { name: 'feijão' }).click()
   await expect(sheet(page)).toHaveCount(0)
-  await page.getByRole('checkbox', { name: strings.list.markPending('feijão') }).click()
+  await page.getByRole('checkbox', { name: 'feijão' }).click()
   await openItem(page)
   await expect(sheet(page)).toBeVisible()
   await expect(page).toHaveURL(/\/$/)
@@ -151,9 +151,9 @@ test('S-057 AC4 (ADR-0022): price on a pending item shows in the list and surviv
   await save(page).click()
   await expect(sheet(page)).toHaveCount(0)
   await expect(row(page, 'café')).toContainText(/R\$\s18,90/)
-  await expect(page.getByRole('checkbox', { name: strings.list.markBought('café') })).toBeVisible()
-  await page.getByRole('checkbox', { name: strings.list.markBought('café') }).click()
-  await page.getByRole('checkbox', { name: strings.list.markPending('café') }).click()
+  await expect(page.getByRole('checkbox', { name: 'café' })).toBeVisible()
+  await page.getByRole('checkbox', { name: 'café' }).click()
+  await page.getByRole('checkbox', { name: 'café' }).click()
   await expect(row(page, 'café')).toContainText(/R\$\s18,90/)
   await openItem(page, 'café')
   await expect(price(page)).toHaveValue('18,90')
@@ -168,7 +168,7 @@ test('S-057: "Já coloquei no carrinho" marks the item without touching the valu
   await price(page).fill('5,00')
   await cart(page).check()
   await save(page).click()
-  await expect(page.getByRole('checkbox', { name: strings.list.markPending('café') })).toBeVisible()
+  await expect(page.getByRole('checkbox', { name: 'café' })).toBeVisible()
   await expect(row(page, 'café')).toContainText(/R\$\s5,00/)
 })
 

@@ -8,14 +8,14 @@ test.beforeEach(async () => {
   await clearEmulators()
 })
 
-const row = (page: Page, name: string) => page.getByRole('button', { name: new RegExp(name) })
+const row = (page: Page, name: string) => page.getByRole('checkbox', { name: new RegExp(name) })
 const finalizeLink = (page: Page) => page.getByRole('link', { name: strings.checkout.link })
 const finish = (page: Page) =>
   page.getByRole('button', { name: strings.checkout.finish, exact: true })
 
 async function buyAndOpenCheckout(page: Page, names: string[]) {
   for (const n of names) await row(page, n).click()
-  for (const n of names) await expect(row(page, n)).toHaveAttribute('aria-pressed', 'true')
+  for (const n of names) await expect(row(page, n)).toBeChecked()
   await finalizeLink(page).click()
   await expect(page).toHaveURL(/\/finalizar$/)
 }
@@ -36,7 +36,6 @@ test('S-046 AC3: price + market, only the pending item stays; market is suggeste
   const field = ana.getByLabel(strings.list.addLabel)
   await field.fill('café')
   await field.press('Enter')
-  await ana.getByRole('button', { name: strings.market.enter }).click()
   await row(ana, 'café').click()
   await finalizeLink(ana).click()
   await expect(ana.locator('datalist option[value="Atacadão"]')).toHaveCount(1)
@@ -47,7 +46,7 @@ test('S-046 AC4: offline checkout clears bought at once; the other member sees i
 }) => {
   const { ana, beto } = await twoMembers(browser, ['arroz', 'leite', 'pão'])
   await row(ana, 'arroz').click()
-  await expect(row(beto, 'arroz')).toHaveAttribute('aria-pressed', 'true')
+  await expect(row(beto, 'arroz')).toBeChecked()
   await ana.context().setOffline(true)
   await buyAndOpenCheckout(ana, ['leite'])
   await finish(ana).click()

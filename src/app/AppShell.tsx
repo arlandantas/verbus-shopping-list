@@ -7,7 +7,7 @@ const destinations: NavDestination[] = [
     to: '/',
     label: strings.nav.list,
     icon: 'checklist',
-    also: ['/finalizar', '/mercado', '/item'],
+    also: ['/finalizar', '/item'],
   },
   { to: '/despensa', label: strings.pantry.link, icon: 'kitchen' },
   { to: '/historico', label: strings.history.link, icon: 'history' },
