@@ -65,7 +65,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-055 | UX | Componentes sobrepostos: BottomSheet, Dialog e Snackbar | done | S-052 |
 | S-056 | UX | Dados e regras: renomear item e valor independente do carrinho (ADR-0022) | done | — |
 | S-057 | UX | Sheet "Editar item" substitui a tela de detalhe | done | S-054, S-055, S-056 |
-| S-058 | UX | Lista única: linha com checkbox e editar, fusão do Modo mercado, snackbar Desfazer | todo | S-053, S-055, S-057 |
+| S-058 | UX | Lista única: linha com checkbox e editar, fusão do Modo mercado, snackbar Desfazer | done | S-053, S-055, S-057 |
 | S-059 | UX | Categorias colapsáveis e "Ocultar itens no carrinho" | todo | S-058 |
 | S-060 | UX | Adicionar item na parte inferior da tela | todo | S-058 |
 | S-061 | UX | Despensa: redesign, texto explicativo e "Entenda melhor" | todo | S-053, S-055 |
