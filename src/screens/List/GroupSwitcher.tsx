@@ -7,13 +7,25 @@ import { strings } from '@/strings/pt-BR'
 const ROW =
   'flex min-h-12 w-full items-center gap-3 rounded px-4 text-left text-base text-on-surface'
 
+let navigating = false
+
 /** Bottom sheet to switch the active group (ADR-0024). Create/join entries land on the Grupo tab (S-091 adds the flows). */
 export function GroupSwitcher({ onClose }: { onClose: () => void }) {
   const { family, groups, setActiveGroup } = useFamily()
   const navigate = useNavigate()
   const go = () => {
-    // The sheet unwinds its own history entry asynchronously: navigate after that pop, not before.
-    window.addEventListener('popstate', () => void navigate('/grupo'), { once: true })
+    if (navigating) return
+    navigating = true
+    // The sheet unwinds its own history entry asynchronously (and unmounts us): navigate after
+    // that pop, once. The timer is the fallback when no pop comes, so no listener ever lingers.
+    const run = () => {
+      window.removeEventListener('popstate', run)
+      clearTimeout(timer)
+      navigating = false
+      void navigate('/grupo')
+    }
+    const timer = setTimeout(run, 500)
+    window.addEventListener('popstate', run)
     onClose()
   }
   return (

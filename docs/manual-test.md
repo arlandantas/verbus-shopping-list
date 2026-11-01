@@ -30,14 +30,15 @@ Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Grupo**.
 13. Grupo → Categorias: as personalizadas aparecem primeiro; criar, renomear, excluir uma própria. As padrão ficam fixas (cadeado, sem editar/excluir).
 14. **Carla:** criar um grupo novo, copiar o convite; entrar com o código/link em outra conta.
 15. **Sair:** Grupo → sair; aparece diálogo de confirmação; cancelar mantém a sessão, confirmar volta ao login.
-16. **Virada do mês:** aviso "recorrentes voltaram para a lista" na 1ª abertura do mês.
+16. **Trocar de grupo:** na Lista, tocar no título (ou na seta) abre o sheet com os grupos, o ativo marcado; escolher outro mostra os itens dele (Lista, Despensa, Histórico). Com um só grupo o título também abre o sheet. "Criar novo grupo" e "Entrar com código" levam à aba Grupo. Recarregar mantém o grupo escolhido.
+17. **Virada do mês:** aviso "recorrentes voltaram para a lista" na 1ª abertura do mês.
 
 ## Offline, tema e tela larga
 
-17. **Offline:** desligar a rede do navegador, marcar/adicionar itens (UI responde na hora); religar e ver sincronizar na outra janela.
-18. **Escuro/claro:** alternar o tema do sistema; checar legibilidade, contraste e bordas de campos, sheet e diálogos nos dois.
-19. **Tela larga:** abrir em janela de desktop; conteúdo centralizado, abas centralizadas, barra de adicionar não estoura a largura.
-20. **Celular (360 px):** alvos de toque confortáveis com uma mão; nada cortado pelo teclado ou pelas abas.
+18. **Offline:** desligar a rede do navegador, marcar/adicionar itens (UI responde na hora); religar e ver sincronizar na outra janela.
+19. **Escuro/claro:** alternar o tema do sistema; checar legibilidade, contraste e bordas de campos, sheet e diálogos nos dois.
+20. **Tela larga:** abrir em janela de desktop; conteúdo centralizado, abas centralizadas, barra de adicionar não estoura a largura.
+21. **Celular (360 px):** alvos de toque confortáveis com uma mão; nada cortado pelo teclado ou pelas abas.
 
 Anote o que estranhar (comportamento, textos, layout). Reiniciar o `dev:local` apaga os dados e recarrega a semente.
 

@@ -65,7 +65,7 @@ export default defineConfig({
         lang: 'pt-BR',
         display: 'standalone',
         id: base,
-        description: 'Lista de compras compartilhada da família, com modo mercado e uso offline.',
+        description: 'Lista de compras compartilhada, com modo mercado e uso offline.',
         orientation: 'portrait',
         start_url: base,
         scope: base,
