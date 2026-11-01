@@ -26,7 +26,10 @@ async function setupFamily(page: Page): Promise<string> {
   await page.getByRole('button', { name: strings.family.create }).click()
   await expect(page.getByTestId('invite-code')).toBeVisible()
   const code = (await page.getByTestId('invite-code').textContent()) ?? ''
-  await page.getByRole('button', { name: strings.family.continue }).click()
+  await page
+    .getByRole('navigation', { name: strings.nav.label })
+    .getByRole('link', { name: strings.nav.list, exact: true })
+    .click()
   await expect(page).toHaveURL(/\/$/)
   return code
 }

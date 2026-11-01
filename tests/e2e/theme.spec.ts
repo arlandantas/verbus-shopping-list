@@ -129,7 +129,10 @@ test('S-070 AC3: every visible text meets contrast in light and dark across scre
   await expect(page).toHaveURL(/\/familia$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
-  await page.getByRole('button', { name: strings.family.continue }).click()
+  await page
+    .getByRole('navigation', { name: strings.nav.label })
+    .getByRole('link', { name: strings.nav.list, exact: true })
+    .click()
   const field = page.getByLabel(strings.list.addLabel)
   const add = async (text: string, name: string) => {
     await field.fill(text)

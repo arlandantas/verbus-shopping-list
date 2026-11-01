@@ -25,7 +25,6 @@ export const strings = {
     createError: 'Não foi possível criar a família. Tente novamente.',
     offlineWarning: 'Você está offline. Conecte-se à internet para criar a família.',
     members: (n: number) => (n === 1 ? '1 membro' : `${n} membros`),
-    continue: 'Continuar',
     memberFallback: 'Membro',
     membersSection: 'Membros',
     join: {

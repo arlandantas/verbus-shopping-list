@@ -25,4 +25,11 @@ describe('ADR-0004: WriteErrorNotice', () => {
     reportWriteError(new Error('x'))
     expect(spy).toHaveBeenCalled()
   })
+
+  it('S-072 AC3: stacks above the add-bar zone', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    render(<WriteErrorNotice />)
+    act(() => reportWriteError(new Error('x')))
+    expect(screen.getByRole('alert').className).toContain('var(--add-bar-zone,0px)')
+  })
 })

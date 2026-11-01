@@ -41,9 +41,12 @@ body {
   font-family: var(--md-ref-font);
 }
 
-/* App shell (S-053): fixed bottom tabs; content, offline badge and write errors stay above them. */
+/* App shell (S-053/S-072): tabs fixed and centered; the add-bar floats above them; notices stack above the bar. */
 :root:has(.app-shell) {
   --app-bottom-inset: calc(80px + env(safe-area-inset-bottom));
+}
+:root:has(.add-bar) {
+  --add-bar-zone: 80px;
 }
 .app-shell__content {
   padding-bottom: var(--app-bottom-inset);
@@ -53,23 +56,36 @@ body {
   inset-inline: 0;
   bottom: 0;
   z-index: 20;
+  background: var(--md-sys-color-surface-container);
+}
+.app-shell__nav .m3-nav {
+  max-width: 560px;
+  margin-inline: auto;
 }
 
-/* Add-item bar (S-060): fixed above the bottom tabs; suggestions open upward. */
+/* Add-item bar (S-072): floating M3 pill 8px above the tabs; suggestions open upward. */
 .add-bar {
   position: fixed;
-  inset-inline: 0;
-  bottom: var(--app-bottom-inset, 0px);
+  inset-inline: 12px;
+  bottom: calc(var(--app-bottom-inset, 0px) + 8px);
   z-index: 15;
   display: flex;
   align-items: center;
   gap: 8px;
   max-width: 28rem;
   margin-inline: auto;
-  padding: 8px 16px;
-  background: var(--md-sys-color-surface-container-low, var(--md-sys-color-surface));
+  padding: 4px 4px 4px 20px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface-container-high);
+  box-shadow: var(--md-sys-elevation-2);
+}
+.add-bar .m3-field__box {
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  outline: none;
 }
 /* Room so the last item is not covered by the bar. */
 .list-screen {
-  padding-bottom: 88px;
+  padding-bottom: 96px;
 }

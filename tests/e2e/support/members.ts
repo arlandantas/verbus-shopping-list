@@ -41,7 +41,10 @@ export async function twoMembers(browser: Browser, items: string[], now?: Date) 
   await ana.getByLabel(strings.family.nameLabel).fill('Casa')
   await ana.getByRole('button', { name: strings.family.create }).click()
   const code = (await ana.getByTestId('invite-code').textContent()) ?? ''
-  await ana.getByRole('button', { name: strings.family.continue }).click()
+  await ana
+    .getByRole('navigation', { name: strings.nav.label })
+    .getByRole('link', { name: strings.nav.list, exact: true })
+    .click()
   const field = ana.getByLabel(strings.list.addLabel)
   for (const name of items) {
     await field.fill(name)

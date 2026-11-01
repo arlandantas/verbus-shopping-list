@@ -16,7 +16,7 @@ export function WriteErrorNotice() {
   return (
     <div
       role="alert"
-      className="fixed inset-x-0 bottom-[var(--app-bottom-inset,0px)] z-30 flex items-center gap-2 bg-error px-4 py-2 text-sm text-on-error"
+      className="fixed inset-x-0 bottom-[calc(var(--app-bottom-inset,0px)+var(--add-bar-zone,0px))] z-30 flex items-center gap-2 bg-error px-4 py-2 text-sm text-on-error"
     >
       <p className="flex-1">{strings.writeError}</p>
       <button

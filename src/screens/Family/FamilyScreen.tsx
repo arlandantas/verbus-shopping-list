@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { createFamily } from '@/data/families'
@@ -20,7 +19,6 @@ import '../auth.css'
 export function FamilyScreen() {
   const family = useFamily()
   const online = useOnlineStatus()
-  const navigate = useNavigate()
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -67,7 +65,6 @@ export function FamilyScreen() {
             to="/categorias"
           />
         </ul>
-        <Button onClick={() => void navigate('/')}>{t.continue}</Button>
       </>
     )
   } else {

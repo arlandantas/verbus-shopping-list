@@ -42,7 +42,10 @@ test('S-011 AC2: creating a family shows code and link, then / shows the name', 
   await expect(page.getByTestId('invite-link')).toHaveText(
     `${new URL(page.url()).origin}/convite/${code}`,
   )
-  await page.getByRole('button', { name: strings.family.continue }).click()
+  await page
+    .getByRole('navigation', { name: strings.nav.label })
+    .getByRole('link', { name: strings.nav.list, exact: true })
+    .click()
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
 })

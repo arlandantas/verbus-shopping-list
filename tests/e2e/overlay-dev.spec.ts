@@ -20,7 +20,10 @@ test('S-069 AC3: edit sheet opens and stays open on the dev server; Cancel close
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
-  await page.getByRole('button', { name: strings.family.continue }).click()
+  await page
+    .getByRole('navigation', { name: strings.nav.label })
+    .getByRole('link', { name: strings.nav.list, exact: true })
+    .click()
   await field(page).fill('3 kg feijão')
   await field(page).press('Enter')
   await page.getByRole('button', { name: strings.list.edit('feijão') }).click()

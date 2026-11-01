@@ -19,7 +19,10 @@ async function signUpWithFamily(page: Page) {
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
-  await page.getByRole('button', { name: strings.family.continue }).click()
+  await page
+    .getByRole('navigation', { name: strings.nav.label })
+    .getByRole('link', { name: strings.nav.list, exact: true })
+    .click()
   await expect(page).toHaveURL(/\/$/)
 }
 
