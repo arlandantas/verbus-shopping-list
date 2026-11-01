@@ -5,6 +5,7 @@ export const strings = {
   noCategory: 'Sem categoria',
   writeError: 'Não foi possível sincronizar a alteração. Verifique a conexão e tente novamente.',
   dismiss: 'Fechar aviso',
+  overlay: { close: 'Fechar', cancel: 'Cancelar', confirm: 'Confirmar' },
   loadError: 'Não foi possível carregar sua família. Verifique a conexão.',
   retry: 'Tentar novamente',
   loadTimeout: 'Está demorando mais que o normal para carregar. Verifique a conexão.',

@@ -1,0 +1,124 @@
+.m3-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+}
+.m3-overlay--sheet {
+  align-items: flex-end;
+}
+.m3-overlay--dialog {
+  align-items: center;
+}
+.m3-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-scrim, #000);
+  opacity: 0.32;
+}
+.m3-overlay__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--md-sys-color-surface-container-low, var(--md-sys-color-surface));
+  color: var(--md-sys-color-on-surface);
+  animation: m3-overlay-in 200ms ease-out;
+}
+.m3-overlay--sheet .m3-overlay__panel {
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  border-radius: var(--md-sys-shape-corner-xl) var(--md-sys-shape-corner-xl) 0 0;
+}
+.m3-overlay--dialog .m3-overlay__panel {
+  width: min(560px, calc(100% - 48px));
+  max-height: 90vh;
+  border-radius: var(--md-sys-shape-corner-xl);
+  padding: 24px 0 8px;
+}
+.m3-overlay__handle {
+  width: 32px;
+  height: 4px;
+  margin: 12px auto 0;
+  border-radius: 2px;
+  background: var(--md-sys-color-outline-variant, currentColor);
+}
+.m3-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 8px 24px;
+}
+.m3-overlay__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+.m3-overlay__body {
+  overflow-y: auto;
+  padding: 8px 24px 16px;
+  flex: 1 1 auto;
+}
+.m3-overlay__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 24px 16px;
+}
+
+.m3-snackbar-region {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--snackbar-offset, 0px);
+  z-index: 110;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  pointer-events: none;
+}
+.m3-snackbar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  max-width: 560px;
+  width: 100%;
+  padding: 0 8px 0 16px;
+  border-radius: var(--md-sys-shape-corner-xs, 4px);
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  animation: m3-overlay-in 150ms ease-out;
+}
+.m3-snackbar__text {
+  flex: 1;
+  padding: 12px 0;
+}
+.m3-snackbar__action {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: var(--md-sys-color-inverse-primary);
+}
+@keyframes m3-overlay-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .m3-overlay__panel,
+  .m3-snackbar {
+    animation: none;
+  }
+}

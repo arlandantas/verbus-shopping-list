@@ -1,0 +1,224 @@
+import '@testing-library/jest-dom/vitest'
+import { readFileSync } from 'node:fs'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
+import { BottomSheet } from './BottomSheet'
+import { Dialog } from './Dialog'
+import { Snackbar } from './Snackbar'
+
+function Harness({ onClose = vi.fn() }: { onClose?: () => void }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>abrir</button>
+      <BottomSheet
+        open={open}
+        title="Editar"
+        onClose={() => {
+          onClose()
+          setOpen(false)
+        }}
+      >
+        <input aria-label="campo" />
+        <button>ok</button>
+      </BottomSheet>
+    </>
+  )
+}
+
+describe('S-055 AC1: BottomSheet semantics', () => {
+  it('renders modal dialog labelled by title', () => {
+    render(
+      <BottomSheet open title="Editar" onClose={vi.fn()}>
+        <input aria-label="campo" />
+      </BottomSheet>,
+    )
+    const d = screen.getByRole('dialog', { name: 'Editar' })
+    expect(d).toHaveAttribute('aria-modal', 'true')
+    expect(screen.getByTestId('scrim')).toBeInTheDocument()
+    const css = readFileSync('src/components/m3/overlay.css', 'utf8')
+    expect(css).toContain('max-height: 90vh')
+    expect(css).toContain('corner-xl) var(--md-sys-shape-corner-xl) 0 0')
+  })
+  it('renders nothing when closed', () => {
+    render(
+      <BottomSheet open={false} title="X" onClose={vi.fn()}>
+        a
+      </BottomSheet>,
+    )
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+})
+
+describe('S-055 AC2: close and focus', () => {
+  it('closes by Esc, scrim and close icon', () => {
+    const onClose = vi.fn()
+    render(
+      <BottomSheet open title="T" onClose={onClose}>
+        <input aria-label="campo" />
+      </BottomSheet>,
+    )
+    fireEvent.keyDown(screen.getByLabelText('campo'), { key: 'Escape' })
+    fireEvent.click(screen.getByTestId('scrim'))
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }))
+    expect(onClose).toHaveBeenCalledTimes(3)
+  })
+  it('focuses first field, traps Tab, restores focus', () => {
+    render(<Harness />)
+    const opener = screen.getByText('abrir')
+    opener.focus()
+    fireEvent.click(opener)
+    const field = screen.getByLabelText('campo')
+    expect(field).toHaveFocus()
+    screen.getByText('ok').focus()
+    fireEvent.keyDown(screen.getByText('ok'), { key: 'Tab' })
+    expect(screen.getByRole('button', { name: 'Fechar' })).toHaveFocus()
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Fechar' }), {
+      key: 'Tab',
+      shiftKey: true,
+    })
+    expect(screen.getByText('ok')).toHaveFocus()
+    fireEvent.keyDown(field, { key: 'Escape' })
+    expect(opener).toHaveFocus()
+  })
+})
+
+describe('S-055 AC3: history back', () => {
+  it('pushes a state and closes on popstate', () => {
+    const onClose = vi.fn()
+    const len = history.length
+    render(
+      <BottomSheet open title="T" onClose={onClose}>
+        x
+      </BottomSheet>,
+    )
+    expect(history.length).toBe(len + 1)
+    act(() => {
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+  it('closing via app consumes the pushed state', () => {
+    const back = vi.spyOn(history, 'back')
+    const { rerender } = render(
+      <BottomSheet open title="T" onClose={vi.fn()}>
+        x
+      </BottomSheet>,
+    )
+    rerender(
+      <BottomSheet open={false} title="T" onClose={vi.fn()}>
+        x
+      </BottomSheet>,
+    )
+    expect(back).toHaveBeenCalledTimes(1)
+    back.mockRestore()
+  })
+})
+
+describe('S-055 AC4: Dialog', () => {
+  it('has title, scrollable content, actions', () => {
+    render(
+      <Dialog open title="Título" onClose={vi.fn()} actions={<button>Fazer</button>}>
+        corpo
+      </Dialog>,
+    )
+    expect(screen.getByRole('dialog', { name: 'Título' })).toBeInTheDocument()
+    expect(screen.getByText('corpo')).toBeInTheDocument()
+    expect(screen.getByText('Fazer')).toBeInTheDocument()
+    expect(readFileSync('src/components/m3/overlay.css', 'utf8')).toContain('overflow-y: auto')
+  })
+  it('confirm variant uses labels, Esc closes', () => {
+    const onClose = vi.fn()
+    const onConfirm = vi.fn()
+    render(
+      <Dialog
+        open
+        variant="confirm"
+        title="Excluir?"
+        confirmLabel="Excluir"
+        cancelLabel="Manter"
+        onClose={onClose}
+        onConfirm={onConfirm}
+      >
+        certeza
+      </Dialog>,
+    )
+    fireEvent.click(screen.getByText('Excluir'))
+    expect(onConfirm).toHaveBeenCalled()
+    fireEvent.click(screen.getByText('Manter'))
+    fireEvent.keyDown(screen.getByText('Manter'), { key: 'Escape' })
+    expect(onClose).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('S-055 AC5: scroll lock', () => {
+  it('locks body overflow and restores', () => {
+    const { rerender } = render(
+      <BottomSheet open title="T" onClose={vi.fn()}>
+        x
+      </BottomSheet>,
+    )
+    expect(document.body.style.overflow).toBe('hidden')
+    rerender(
+      <BottomSheet open={false} title="T" onClose={vi.fn()}>
+        x
+      </BottomSheet>,
+    )
+    expect(document.body.style.overflow).toBe('')
+  })
+})
+
+describe('S-055 AC6: Snackbar', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+  it('is a polite status region, dismisses after duration', () => {
+    const onDismiss = vi.fn()
+    render(<Snackbar message="Oi" onDismiss={onDismiss} />)
+    expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
+    act(() => void vi.advanceTimersByTime(3999))
+    expect(onDismiss).not.toHaveBeenCalled()
+    act(() => void vi.advanceTimersByTime(1))
+    expect(onDismiss).toHaveBeenCalledTimes(1)
+  })
+  it('action calls onAction then onDismiss once', () => {
+    const calls: string[] = []
+    render(
+      <Snackbar
+        message="Oi"
+        actionLabel="Desfazer"
+        onAction={() => calls.push('a')}
+        onDismiss={() => calls.push('d')}
+      />,
+    )
+    fireEvent.click(screen.getByText('Desfazer'))
+    expect(calls).toEqual(['a', 'd'])
+  })
+  it('uses inverse colors', () => {
+    const css = readFileSync('src/components/m3/overlay.css', 'utf8')
+    expect(css).toContain('--md-sys-color-inverse-surface')
+    expect(css).toContain('--md-sys-color-inverse-on-surface')
+    expect(css).toContain('--md-sys-color-inverse-primary')
+  })
+})
+
+describe('S-055 AC7: replacement and offset', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+  it('new message restarts timer; only one snackbar', () => {
+    const onDismiss = vi.fn()
+    const { rerender } = render(<Snackbar message="A" onDismiss={onDismiss} />)
+    act(() => void vi.advanceTimersByTime(3000))
+    rerender(<Snackbar message="B" onDismiss={onDismiss} />)
+    act(() => void vi.advanceTimersByTime(3000))
+    expect(onDismiss).not.toHaveBeenCalled()
+    expect(screen.getAllByRole('status')).toHaveLength(1)
+    expect(screen.queryByText('A')).toBeNull()
+    act(() => void vi.advanceTimersByTime(1000))
+    expect(onDismiss).toHaveBeenCalledTimes(1)
+  })
+  it('positions with --snackbar-offset', () => {
+    expect(readFileSync('src/components/m3/overlay.css', 'utf8')).toContain(
+      'bottom: var(--snackbar-offset',
+    )
+  })
+})
