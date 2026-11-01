@@ -57,7 +57,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-047 | M5 | Tela Histórico (meses e mês somente leitura) | done | S-040, S-036 |
 | S-048 | M5 | Histórico: readicionar item à lista atual | done | S-047 |
 | S-049 | M5 | Virada do mês: aviso e E2E dos recorrentes | done | S-041, S-046 |
-| E-UX | UX | Épico: redesign Material 3 (feedback da 1ª rodada; ADR-0018..0022). Prioridade atual | todo | — |
+| E-UX | UX | Épico: redesign Material 3 (feedback da 1ª rodada; ADR-0018..0022). Prioridade atual | done | — |
 | S-051 | UX | Tokens Material 3, tema claro/escuro e ícones | done | — |
 | S-052 | UX | Componentes base: Button, IconButton, TopAppBar, NavigationBar | done | S-051 |
 | S-053 | UX | Shell com abas inferiores e barras superiores | done | S-052 |
@@ -75,7 +75,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-065 | UX | Histórico: redesign M3 (meses e mês) | done | S-053, S-055 |
 | S-066 | UX | Histórico: agrupar por compra finalizada | done | S-065 |
 | S-067 | UX | Regras e dados: editar linhas de compras passadas (ADR-0021) | done | S-066 |
-| S-068 | UX | Histórico: editar item comprado | todo | S-067 |
+| S-068 | UX | Histórico: editar item comprado | done | S-067 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |
 | E-SEC | — | Épico: endurecimento de segurança (só após a 1ª rodada de testes do usuário; ADR-0017, ADR-0016) | todo | — |
 | E-LISTS | — | Épico futuro: várias listas por família (mercado, roupas, desejos) com acesso por lista; exige ADR de modelo de dados e regras antes das histórias | todo | E-UX |
