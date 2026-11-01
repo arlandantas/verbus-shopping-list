@@ -141,7 +141,7 @@ describe('S-061 PantryScreen', () => {
     expect(screen.getByRole('button', { name: 'Marcar Arroz como falta' })).toBeEnabled()
     const cafe = screen.getByRole('button', { name: strings.pantry.inCartFor('Café') })
     expect(cafe).toBeDisabled()
-    expect(cafe.closest('li')).toHaveClass('m3-list-item--muted')
+    expect(cafe.closest('li')).toHaveClass('m3-list-item--muted', 'm3-list-item--struck')
     const feijao = screen.getByRole('button', { name: strings.pantry.markAtHomeFor('Feijão') })
     expect(feijao.closest('li')).toHaveClass('m3-list-item--primary')
   })

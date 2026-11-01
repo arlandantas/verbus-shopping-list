@@ -33,6 +33,7 @@ export function PantryRow({
   return (
     <ListItem
       headline={entry.name}
+      struck={state === 'inCart'}
       tone={state === 'missing' ? 'primary' : state === 'inCart' ? 'muted' : undefined}
       leading={<Icon name={stateIcon} />}
       supporting={state === 'missing' ? s.missing : state === 'inCart' ? s.inCart : s.atHome}

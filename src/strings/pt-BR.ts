@@ -138,7 +138,7 @@ export const strings = {
     help: [
       'Recorrente é o item que você compra todo mês, como arroz ou café.',
       'Para tornar um item recorrente, abra o "Editar item" na lista e marque "Recorrente mensal", ou use "Outros itens já usados" aqui na Despensa.',
-      'Cada item tem um estado: "Falta" (já está pendente na Lista), "Tenho em casa" (não precisa comprar) e "No carrinho" (já foi comprado neste mês).',
+      'Cada item tem um estado: "Falta" (já está pendente na Lista), "Tenho em casa" (não precisa comprar) e "No carrinho" (já está marcado como comprado na Lista; não dá para mudar aqui).',
       'No começo de cada mês, os recorrentes voltam sozinhos para a Lista como pendentes.',
       'Para remover um item dos recorrentes, toque no ícone de lixeira ao lado dele.',
     ],
