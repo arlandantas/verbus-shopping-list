@@ -94,7 +94,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA (spec 80) | todo | S-005 |
 | S-080 | M6 | Aviso "Adicionar à Tela de Início" no iOS | done | — |
 | S-081 | M6 | Manifest e metas Apple coerentes com o tema e o base path | done | S-080 |
-| S-082 | M6 | Fallback offline sob base path e rotas profundas | todo | S-081 |
+| S-082 | M6 | Fallback offline sob base path e rotas profundas | done | S-081 |
 | S-083 | M6 | Atualização do app com aviso, sem recarregar sozinho | todo | S-082 |
 | S-084 | SEC | CSP por meta tag compatível com Firebase (hospedagem estática) | todo | S-083 |
 | S-085 | SEC | CI: varredura de segredos e auditoria de dependências | todo | — |

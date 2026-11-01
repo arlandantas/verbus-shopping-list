@@ -53,11 +53,7 @@ jobs:
             *.github.io) export VITE_BASE=/ ;;
             *) export VITE_BASE="/${GITHUB_REPOSITORY#*/}/" ;;
           esac
-          pnpm build
-
-      # Pages has no SPA rewrite: serve the app shell for deep links (/historico, /familia...).
-      - name: SPA fallback
-        run: cp dist/index.html dist/404.html
+          pnpm build # also writes dist/404.html (SPA fallback for deep links on Pages)
 
       - uses: actions/configure-pages@v5
 
