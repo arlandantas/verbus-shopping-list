@@ -36,6 +36,7 @@ describe('S-050 AC5: quick-login panel stays out of production', () => {
   it('S-050 AC5: production build has neither the panel nor the fake credentials', async () => {
     const text = await bundleText('production')
     expect(text).not.toContain(devStrings.testAccounts)
+    expect(text).not.toContain(devStrings.emulatorNotFound)
     for (const a of TEST_ACCOUNTS) {
       expect(text).not.toContain(a.password)
       expect(text).not.toContain(a.email)

@@ -100,6 +100,7 @@ export const strings = {
     unit: 'Unidade',
     note: 'Observação (marca)',
     recurring: 'Recorrente mensal',
+    category: 'Categoria',
     save: 'Salvar',
     delete: 'Apagar',
     confirmDelete: (name: string) => `Apagar ${name}?`,
@@ -150,4 +151,5 @@ export const strings = {
 /** Dev-only strings (emulator quick login, S-050). Separate export so production bundles drop them. */
 export const devStrings = {
   testAccounts: 'Contas de teste',
+  emulatorNotFound: 'Emulador do Firebase não encontrado. Rode `pnpm dev:local`.',
 } as const

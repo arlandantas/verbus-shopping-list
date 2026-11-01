@@ -10,7 +10,7 @@ vi.mock('@/data/auth', () => ({
   signInWithEmail: (...a: unknown[]) => signInWithEmail(...(a as [string, string])),
   signUpWithEmail: vi.fn(),
   signInWithGoogle: vi.fn(),
-  authErrorMessage: () => 'erro',
+  authErrorMessage: (e: unknown) => (e as { code?: string }).code ?? 'erro',
 }))
 
 afterEach(() => {
@@ -46,5 +46,13 @@ describe('S-050 AC4: test accounts panel', () => {
     const off = await import('./LoginScreen')
     render(<off.LoginScreen />)
     expect(screen.queryByText(devStrings.testAccounts)).not.toBeInTheDocument()
+  })
+
+  it('shows the error from authErrorMessage when quick login fails', async () => {
+    signInWithEmail.mockRejectedValueOnce({ code: 'auth/network-request-failed' })
+    const { TestAccountsPanel } = await import('./TestAccountsPanel')
+    render(<TestAccountsPanel />)
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(TEST_ACCOUNTS[0].displayName) }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('auth/network-request-failed')
   })
 })

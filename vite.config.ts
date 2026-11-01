@@ -2,10 +2,32 @@ import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import net from 'node:net'
+import { loadEnv, type Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
+
+/** Dev-server hint: warns when emulator mode is on but the Auth emulator (9099) is unreachable. */
+function emulatorWarning(): Plugin {
+  return {
+    name: 'warn-missing-auth-emulator',
+    apply: 'serve',
+    configResolved(config) {
+      const env = loadEnv(config.mode, process.cwd(), 'VITE_')
+      if (env.VITE_USE_EMULATOR !== 'true' || process.env.VITEST) return
+      const sock = net.connect({ port: 9099, host: '127.0.0.1' })
+      sock.once('connect', () => sock.destroy())
+      sock.once('error', () =>
+        config.logger.warn(
+          '[verbus] VITE_USE_EMULATOR=true but the Auth emulator (localhost:9099) is not running; login will fail. Use `pnpm dev:local`.',
+        ),
+      )
+    },
+  }
+}
 
 export default defineConfig({
   plugins: [
+    emulatorWarning(),
     react(),
     tailwindcss(),
     VitePWA({

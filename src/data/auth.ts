@@ -8,7 +8,7 @@ import {
   type Unsubscribe,
 } from 'firebase/auth'
 import { auth } from '@/data/firebase'
-import { strings } from '@/strings/pt-BR'
+import { devStrings, strings } from '@/strings/pt-BR'
 import { ensureUserProfile, type AuthUser } from './users'
 
 export type { AuthUser }
@@ -16,6 +16,10 @@ export type { AuthUser }
 /** Maps a Firebase `auth/*` error to a pt-BR message; never leaks Firebase's English text. */
 export function authErrorMessage(error: unknown): string {
   const code = (error as { code?: unknown } | null)?.code
+  // Dev-only hint (literal env check so production builds drop devStrings): Vite without emulators.
+  if (import.meta.env.VITE_USE_EMULATOR === 'true' && code === 'auth/network-request-failed') {
+    return devStrings.emulatorNotFound
+  }
   const table: Record<string, string> = strings.authErrors
   return (typeof code === 'string' && table[code]) || strings.authErrors.unknown
 }
