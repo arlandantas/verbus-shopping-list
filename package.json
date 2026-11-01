@@ -9,6 +9,7 @@
   "packageManager": "pnpm@11.1.2",
   "scripts": {
     "dev": "vite",
+    "dev:local": "node --disable-warning=ExperimentalWarning scripts/dev-local.mjs",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --project unit",

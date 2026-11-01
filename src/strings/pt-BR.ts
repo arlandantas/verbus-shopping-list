@@ -146,3 +146,8 @@ export const strings = {
     unknown: 'Não foi possível entrar. Tente novamente.',
   },
 } as const
+
+/** Dev-only strings (emulator quick login, S-050). Separate export so production bundles drop them. */
+export const devStrings = {
+  testAccounts: 'Contas de teste',
+} as const

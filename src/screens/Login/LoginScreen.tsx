@@ -1,6 +1,13 @@
-import { useState, type FormEvent } from 'react'
+import { lazy, Suspense, useState, type FormEvent } from 'react'
 import { authErrorMessage, signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/data/auth'
 import { strings } from '@/strings/pt-BR'
+
+// Dev-only quick login (S-050): the literal env check lets the production build drop the panel.
+const loadPanel =
+  import.meta.env.VITE_USE_EMULATOR === 'true'
+    ? () => import('./TestAccountsPanel').then((m) => ({ default: m.TestAccountsPanel }))
+    : null
+const TestAccountsPanel = loadPanel ? lazy(loadPanel) : null
 
 const field = 'min-h-12 w-full rounded border border-gray-400 px-3 text-base'
 const button = 'min-h-12 w-full rounded px-4 text-base font-medium'
@@ -79,6 +86,11 @@ export function LoginScreen() {
       >
         {strings.login.google}
       </button>
+      {TestAccountsPanel && (
+        <Suspense fallback={null}>
+          <TestAccountsPanel />
+        </Suspense>
+      )}
     </main>
   )
 }

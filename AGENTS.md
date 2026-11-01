@@ -26,6 +26,7 @@ This file follows the AGENTS.md convention and is the single entry point for any
 
 - `pnpm install` — install deps (CI: `--frozen-lockfile`)
 - `pnpm dev` — Vite dev server
+- `pnpm dev:local` — emulators + idempotent seed (`scripts/seed/`) + Vite, with the emulator-only quick-login panel (S-050); Ctrl+C stops all
 - `pnpm build` — typecheck + production build
 - `pnpm typecheck` — `tsc --noEmit` (strict)
 - `pnpm test` — Vitest (unit project, no emulator)

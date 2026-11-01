@@ -6,3 +6,9 @@ PWA de lista de compras compartilhada para o núcleo familiar. Cadastro mínimo,
 - Roadmap: [docs/roadmap.md](docs/roadmap.md)
 - Estado atual: [docs/STATE.md](docs/STATE.md)
 - Desenvolvimento agêntico: veja [AGENTS.md](AGENTS.md)
+
+## Teste manual local
+
+Rode `pnpm dev:local` (precisa de JDK 21): sobe os emuladores Auth/Firestore, carrega contas e dados de exemplo e inicia o Vite.
+Na tela de login, o painel "Contas de teste" entra com um toque: Ana e Beto (mesma família, com itens) e Carla (sem família).
+Esse painel só existe com o emulador; as credenciais ficam em `scripts/seed/accounts.ts`. Ctrl+C encerra tudo; rodar de novo é seguro.

@@ -7,8 +7,10 @@
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "isolatedModules": true,
+    "erasableSyntaxOnly": true,
     "types": [
       "vite/client",
       "vite-plugin-pwa/client",
@@ -17,5 +19,12 @@
     ],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [
+    "src",
+    "scripts/seed",
+    "tests/data/seed.test.ts",
+    "tests/seed-bundle.test.ts",
+    "tests/e2e/test-accounts.spec.ts",
+    "vite.config.ts"
+  ]
 }

@@ -36,3 +36,24 @@ describe('S-002 AC4: tailwind build', () => {
     expect(css).toContain('min-h-12')
   }, 120_000)
 })
+
+describe('S-050 AC1: dev:local is wired and documented', () => {
+  const read = (f: string) => readFileSync(join(root, f), 'utf8')
+  it('S-050 AC1: package.json script runs scripts/dev-local.mjs', () => {
+    const scripts = JSON.parse(read('package.json')).scripts as Record<string, string>
+    expect(scripts['dev:local']).toContain('scripts/dev-local.mjs')
+  })
+  it('S-050 AC1: dev-local starts auth+firestore emulators, seeds, then vite', () => {
+    const src = read('scripts/dev-local.mjs')
+    expect(src).toContain('auth,firestore')
+    expect(src.indexOf('seedEmulators()')).toBeLessThan(src.indexOf("'vite'"))
+  })
+  it('S-050 AC1: README explains it in at most 5 lines; AGENTS.md Commands lists it', () => {
+    const readme = read('README.md')
+    const section = readme.split(/^## /m).find((s) => s.startsWith('Teste manual local'))
+    expect(section).toBeDefined()
+    expect(section!.trim().split('\n').length - 1).toBeLessThanOrEqual(5)
+    expect(section).toContain('pnpm dev:local')
+    expect(read('AGENTS.md')).toContain('`pnpm dev:local`')
+  })
+})
