@@ -157,7 +157,7 @@ test('S-057 AC4 (ADR-0022): price on a pending item shows in the list and surviv
   await expect(row(page, 'café')).toContainText(/R\$\s18,90/)
   await openItem(page, 'café')
   await expect(price(page)).toHaveValue('18,90')
-  await expect(cart(page)).not.toBeChecked()
+  await expect(cart(page)).toBeChecked({ checked: false })
 })
 
 test('S-057: "Já coloquei no carrinho" marks the item without touching the value', async ({

@@ -105,10 +105,8 @@ describe('S-057 AC4: price and cart are independent (ADR-0022)', () => {
     fireEvent.click(save())
     expect(vi.mocked(updateItemDetails).mock.calls[0]![2]).toEqual({ status: 'pending' })
   })
-  it('clearing the price writes null; invalid price disables Salvar; no cart helper text', () => {
+  it('clearing the price writes null; no cart helper text', () => {
     open({ priceCents: 500 })
-    fireEvent.change(price(), { target: { value: 'abc' } })
-    expect(save()).toBeDisabled()
     fireEvent.change(price(), { target: { value: '' } })
     fireEvent.click(save())
     expect(vi.mocked(updateItemDetails).mock.calls[0]![2]).toEqual({ priceCents: null })

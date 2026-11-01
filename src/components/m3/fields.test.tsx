@@ -47,15 +47,33 @@ describe('S-054 AC2: MoneyField', () => {
     )
     return { onChange, onBlur, input: screen.getByLabelText('Preço') }
   }
-  it('shows R$ prefix and decimal keypad', () => {
+  it('shows R$ prefix and numeric keypad', () => {
     const { input } = setup('')
     expect(screen.getByText('R$')).toBeVisible()
-    expect(input).toHaveAttribute('inputmode', 'decimal')
+    expect(input).toHaveAttribute('inputmode', 'numeric')
   })
-  it('reports typed text', () => {
+  it.each([
+    ['1', '0,01'],
+    ['12', '0,12'],
+    ['1290', '12,90'],
+    ['123456', '1.234,56'],
+    ['R$ 12,90', '12,90'],
+    ['0', ''],
+    ['10000000', '100.000,00'],
+    ['100000001', '100.000,00'],
+  ])('S-071 mask: typing %j reports %j', (typed, shown) => {
     const { input, onChange } = setup('')
-    fireEvent.change(input, { target: { value: '12,90' } })
-    expect(onChange).toHaveBeenCalledWith('12,90')
+    fireEvent.change(input, { target: { value: typed } })
+    expect(onChange).toHaveBeenCalledWith(shown)
+  })
+  it('S-071: clearing the field reports empty', () => {
+    const { input, onChange } = setup('1,29')
+    fireEvent.change(input, { target: { value: '' } })
+    expect(onChange).toHaveBeenCalledWith('')
+  })
+  it('S-071: initial value is shown as given', () => {
+    const { input } = setup('12,90')
+    expect(input).toHaveValue('12,90')
   })
   it.each(['12,90', '12.90', 'R$ 12,90', ''])('accepts %j without error', (v) => {
     setup(v)

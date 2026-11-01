@@ -87,15 +87,13 @@ describe('S-046 AC2: checkout screen', () => {
     expect(market).toHaveValue('Feira')
   })
 
-  it('S-063 AC4: live total sums valid values; invalid disables finish', () => {
+  it('S-063 AC4: live total sums valid values', () => {
     renderIt()
     fireEvent.change(screen.getByLabelText('Valor de arroz'), { target: { value: '50,00' } })
     fireEvent.change(screen.getByLabelText('Valor de leite'), { target: { value: '2,30' } })
     expect(screen.getByText(/^Total: R\$\s52,30$/)).toBeInTheDocument()
     const finish = screen.getByRole('button', { name: strings.checkout.finish })
     expect(finish).toBeEnabled()
-    fireEvent.change(screen.getByLabelText('Valor de leite'), { target: { value: 'abc' } })
-    expect(finish).toBeDisabled()
   })
 
   it('saves the price with setItemPrice on blur', () => {

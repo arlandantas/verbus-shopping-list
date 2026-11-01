@@ -25,7 +25,8 @@ test('S-046 AC3: price + market, only the pending item stays; market is suggeste
 }) => {
   const { ana } = await twoMembers(browser, ['arroz', 'leite', 'pão'])
   await buyAndOpenCheckout(ana, ['arroz', 'leite'])
-  await ana.getByLabel(strings.checkout.priceFor('arroz')).fill('5,00')
+  await ana.getByLabel(strings.checkout.priceFor('arroz')).fill('500')
+  await expect(ana.getByLabel(strings.checkout.priceFor('arroz'))).toHaveValue('5,00')
   await ana.getByLabel(strings.checkout.marketLabel).fill('Atacadão')
   await finish(ana).click()
   await expect(ana).toHaveURL(/\/$/)

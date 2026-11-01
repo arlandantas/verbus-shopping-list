@@ -87,16 +87,12 @@ describe('S-068 AC2/AC3: edit sheet', () => {
     expect(h.update).not.toHaveBeenCalled()
   })
 
-  it('disables save with a message on invalid quantity or price', () => {
+  it('disables save with a message on invalid quantity', () => {
     open()
     const s = within(sheet())
     fireEvent.change(s.getByLabelText(strings.item.quantity), { target: { value: '0' } })
     expect(save()).toBeDisabled()
     expect(s.getByText(strings.item.quantityInvalid)).toBeInTheDocument()
-    fireEvent.change(s.getByLabelText(strings.item.quantity), { target: { value: '2' } })
-    fireEvent.change(s.getByLabelText(strings.item.price), { target: { value: 'abc' } })
-    expect(save()).toBeDisabled()
-    expect(s.getByText(strings.item.priceInvalid)).toBeInTheDocument()
   })
 
   it('saves only the changed fields and closes', () => {
