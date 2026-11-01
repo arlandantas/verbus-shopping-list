@@ -90,7 +90,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-076 | SEC | Regras: convites e entrar na família (suíte adversarial) | done | S-075 |
 | S-077 | SEC | Trocar o código de convite (rotação) | done | S-076 |
 | S-078 | SEC | Regras: escalada de papel e de campos, limites de tamanho | done | S-075 |
-| S-079 | SEC | Regras: preços, compras, linhas e ciclos (suíte adversarial) | todo | S-078 |
+| S-079 | SEC | Regras: preços, compras, linhas e ciclos (suíte adversarial) | done | S-078 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA (spec 80) | todo | S-005 |
 | S-080 | M6 | Aviso "Adicionar à Tela de Início" no iOS | todo | — |
 | S-081 | M6 | Manifest e metas Apple coerentes com o tema e o base path | todo | S-080 |
