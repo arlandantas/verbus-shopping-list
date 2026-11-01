@@ -6,7 +6,7 @@
 GitHub Pages não permite cabeçalhos. O build injeta `<meta http-equiv="Content-Security-Policy">` e `<meta name="referrer" content="strict-origin-when-cross-origin">` (`vite/csp.ts`, só em `vite build`; `pnpm dev` fica sem CSP por causa do HMR).
 
 ## Decisão
-`default-src 'self'`; `script-src 'self' https://apis.google.com`; `style-src 'self' 'unsafe-inline'`; `connect-src 'self'` + `firestore|identitytoolkit|securetoken.googleapis.com` + `https://<authDomain>`; `frame-src https://<authDomain>` (`'none'` sem authDomain); `img-src 'self' data:`; `worker-src 'self'`; `manifest-src 'self'`; `object-src 'none'`; `base-uri 'self'`; `form-action 'self'`. Build de emulador soma `http://127.0.0.1:*` e `http://localhost:*` em `connect-src`. Sem `unsafe-eval` nem `unsafe-inline` em scripts.
+`default-src 'self'`; `script-src 'self' https://apis.google.com`; `style-src 'self' 'unsafe-inline'`; `connect-src 'self'` + `firestore|identitytoolkit|securetoken.googleapis.com` + `https://<authDomain>`; `frame-src https://<authDomain>` (`'none'` sem authDomain); `img-src 'self' data:`; `worker-src 'self'`; `manifest-src 'self'`; `object-src 'none'`; `base-uri 'self'`; `form-action 'self'`. Build de emulador soma `http://127.0.0.1:*` e `http://localhost:*` em `connect-src` e `frame-src` (o SDK embute um iframe do emulador Auth no login por popup; achado pelo E2E). Sem `unsafe-eval` nem `unsafe-inline` em scripts.
 
 ## Verificado x assumido
 - Verificado (E2E, emulador): e-mail/senha, Firestore, SW, nenhum `securitypolicyviolation`.

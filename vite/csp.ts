@@ -8,13 +8,14 @@ export interface CspOptions {
 /** Builds the Content-Security-Policy for the static (GitHub Pages) deploy. Pure. */
 export function buildCsp({ authDomain, emulator }: CspOptions): string {
   const auth = authDomain ? [`https://${authDomain}`] : []
+  const loopback = emulator ? ['http://127.0.0.1:*', 'http://localhost:*'] : []
   const connect = [
     "'self'",
     'https://firestore.googleapis.com',
     'https://identitytoolkit.googleapis.com',
     'https://securetoken.googleapis.com',
     ...auth,
-    ...(emulator ? ['http://127.0.0.1:*', 'http://localhost:*'] : []),
+    ...loopback,
   ]
   const directives: Record<string, string[]> = {
     'default-src': ["'self'"],
@@ -23,7 +24,8 @@ export function buildCsp({ authDomain, emulator }: CspOptions): string {
     // 'unsafe-inline' for inline style attributes (React/Tailwind); see ADR-0026.
     'style-src': ["'self'", "'unsafe-inline'"],
     'connect-src': connect,
-    'frame-src': auth.length ? auth : ["'none'"],
+    // Emulator: the Auth SDK iframes http://127.0.0.1:9099 for the popup flow.
+    'frame-src': auth.length || loopback.length ? [...auth, ...loopback] : ["'none'"],
     'img-src': ["'self'", 'data:'],
     'worker-src': ["'self'"],
     'manifest-src': ["'self'"],

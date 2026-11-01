@@ -39,7 +39,8 @@ describe('S-084 AC2: buildCsp', () => {
     const emu = buildCsp({ emulator: true })
     expect(dir(emu, 'connect-src')).toContain('http://127.0.0.1:* http://localhost:*')
     expect(emu).not.toContain('undefined')
-    expect(dir(emu, 'frame-src')).toBe("frame-src 'none'")
+    expect(dir(emu, 'frame-src')).toBe('frame-src http://127.0.0.1:* http://localhost:*')
+    expect(dir(buildCsp({}), 'frame-src')).toBe("frame-src 'none'")
   })
 })
 
