@@ -35,6 +35,7 @@ This file follows the AGENTS.md convention and is the single entry point for any
 - `pnpm test:e2e` — emulators + Playwright (Pixel 7, Chromium; first run: `pnpm exec playwright install chromium`)
 - `node scripts/gen-icons.mjs` — regenerate placeholder PWA icons (final icons come from the user)
 - `pnpm lint` — ESLint (flat config) · `pnpm format` / `pnpm format:check` — Prettier
+- `pnpm check:bundle` — builds in a temp dir and fails if the prod bundle has test accounts/panel/emulator hosts (S-086)
 - `pnpm check` — lint + typecheck + test + test:rules + test:data
 
 ## Size limits (split before exceeding)

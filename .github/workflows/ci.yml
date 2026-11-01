@@ -66,6 +66,9 @@ jobs:
 
       - run: pnpm check
 
+      - name: Check production bundle (S-086)
+        run: pnpm check:bundle
+
       - run: pnpm exec playwright install --with-deps chromium
 
       - run: pnpm test:e2e

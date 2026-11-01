@@ -55,6 +55,10 @@ jobs:
           esac
           pnpm build # also writes dist/404.html (SPA fallback for deep links on Pages)
 
+      # S-086: fail the deploy if the bundle carries test accounts, the quick-login panel or emulator hosts.
+      - name: Check production bundle
+        run: pnpm check:bundle
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
