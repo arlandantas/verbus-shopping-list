@@ -183,12 +183,13 @@
   text-decoration: none;
 }
 .m3-list-item--primary {
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-inline-start: 4px solid var(--md-sys-color-primary);
 }
 .m3-list-item--primary .m3-list-item__supporting,
 .m3-list-item--primary .m3-list-item__trailing {
-  color: var(--md-sys-color-on-primary-container);
+  color: var(--md-sys-color-on-secondary-container);
 }
 .m3-list-item--muted,
 .m3-list-item--muted .m3-list-item__supporting,

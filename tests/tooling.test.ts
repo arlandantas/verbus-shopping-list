@@ -65,3 +65,25 @@ describe('S-060 AC4: viewport meta', () => {
     )
   })
 })
+
+describe('S-070 AC2: no fixed Tailwind palette colors in src', () => {
+  // Justified exceptions: none yet. Add "path:line-fragment" entries with a reason.
+  const exceptions: string[] = []
+  const palette =
+    /\b(text|bg|border|ring|fill|stroke|divide|outline)-(gray|green|red|blue|slate|zinc|neutral|white|black)\b/
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)],
+    )
+  it('S-070 AC2: src/**/*.{ts,tsx,css} use theme tokens only', () => {
+    const hits = walk(join(root, 'src'))
+      .filter((f) => /\.(ts|tsx|css)$/.test(f) && !/\.test\.tsx?$/.test(f))
+      .flatMap((f) =>
+        readFileSync(f, 'utf8')
+          .split('\n')
+          .map((l, n) => `${f.slice(root.length + 1)}:${n + 1}: ${l.trim()}`)
+          .filter((l) => palette.test(l) && !exceptions.some((x) => l.includes(x))),
+      )
+    expect(hits).toEqual([])
+  })
+})

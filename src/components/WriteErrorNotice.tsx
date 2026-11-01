@@ -16,13 +16,13 @@ export function WriteErrorNotice() {
   return (
     <div
       role="alert"
-      className="fixed inset-x-0 bottom-[var(--app-bottom-inset,0px)] z-30 flex items-center gap-2 bg-red-800 px-4 py-2 text-sm text-white"
+      className="fixed inset-x-0 bottom-[var(--app-bottom-inset,0px)] z-30 flex items-center gap-2 bg-error px-4 py-2 text-sm text-on-error"
     >
       <p className="flex-1">{strings.writeError}</p>
       <button
         type="button"
         onClick={() => setVisible(false)}
-        className="min-h-12 min-w-12 rounded border border-white px-3"
+        className="min-h-12 min-w-12 rounded border border-on-error px-3"
       >
         {strings.dismiss}
       </button>

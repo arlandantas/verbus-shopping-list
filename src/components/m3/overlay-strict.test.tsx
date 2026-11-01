@@ -80,4 +80,36 @@ describe('S-069: overlays survive StrictMode in dev', () => {
     expect(history.state?.m3overlay).toBeUndefined()
     expect(history.length).toBeLessThanOrEqual(base + 3)
   })
+
+  it('S-070: Dialog stacked over BottomSheet under StrictMode; back closes only the Dialog', async () => {
+    const onSheet = vi.fn()
+    function Stack() {
+      const [dialog, setDialog] = useState(false)
+      return (
+        <>
+          <BottomSheet open title="Sheet" onClose={onSheet}>
+            <button onClick={() => setDialog(true)}>abrir</button>
+          </BottomSheet>
+          <Dialog open={dialog} title="Dialog" onClose={() => setDialog(false)}>
+            y
+          </Dialog>
+        </>
+      )
+    }
+    render(
+      <StrictMode>
+        <Stack />
+      </StrictMode>,
+    )
+    await settle()
+    fireEvent.click(screen.getByText('abrir'))
+    await settle()
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Dialog' })).toBeInTheDocument()
+    act(() => history.back())
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'Dialog' })).not.toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBeInTheDocument()
+    expect(onSheet).not.toHaveBeenCalled()
+  })
 })

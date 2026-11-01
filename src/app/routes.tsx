@@ -41,7 +41,7 @@ function FamilyRoutes(): ReactNode {
         <button
           type="button"
           onClick={family.retry}
-          className="min-h-12 w-full rounded bg-green-700 px-4 text-base font-medium text-white"
+          className="min-h-12 w-full rounded bg-primary px-4 text-base font-medium text-on-primary"
         >
           {strings.retry}
         </button>

@@ -6,13 +6,13 @@ export function CycleNotice({ added, onDismiss }: { added: number; onDismiss: ()
   return (
     <div
       role="status"
-      className="mx-4 mb-2 flex items-center gap-2 rounded border border-gray-700 bg-gray-100 px-3 py-2 text-sm text-gray-900"
+      className="mx-4 mb-2 flex items-center gap-2 rounded border border-outline bg-secondary-container px-3 py-2 text-sm text-on-secondary-container"
     >
       <p className="flex-1">{strings.cycle.returned(added)}</p>
       <button
         type="button"
         onClick={onDismiss}
-        className="min-h-12 min-w-12 rounded border border-gray-700 px-3"
+        className="min-h-12 min-w-12 rounded border border-outline px-3"
       >
         {strings.cycle.ok}
       </button>

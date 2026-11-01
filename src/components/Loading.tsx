@@ -17,7 +17,7 @@ export function Loading({ timeoutMs = LOADING_TIMEOUT_MS }: { timeoutMs?: number
       <button
         type="button"
         onClick={() => window.location.reload()}
-        className="min-h-12 w-full rounded bg-green-700 px-4 text-base font-medium text-white"
+        className="min-h-12 w-full rounded bg-primary px-4 text-base font-medium text-on-primary"
       >
         {strings.retry}
       </button>

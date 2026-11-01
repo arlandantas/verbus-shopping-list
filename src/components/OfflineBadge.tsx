@@ -7,7 +7,7 @@ export function OfflineBadge() {
   return (
     <div
       role="status"
-      className="fixed inset-x-0 bottom-[var(--app-bottom-inset,0px)] bg-gray-900 px-4 py-3 text-center text-sm text-white"
+      className="fixed inset-x-0 bottom-[var(--app-bottom-inset,0px)] bg-inverse-surface px-4 py-3 text-center text-sm text-inverse-on-surface"
     >
       {strings.offline}
     </div>

@@ -83,7 +83,7 @@ export function ListScreen() {
         }
       />
       {list.length > 0 && done === list.length && (
-        <p className="px-4 pb-2 text-green-800">{strings.market.allDone}</p>
+        <p className="px-4 pb-2 text-on-surface-variant">{strings.market.allDone}</p>
       )}
       <CycleNotice added={recurringAdded} onDismiss={dismissRecurringNotice} />
       <AddItemBar onAdd={onAdd} catalog={catalog} pendingKeys={pendingKeys} onPick={onPick} />
