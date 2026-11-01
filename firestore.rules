@@ -202,7 +202,7 @@ service cloud.firestore {
       return v == null || (v is int && v >= 0 && v <= max);
     }
 
-    // ADR-0012: create-only purchase (one trip to the market).
+    // ADR-0012 (+ADR-0021: totalCents editable): purchase (one trip to the market).
     function validPurchase(d) {
       return d.keys().hasOnly(['cycle', 'market', 'itemCount', 'totalCents', 'createdBy', 'purchasedAt'])
         && d.keys().hasAll(['cycle', 'market', 'itemCount', 'totalCents', 'createdBy', 'purchasedAt'])
@@ -214,7 +214,7 @@ service cloud.firestore {
         && d.purchasedAt == request.time;
     }
 
-    // ADR-0012: create-only history line, doc id = archived item id.
+    // ADR-0012: history line (ADR-0021: quantity/unit/priceCents editable), doc id = archived item id.
     function validPurchaseLine(d) {
       return d.keys().hasOnly(['purchaseId', 'cycle', 'name', 'nameKey', 'quantity', 'unit',
           'categoryId', 'categoryName', 'priceCents', 'market', 'markedBy', 'purchasedAt'])
@@ -280,13 +280,24 @@ service cloud.firestore {
       match /purchases/{purchaseId} {
         allow read: if isMember(familyId);
         allow create: if isMember(familyId) && validPurchase(request.resource.data);
-        allow update, delete: if false;
+        // ADR-0021: only the total may change (recomputed by the client from the lines).
+        allow update: if isMember(familyId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalCents'])
+          && validPriceCents(request.resource.data.totalCents, 2000000000);
+        allow delete: if false;
       }
 
       match /purchaseLines/{itemId} {
         allow read: if isMember(familyId);
         allow create: if isMember(familyId) && validPurchaseLine(request.resource.data);
-        allow update, delete: if false;
+        // ADR-0021: past lines may be corrected in quantity, unit and price only.
+        allow update: if isMember(familyId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['quantity', 'unit', 'priceCents'])
+          && validQuantity(request.resource.data.quantity)
+          && validUnit(request.resource.data.unit)
+          && validPriceCents(request.resource.data.priceCents, 10000000);
+        allow delete: if false;
       }
 
       // Member profile (ADR-0011): readable by the family, writable only by its owner uid.

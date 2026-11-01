@@ -1,4 +1,13 @@
-import { collection, onSnapshot, orderBy, query, where, type Unsubscribe } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+  writeBatch,
+  type Unsubscribe,
+} from 'firebase/firestore'
 import { db } from '@/data/firebase'
 import {
   purchaseConverter,
@@ -6,6 +15,7 @@ import {
   type Purchase,
   type PurchaseLine,
 } from './converters'
+import { fireAndForget } from './writeErrors'
 
 const SNAPSHOT = { includeMetadataChanges: true } as const
 const OPTIONS = { serverTimestamps: 'estimate' } as const
@@ -45,4 +55,31 @@ export function watchCycleLines(
       ),
     onError,
   )
+}
+
+export type PurchaseLinePatch = Partial<Pick<PurchaseLine, 'quantity' | 'unit' | 'priceCents'>>
+
+/**
+ * Edits quantity/unit/price of an archived line and rewrites the purchase `totalCents` (sum of the
+ * prices of the lines of the same purchase, null if none has one) in a single un-awaited batch
+ * (ADR-0021). `siblings` are the cached lines; the edited one is matched by id.
+ */
+export function updatePurchaseLine(
+  familyId: string,
+  line: PurchaseLine,
+  patch: PurchaseLinePatch,
+  siblings: PurchaseLine[],
+): void {
+  const family = ['families', familyId] as const
+  const next = { ...line, ...patch }
+  const prices = siblings
+    .filter((l) => l.purchaseId === line.purchaseId && l.id !== line.id)
+    .concat(next)
+    .flatMap((l) => (l.priceCents == null ? [] : [l.priceCents]))
+  const batch = writeBatch(db)
+  batch.update(doc(db, ...family, 'purchaseLines', line.id), patch)
+  batch.update(doc(db, ...family, 'purchases', line.purchaseId), {
+    totalCents: prices.length ? prices.reduce((a, b) => a + b, 0) : null,
+  })
+  fireAndForget(batch.commit())
 }

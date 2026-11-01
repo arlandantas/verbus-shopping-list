@@ -72,9 +72,12 @@ describe('S-033 AC3: read-only history and isolation', () => {
     await assertSucceeds(getDoc(doc(alice(), 'families/F1/purchaseLines/L0')))
   })
 
-  it.each(['purchases/P0', 'purchaseLines/L0'])('denies update of %s', async (path) => {
-    await assertFails(updateDoc(doc(alice(), `families/F1/${path}`), { cycle: '2026-09' }))
-  })
+  it.each(['purchases/P0', 'purchaseLines/L0'])(
+    'denies update of cycle in %s (S-067 AC7)',
+    async (path) => {
+      await assertFails(updateDoc(doc(alice(), `families/F1/${path}`), { cycle: '2026-09' }))
+    },
+  )
 
   it.each(['purchases/P0', 'purchaseLines/L0'])('denies delete of %s', async (path) => {
     await assertFails(deleteDoc(doc(alice(), `families/F1/${path}`)))
