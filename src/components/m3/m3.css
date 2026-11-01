@@ -1,0 +1,165 @@
+/* M3 base components. State layer: ::before with currentColor (8% hover, 10% pressed/focus). */
+.m3-btn,
+.m3-icon-btn,
+.m3-nav__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  font: var(--md-sys-typescale-label-large);
+  -webkit-tap-highlight-color: transparent;
+}
+.m3-btn::before,
+.m3-icon-btn::before,
+.m3-nav__pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentcolor;
+  opacity: 0;
+  pointer-events: none;
+}
+.m3-btn:hover::before,
+.m3-icon-btn:hover::before,
+.m3-nav__item:hover .m3-nav__pill::before {
+  opacity: 0.08;
+}
+.m3-btn:active::before,
+.m3-btn:focus-visible::before,
+.m3-icon-btn:active::before,
+.m3-icon-btn:focus-visible::before,
+.m3-nav__item:active .m3-nav__pill::before {
+  opacity: 0.1;
+}
+.m3-btn:focus-visible,
+.m3-icon-btn:focus-visible,
+.m3-nav__item:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+.m3-btn:disabled {
+  cursor: default;
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+/* Button: 40px visual, 48px touch area via min-block-size on wrapper margin */
+.m3-btn {
+  gap: 8px;
+  height: 40px;
+  min-width: 48px;
+  padding: 0 24px;
+  border-radius: var(--md-sys-shape-corner-full);
+  margin-block: 4px;
+}
+.m3-btn::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block: -4px;
+}
+.m3-btn--has-icon {
+  padding-inline-start: 16px;
+}
+.m3-btn--filled {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.m3-btn--tonal {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-surface);
+}
+.m3-btn--outlined {
+  border: 1px solid var(--md-sys-color-outline);
+  color: var(--md-sys-color-primary);
+}
+.m3-btn--text {
+  padding: 0 12px;
+  color: var(--md-sys-color-primary);
+}
+
+/* IconButton: 48x48 touch area, 40px visual */
+.m3-icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+}
+.m3-icon-btn--filled {
+  color: var(--md-sys-color-on-primary);
+  background: var(--md-sys-color-primary);
+}
+.m3-icon-btn--tonal {
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-secondary-container);
+}
+.m3-icon-btn--standard[aria-pressed='true'] {
+  color: var(--md-sys-color-primary);
+}
+
+/* TopAppBar */
+.m3-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 8px 4px;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+.m3-top-bar__titles {
+  flex: 1;
+  min-width: 0;
+  padding-inline: 12px;
+}
+.m3-top-bar__title {
+  margin: 0;
+  font: var(--md-sys-typescale-title-large);
+}
+.m3-top-bar__subtitle {
+  margin: 0;
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
+.m3-top-bar__actions {
+  display: flex;
+  align-items: center;
+}
+
+/* NavigationBar */
+.m3-nav {
+  display: flex;
+  height: 80px;
+  box-sizing: content-box;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--md-sys-color-surface-container);
+}
+.m3-nav__item {
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 48px;
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-label-medium);
+}
+.m3-nav__pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 32px;
+  border-radius: var(--md-sys-shape-corner-full);
+}
+.m3-nav__item[aria-current='page'] {
+  color: var(--md-sys-color-on-surface);
+}
+.m3-nav__item[aria-current='page'] .m3-nav__pill {
+  background: var(--md-sys-color-secondary-container);
+}
