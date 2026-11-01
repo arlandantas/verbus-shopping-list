@@ -18,5 +18,6 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0012](0012-checkout-purchases-and-lines.md) | Finalizar compra: `purchases` + `purchaseLines` (emenda spec 70 / 0009) | aceito |
 | [0013](0013-cycles-and-recurring-return.md) | Ciclo mensal e volta dos recorrentes (fecha ponto da 0010) | aceito |
 | [0014](0014-categories-defaults-and-grouping.md) | Categorias: padrões, CRUD e agrupamento (emenda spec 70 / 0009) | aceito |
+| [0017](0017-mvp-first-security-later.md) | MVP primeiro, endurecimento de segurança depois | aceito |
 | [0016](0016-accepted-risks-m5-rules.md) | Riscos aceitos nas regras do M5 | aceito |
 | [0015](0015-price-only-when-bought.md) | Preço só em item comprado; mercado opcional (emenda a 0008) | aceito |
