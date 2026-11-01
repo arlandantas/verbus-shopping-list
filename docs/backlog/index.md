@@ -76,13 +76,13 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-066 | UX | Histórico: agrupar por compra finalizada | done | S-065 |
 | S-067 | UX | Regras e dados: editar linhas de compras passadas (ADR-0021) | done | S-066 |
 | S-068 | UX | Histórico: editar item comprado | done | S-067 |
-| E-UX2 | UX | Épico: ajustes da 2ª rodada (revisão em navegador, 2026-11-01). Prioridade atual | todo | E-UX |
+| E-UX2 | UX | Épico: ajustes da 2ª rodada (revisão em navegador, 2026-11-01). Prioridade atual | done | E-UX |
 | S-069 | UX | Overlay: sheet e diálogos fecham sozinhos em dev (StrictMode) | done | — |
 | S-070 | UX | Legibilidade e contraste no modo escuro | done | S-069 |
 | S-071 | UX | Campo de valor com máscara de centavos | done | — |
 | S-072 | UX | Shell: abas centralizadas, barra de adicionar flutuante, avisos empilhados | done | S-070 |
 | S-073 | UX | Confirmar sair da conta | done | S-069 |
-| S-074 | UX | Despensa: "Outros itens já usados" como seção colapsável | todo | S-070 |
+| S-074 | UX | Despensa: "Outros itens já usados" como seção colapsável | done | S-070 |
 | E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA | todo | S-005 |
 | E-SEC | — | Épico: endurecimento de segurança (só após a 1ª rodada de testes do usuário; ADR-0017, ADR-0016) | todo | — |
 | E-LISTS | — | Épico futuro: várias listas por família (mercado, roupas, desejos) com acesso por lista; exige ADR de modelo de dados e regras antes das histórias | todo | E-UX |
