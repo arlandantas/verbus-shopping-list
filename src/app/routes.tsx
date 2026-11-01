@@ -4,6 +4,7 @@ import { useLocation } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { FamilyProvider, useFamily } from '@/app/FamilyProvider'
 import { AppShell } from '@/app/AppShell'
+import { IosInstallHint } from '@/components/IosInstallHint'
 import { CheckoutScreen } from '@/screens/Checkout/CheckoutScreen'
 import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
@@ -67,7 +68,15 @@ function FamilyRoutes(): ReactNode {
           <Route path="/item/:id" element={<Navigate to="/" replace />} />
         </Route>
       ) : (
-        <Route path="/familia" element={<FamilyScreen />} />
+        <Route
+          path="/familia"
+          element={
+            <>
+              <IosInstallHint />
+              <FamilyScreen />
+            </>
+          }
+        />
       )}
       <Route path="*" element={<Navigate to={status === 'ready' ? '/' : '/familia'} replace />} />
     </Routes>

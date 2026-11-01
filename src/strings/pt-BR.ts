@@ -74,6 +74,13 @@ export const strings = {
       n === 1 ? '1 recorrente voltou para a lista' : `${n} recorrentes voltaram para a lista`,
     ok: 'OK',
   },
+  iosInstall: {
+    before: 'Para instalar no iPhone/iPad, toque em',
+    share: 'Compartilhar',
+    then: 'e depois em',
+    add: 'Adicionar à Tela de Início',
+    close: 'Fechar aviso de instalação',
+  },
   nav: { label: 'Principal', list: 'Lista' },
   back: 'Voltar',
   list: {
