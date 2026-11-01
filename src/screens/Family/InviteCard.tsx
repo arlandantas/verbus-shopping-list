@@ -12,7 +12,7 @@ interface Props {
 /** Shows the invite code and link; shares via the Web Share API or copies the link. */
 export function InviteCard({ code, familyName }: Props) {
   const [copied, setCopied] = useState<'link' | 'code' | 'failed' | null>(null)
-  const link = `${window.location.origin}/convite/${code}`
+  const link = `${window.location.origin}${import.meta.env.BASE_URL}convite/${code}`
   const t = strings.family.invite
 
   async function share() {

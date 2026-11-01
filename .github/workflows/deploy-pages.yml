@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# Publishes the static build at the site root (verbus-shopping-list.github.io).
+# Publishes the static build. Base path is derived from the repo name (see Build step).
 # Needs repository variables (Settings > Secrets and variables > Actions > Variables):
 # VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_APP_ID.
 # These web-config values are public by design; real protection is firestore.rules.
@@ -46,7 +46,14 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm build
+      # Project pages live under /<repo>/; the <user>.github.io repo is served at the root.
+      - name: Build
+        run: |
+          case "$GITHUB_REPOSITORY" in
+            *.github.io) export VITE_BASE=/ ;;
+            *) export VITE_BASE="/${GITHUB_REPOSITORY#*/}/" ;;
+          esac
+          pnpm build
 
       # Pages has no SPA rewrite: serve the app shell for deep links (/historico, /familia...).
       - name: SPA fallback

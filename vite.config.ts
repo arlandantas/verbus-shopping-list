@@ -25,7 +25,11 @@ function emulatorWarning(): Plugin {
   }
 }
 
+// Deploy base path (e.g. '/verbus-shopping-list/' on a GitHub project page); '/' by default.
+const base = process.env.VITE_BASE ?? '/'
+
 export default defineConfig({
+  base,
   plugins: [
     emulatorWarning(),
     react(),
@@ -38,14 +42,14 @@ export default defineConfig({
         short_name: 'Compras',
         lang: 'pt-BR',
         display: 'standalone',
-        start_url: '/',
-        scope: '/',
+        start_url: base,
+        scope: base,
         theme_color: '#16a34a',
         background_color: '#ffffff',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
