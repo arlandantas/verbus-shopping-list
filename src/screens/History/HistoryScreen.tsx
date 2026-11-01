@@ -5,6 +5,7 @@ import { usePurchases } from '@/hooks/useHistory'
 import { cyclesFrom } from '@/domain/history'
 import { formatCycle } from '@/domain/cycle'
 import { formatBRL } from '@/domain/price'
+import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 
 export function HistoryScreen() {
@@ -21,7 +22,7 @@ export function HistoryScreen() {
           {strings.history.back}
         </Link>
       </header>
-      {purchases === null && <p className="p-4">{strings.loading}</p>}
+      {purchases === null && <Loading />}
       {purchases !== null && months.length === 0 && <p className="p-4">{strings.history.empty}</p>}
       {months.length > 0 && (
         <ul aria-label={strings.history.monthsLabel} className="flex flex-col">

@@ -1,4 +1,4 @@
-import { authErrorMessage } from '@/data/auth'
+import { authErrorMessage, isSessionDead } from '@/data/auth'
 import { devStrings, strings } from '@/strings/pt-BR'
 
 vi.mock('@/data/firebase', () => ({ auth: {}, db: {} }))
@@ -31,5 +31,31 @@ describe('authErrorMessage', () => {
       vi.stubEnv('VITE_USE_EMULATOR', 'false')
       expect(authErrorMessage(netErr)).toBe(strings.authErrors['auth/network-request-failed'])
     })
+  })
+})
+
+describe('isSessionDead', () => {
+  const failing = (code: string) => ({ getIdToken: () => Promise.reject({ code }) })
+
+  it.each([
+    'auth/invalid-refresh-token',
+    'auth/user-token-expired',
+    'auth/user-not-found',
+    'auth/user-disabled',
+    'auth/id-token-revoked',
+  ])('stale session: %s means the session is dead', async (code) => {
+    expect(await isSessionDead(failing(code))).toBe(true)
+  })
+
+  it('offline: network-request-failed keeps the cached session (ADR-0004)', async () => {
+    expect(await isSessionDead(failing('auth/network-request-failed'))).toBe(false)
+  })
+
+  it('a hanging token refresh times out and keeps the session', async () => {
+    expect(await isSessionDead({ getIdToken: () => new Promise(() => undefined) }, 20)).toBe(false)
+  })
+
+  it('a working token keeps the session', async () => {
+    expect(await isSessionDead({ getIdToken: () => Promise.resolve('t') })).toBe(false)
   })
 })

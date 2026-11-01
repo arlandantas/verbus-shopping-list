@@ -12,6 +12,7 @@ import { isCycle, formatCycle } from '@/domain/cycle'
 import { sumByCategory } from '@/domain/categories'
 import { cycleTotalCents } from '@/domain/history'
 import { formatBRL } from '@/domain/price'
+import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 
 const dayMonth = (d: Date) =>
@@ -60,7 +61,7 @@ export function CycleScreen() {
           {strings.history.backToHistory}
         </Link>
       </header>
-      {!loaded && <p className="p-4">{strings.loading}</p>}
+      {!loaded && <Loading />}
       {loaded && mine.length === 0 && lines.length === 0 && (
         <p className="p-4">{strings.history.cycleEmpty}</p>
       )}

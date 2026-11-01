@@ -15,6 +15,7 @@ import { ListScreen } from '@/screens/List/ListScreen'
 import { LoginScreen } from '@/screens/Login/LoginScreen'
 import { InviteScreen } from '@/screens/Invite/InviteScreen'
 import { peekReturnTo, saveReturnTo } from '@/app/returnTo'
+import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 
 /** Signed out on an invite link: remember it, go log in (S-012). */
@@ -33,7 +34,7 @@ function AfterLogin({ fallback }: { fallback: string }): ReactNode {
 function FamilyRoutes(): ReactNode {
   const family = useFamily()
   const { status } = family
-  if (status === 'loading') return <p className="p-4">{strings.loading}</p>
+  if (status === 'loading') return <Loading />
   if (status === 'error')
     return (
       <main className="mx-auto flex max-w-sm flex-col gap-4 p-4">
@@ -71,7 +72,7 @@ function FamilyRoutes(): ReactNode {
 /** Auth-guarded routes (ADR-0005): /entrar, /familia, / (list lands in later stories). */
 export function AppRoutes(): ReactNode {
   const { status, user } = useAuth()
-  if (status === 'loading') return <p className="p-4">{strings.loading}</p>
+  if (status === 'loading') return <Loading />
   if (status === 'signedOut')
     return (
       <Routes>

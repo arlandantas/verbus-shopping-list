@@ -7,6 +7,7 @@ export const strings = {
   dismiss: 'Fechar aviso',
   loadError: 'Não foi possível carregar sua família. Verifique a conexão.',
   retry: 'Tentar novamente',
+  loadTimeout: 'Está demorando mais que o normal para carregar. Verifique a conexão.',
   login: {
     email: 'E-mail',
     password: 'Senha',

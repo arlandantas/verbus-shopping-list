@@ -9,6 +9,7 @@ import {
   joinFamilyByCode,
 } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
+import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 
 type Preview =
@@ -86,7 +87,7 @@ export function InviteScreen() {
   } else if (preview.state === 'error') {
     body = <p role="alert">{strings.invite.error}</p>
   } else if (preview.state === 'loading' || family.status === 'loading' || joined) {
-    body = <p>{strings.loading}</p>
+    body = <Loading />
   } else {
     body = (
       <>

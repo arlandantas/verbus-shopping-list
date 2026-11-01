@@ -3,6 +3,7 @@ import { useFamily } from '@/app/FamilyProvider'
 import { deleteItem, updateItemDetails, type ItemPatch } from '@/data/items'
 import { useCategories } from '@/hooks/useCategories'
 import { useItems } from '@/screens/List/useItems'
+import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 import { ItemForm } from './ItemForm'
 
@@ -13,8 +14,7 @@ export function ItemScreen() {
   const items = useItems(familyId)
   const categories = useCategories(familyId)
   const navigate = useNavigate()
-  if (!family || items === null || categories === null)
-    return <p className="p-4">{strings.loading}</p>
+  if (!family || items === null || categories === null) return <Loading />
   const item = items.find((i) => i.id === id)
   if (!item)
     return (

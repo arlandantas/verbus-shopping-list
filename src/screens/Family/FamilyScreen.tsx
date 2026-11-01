@@ -4,6 +4,7 @@ import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { createFamily } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
+import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 import { InviteCard } from './InviteCard'
 import { JoinForm } from './JoinForm'
@@ -36,7 +37,7 @@ export function FamilyScreen() {
 
   let body
   if (family.status === 'loading') {
-    body = <p>{strings.loading}</p>
+    body = <Loading />
   } else if (family.status === 'ready') {
     body = (
       <>

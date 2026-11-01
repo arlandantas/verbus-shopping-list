@@ -69,3 +69,44 @@ test('S-010 AC6: reload keeps the session; sign out returns to /entrar', async (
   await page.getByRole('button', { name: strings.login.signOut }).click()
   await expect(page).toHaveURL(/\/entrar$/)
 })
+
+/** Marks the persisted Firebase ID token as expired so the next load must use the refresh token. */
+async function expireStoredIdToken(page: Page) {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('firebaseLocalStorageDb')
+        open.onerror = () => reject(open.error)
+        open.onsuccess = () => {
+          const store = open.result
+            .transaction('firebaseLocalStorage', 'readwrite')
+            .objectStore('firebaseLocalStorage')
+          const all = store.getAll()
+          all.onsuccess = () => {
+            for (const row of all.result as {
+              fbase_key: string
+              value: { stsTokenManager?: { expirationTime: number } }
+            }[]) {
+              if (row.value?.stsTokenManager) {
+                row.value.stsTokenManager.expirationTime = 1
+                store.put(row)
+              }
+            }
+            store.transaction.oncomplete = () => resolve()
+          }
+        }
+      }),
+  )
+}
+
+test('stale session: accounts wiped server-side shows the login form, not endless loading', async ({
+  page,
+}) => {
+  await signUp(page)
+  await clearEmulators() // like restarting pnpm dev:local: the cached refresh token is now invalid
+  await expireStoredIdToken(page) // a >1h-old session: the SDK must refresh, and the refresh fails
+  await page.reload()
+  await expect(page.getByLabel(strings.login.email)).toBeVisible({ timeout: 8000 })
+  await expect(page).toHaveURL(/\/entrar/)
+  await expect(page.getByText(strings.loading)).toHaveCount(0)
+})
