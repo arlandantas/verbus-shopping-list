@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import type { Category, Item } from '@/data/converters'
-import type { ItemPatch } from '@/data/items'
+import { setItemPrice, type ItemPatch } from '@/data/items'
+import { PriceInput } from '@/components/PriceInput'
+import { formatBRL, parsePriceBRL } from '@/domain/price'
 import { UNITS, type Unit } from '@/domain/units'
 import { strings } from '@/strings/pt-BR'
 
@@ -18,13 +20,14 @@ export function parseQuantity(text: string): number | null {
 const unitLabel = (u: Unit) => (u === 'l' ? 'L' : u)
 
 interface Props {
+  familyId: string
   item: Item
   categories: readonly Category[]
   onSave: (patch: ItemPatch) => void
   onDelete: () => void
 }
 
-export function ItemForm({ item, categories, onSave, onDelete }: Props) {
+export function ItemForm({ familyId, item, categories, onSave, onDelete }: Props) {
   const [quantity, setQuantity] = useState(String(item.quantity).replace('.', ','))
   const [unit, setUnit] = useState<Unit>(item.unit)
   const known = categories.some((c) => c.id === item.categoryId)
@@ -33,11 +36,17 @@ export function ItemForm({ item, categories, onSave, onDelete }: Props) {
   const [note, setNote] = useState(item.note ?? '')
   const [recurring, setRecurring] = useState(item.recurring)
   const [confirming, setConfirming] = useState(false)
+  const bought = item.status === 'bought'
+  const [price, setPrice] = useState(
+    item.priceCents == null ? '' : formatBRL(item.priceCents).replace(/^R\$\s*/, ''),
+  )
   const parsed = parseQuantity(quantity)
+  const parsedPrice = parsePriceBRL(price)
+  const valid = parsed !== null && (!bought || parsedPrice.ok)
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
-    if (parsed === null) return
+    if (parsed === null || !valid) return
     const patch: ItemPatch = {}
     if (parsed !== item.quantity) patch.quantity = parsed
     if (unit !== item.unit) patch.unit = unit
@@ -45,6 +54,8 @@ export function ItemForm({ item, categories, onSave, onDelete }: Props) {
     const newNote = note.trim() === '' ? null : note.trim()
     if (newNote !== item.note) patch.note = newNote
     if (recurring !== item.recurring) patch.recurring = recurring
+    if (bought && parsedPrice.ok && parsedPrice.cents !== item.priceCents)
+      setItemPrice(familyId, item.id, parsedPrice.cents)
     onSave(patch)
   }
 
@@ -101,6 +112,7 @@ export function ItemForm({ item, categories, onSave, onDelete }: Props) {
           className={input}
         />
       </label>
+      {bought && <PriceInput value={price} onChange={setPrice} />}
       <label className="flex min-h-12 items-center gap-3">
         <input
           type="checkbox"
@@ -112,7 +124,7 @@ export function ItemForm({ item, categories, onSave, onDelete }: Props) {
       </label>
       <button
         type="submit"
-        disabled={parsed === null}
+        disabled={!valid}
         className="min-h-12 w-full rounded bg-green-700 px-4 text-base font-medium text-white disabled:opacity-50"
       >
         {strings.item.save}

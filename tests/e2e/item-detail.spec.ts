@@ -136,3 +136,18 @@ test('S-043 AC4: free-text add does not ask for a category', async ({ page }) =>
   await expect(page).toHaveURL(/\/$/)
   await expect(row(page, 'arroz')).toBeVisible()
 })
+
+test('S-045 AC3: price on a bought item shows in the list; unchecking clears it', async ({
+  page,
+}) => {
+  await setupWithItem(page, 'café')
+  await expect(page.getByLabel(strings.item.price)).toHaveCount(0)
+  await page.getByRole('checkbox', { name: strings.list.markBought('café') }).click()
+  await page.getByRole('link', { name: 'café' }).click()
+  await page.getByLabel(strings.item.price).fill('18,90')
+  await save(page).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(row(page, 'café')).toContainText(/R\$\s18,90/)
+  await page.getByRole('checkbox', { name: strings.list.markPending('café') }).click()
+  await expect(row(page, 'café')).not.toContainText('R$')
+})

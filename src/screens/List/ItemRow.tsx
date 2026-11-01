@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import type { Item } from '@/data/converters'
 import { formatQuantity } from '@/domain/itemText'
+import { formatBRL } from '@/domain/price'
 import { MarkedBy } from '@/components/MarkedBy'
 import { strings } from '@/strings/pt-BR'
 
@@ -35,6 +36,9 @@ export function ItemRow({
       </Link>
       <MarkedBy status={item.status} markedBy={item.markedBy} names={names} uid={uid} />
       <span className="text-sm text-gray-700">{formatQuantity(item.quantity, item.unit)}</span>
+      {bought && item.priceCents != null && (
+        <span className="text-sm text-gray-700">{formatBRL(item.priceCents)}</span>
+      )}
       {item.hasPendingWrites && (
         <span className="text-xs text-amber-800">{strings.list.pendingSync}</span>
       )}

@@ -99,6 +99,8 @@ export const strings = {
     note: 'Observação (marca)',
     recurring: 'Recorrente mensal',
     category: 'Categoria',
+    price: 'Preço pago',
+    priceInvalid: 'Informe um preço válido, por exemplo 12,90.',
     save: 'Salvar',
     delete: 'Apagar',
     confirmDelete: (name: string) => `Apagar ${name}?`,

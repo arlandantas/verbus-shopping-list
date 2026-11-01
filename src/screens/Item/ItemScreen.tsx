@@ -42,7 +42,13 @@ export function ItemScreen() {
         </Link>
         <h1 className="text-xl">{item.name}</h1>
       </header>
-      <ItemForm item={item} categories={categories} onSave={onSave} onDelete={onDelete} />
+      <ItemForm
+        familyId={familyId}
+        item={item}
+        categories={categories}
+        onSave={onSave}
+        onDelete={onDelete}
+      />
     </main>
   )
 }

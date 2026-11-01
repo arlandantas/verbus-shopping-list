@@ -123,3 +123,14 @@ test('S-044 AC3: checking arroz moves it to the end of its own section; undo res
   await page.getByRole('button', { name: /arroz/ }).click()
   await expect(mercearia.first()).toContainText('arroz')
 })
+
+test('S-045 AC4: bought items in market mode show no price field or text input', async ({
+  page,
+}) => {
+  await setup(page, ['arroz'])
+  await goMarket(page)
+  await page.getByRole('button', { name: /arroz/ }).click()
+  await expect(page.getByRole('button', { name: /arroz/ })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('input, textarea')).toHaveCount(0)
+  await expect(page.getByLabel(strings.item.price)).toHaveCount(0)
+})
