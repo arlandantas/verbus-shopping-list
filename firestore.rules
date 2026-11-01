@@ -74,6 +74,17 @@ service cloud.firestore {
         && profileJoins(familyId);
     }
 
+    // Invite rotation (S-077): member changes only inviteCode to a new invite created in the same batch.
+    function validRotate(familyId) {
+      let after = request.resource.data;
+      return isMember(familyId)
+        && after.diff(resource.data).affectedKeys().hasOnly(['inviteCode'])
+        && validCode(after.inviteCode)
+        && after.inviteCode != resource.data.get('inviteCode', null)
+        && getAfter(/databases/$(database)/documents/invites/$(after.inviteCode)).data.familyId == familyId
+        && getAfter(/databases/$(database)/documents/invites/$(after.inviteCode)).data.createdBy == request.auth.uid;
+    }
+
     function validInvite(data, code) {
       return data.keys().hasOnly(['familyId', 'familyName', 'createdBy', 'createdAt'])
         && data.keys().hasAll(['familyId', 'familyName', 'createdBy', 'createdAt'])
@@ -260,7 +271,7 @@ service cloud.firestore {
     match /families/{familyId} {
       allow read: if isSignedIn() && request.auth.uid in resource.data.members;
       allow create: if isSignedIn() && validFamilyCreate(request.resource.data, familyId);
-      allow update: if validJoin(familyId);
+      allow update: if validJoin(familyId) || validRotate(familyId);
       allow delete: if false;
 
       match /items/{itemId} {

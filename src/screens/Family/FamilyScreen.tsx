@@ -62,7 +62,11 @@ export function FamilyScreen() {
   } else if (family.status === 'ready') {
     body = (
       <>
-        <InviteCard code={family.family.inviteCode} familyName={family.family.name} />
+        <InviteCard
+          familyId={family.family.id}
+          code={family.family.inviteCode}
+          familyName={family.family.name}
+        />
         <h2 className="auth-heading">{t.members(family.family.members.length)}</h2>
         <ul aria-label={t.membersSection} className="family-list">
           {family.family.members.map((uid) => (

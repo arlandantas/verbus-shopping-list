@@ -49,6 +49,14 @@ export const strings = {
       copied: 'Link copiado!',
       codeCopied: 'Código copiado!',
       copyFailed: 'Não foi possível copiar. Copie manualmente.',
+      rotate: 'Gerar novo código',
+      rotateTitle: 'Gerar novo código?',
+      rotateNote:
+        'O código e o link atuais deixam de funcionar. Quem já entrou continua na família.',
+      rotateConfirm: 'Trocar código',
+      rotateCancel: 'Cancelar',
+      rotateError: 'Não foi possível gerar o código. Tente novamente.',
+      rotateOffline: 'Você está offline. Conecte-se à internet para gerar um novo código.',
     },
   },
   invite: {

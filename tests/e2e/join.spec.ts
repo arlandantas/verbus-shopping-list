@@ -107,3 +107,25 @@ test('S-012 AC4: a user who already has a family sees a notice and is not switch
   await expect(page.getByText(strings.family.members(1))).toBeVisible()
   await b.context().close()
 })
+
+test('S-077 AC5: rotating the code shows a new one and the old one stops working', async ({
+  page,
+  browser,
+}) => {
+  await signUp(page, 'ana@example.com')
+  const oldCode = await createFamily(page, 'Casa')
+  await page.getByRole('button', { name: strings.family.invite.rotate }).click()
+  await page.getByRole('button', { name: strings.family.invite.rotateConfirm }).click()
+  await expect(page.getByTestId('invite-code')).not.toHaveText(oldCode)
+  const newCode = (await page.getByTestId('invite-code').textContent()) ?? ''
+  expect(newCode).toMatch(/^[2-9A-HJKMNP-Z]{8}$/)
+
+  const b = await newPage(browser)
+  await signUp(b, 'beto@example.com')
+  await expect(b).toHaveURL(/\/familia$/)
+  await b.goto(`/convite/${oldCode}`)
+  await expect(b.getByText(strings.invite.notFound)).toBeVisible()
+  await b.goto(`/convite/${newCode}`)
+  await expect(b.getByRole('button', { name: strings.invite.confirm })).toBeVisible()
+  await b.context().close()
+})

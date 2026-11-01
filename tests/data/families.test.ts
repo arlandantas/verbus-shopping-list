@@ -7,6 +7,7 @@ import {
   createFamily,
   getInvitePreview,
   joinFamilyByCode,
+  rotateInviteCode,
   watchFamily,
 } from '@/data/families'
 import { ensureUserProfile, watchUser } from '@/data/users'
@@ -148,5 +149,22 @@ describe('S-009 AC5: watchers', () => {
     expect(calls.at(-1)).toMatchObject({ id: familyId, name: 'Casa', members: [user.uid] })
     expect(typeof off).toBe('function')
     off()
+  })
+})
+
+describe('S-077 AC4: rotateInviteCode', () => {
+  it('creates the new invite, updates the family and deletes the old invite', async () => {
+    const user = await signUp('rita')
+    const { familyId, inviteCode } = await createFamily('Casa')
+    const next = await rotateInviteCode(familyId)
+    expect(next).not.toBe(inviteCode)
+    expect(isValidInviteCode(next)).toBe(true)
+    expect((await getDoc(doc(db, 'families', familyId))).data()?.inviteCode).toBe(next)
+    expect((await getDoc(doc(db, 'invites', next))).data()).toMatchObject({
+      familyId,
+      familyName: 'Casa',
+      createdBy: user.uid,
+    })
+    expect((await getDoc(doc(db, 'invites', inviteCode))).exists()).toBe(false)
   })
 })

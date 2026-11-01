@@ -209,3 +209,22 @@ describe('S-076 AC7: deleting and updating invites', () => {
     await assertSucceeds(deleteDoc(doc(a, 'invites/ABCD2345')))
   })
 })
+
+describe('S-076 gaps: re-join and extra keys', () => {
+  it('denies an existing member re-joining, allows a free user (control)', async () => {
+    await assertFails(join('alice', 'F1', ['alice', 'alice']))
+    await assertSucceeds(join('carol', 'F1', ['alice', 'carol']))
+  })
+  it('denies an extra key in the join payload, allows the exact payload (control)', async () => {
+    const db = asUser(env, 'dave')
+    const bad = writeBatch(db)
+    bad.update(doc(db, 'families/F1'), {
+      members: ['alice', 'dave'],
+      joinCode: 'ABCD2345',
+      ownerId: 'dave',
+    })
+    bad.update(doc(db, 'users/dave'), { familyId: 'F1' })
+    await assertFails(bad.commit())
+    await assertSucceeds(join('dave', 'F1', ['alice', 'dave']))
+  })
+})

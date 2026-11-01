@@ -79,6 +79,27 @@ export async function createFamily(
   return { familyId: familyRef.id, inviteCode }
 }
 
+/** One batch (no transaction, ADR-0004): new invite + family.inviteCode + old invite deleted. Returns the new code. */
+export async function rotateInviteCode(familyId: string): Promise<string> {
+  const uid = currentUid()
+  const familyRef = doc(db, 'families', familyId)
+  const family = await getDoc(familyRef)
+  if (!family.exists()) throw new Error('family-not-found')
+  const oldCode: string | undefined = family.data().inviteCode
+  const inviteCode = await freshInviteCode()
+  const batch = writeBatch(db)
+  batch.set(doc(db, 'invites', inviteCode), {
+    familyId,
+    familyName: family.data().name,
+    createdBy: uid,
+    createdAt: serverTimestamp(),
+  })
+  batch.update(familyRef, { inviteCode })
+  if (oldCode) batch.delete(doc(db, 'invites', oldCode))
+  await batch.commit()
+  return inviteCode
+}
+
 /** Public preview of an invite (ADR-0007): readable by any signed-in user, member or not. */
 export async function getInvitePreview(
   rawCode: string,

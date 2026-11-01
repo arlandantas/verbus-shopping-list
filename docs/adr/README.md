@@ -27,3 +27,4 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0021](0021-edit-past-purchase-lines.md) | Editar linhas de compras passadas (emenda 0012) | aceito |
 | [0022](0022-price-independent-of-cart.md) | Valor independente do carrinho (emenda 0015 e 0020) | aceito |
 | [0023](0023-security-hardening-resumed.md) | Endurecimento de segurança retomado (emenda a 0017) | aceito |
+| [0024](0024-multi-group-membership.md) | Vários grupos por usuário; categorias como sugestões (emenda 0003, 0014; substitui S-014) | aceito |
