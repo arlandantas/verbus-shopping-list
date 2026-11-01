@@ -58,3 +58,17 @@ test('S-082 AC3/AC5: SW denylist and 404.html equals index.html', () => {
   expect(compact).toContain('denylist:[/^\\/__\\//,/\\/[^/?]+\\.[^/]+$/]')
   expect(sw).toMatch(/createHandlerBoundToURL\("index\.html"\)/)
 }, 120_000)
+
+test('S-083 AC1: prompt registration, no inline script, waits for SKIP_WAITING message', () => {
+  const out = mkdtempSync(join(tmpdir(), 'verbus-dist-'))
+  dirs.push(out)
+  execSync(`pnpm exec vite build --outDir ${out} --emptyOutDir`, {
+    env: { ...process.env, VITE_BASE: '/sub/' },
+    stdio: 'pipe',
+  })
+  const html = readFileSync(join(out, 'index.html'), 'utf8')
+  expect(html).not.toMatch(/<script(?![^>]*\bsrc=)[^>]*>\s*\S/)
+  const sw = readFileSync(join(out, 'sw.js'), 'utf8')
+  expect(sw).not.toMatch(/clientsClaim\(\)/)
+  expect(sw).toMatch(/SKIP_WAITING/)
+}, 120_000)

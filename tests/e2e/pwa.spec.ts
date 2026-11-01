@@ -65,3 +65,15 @@ test('S-005 AC5: offline badge appears and disappears', async ({ page, context }
   await context.setOffline(false)
   await expect(page.getByText(strings.offline)).toBeHidden()
 })
+
+test('S-083 AC6: with prompt registration the SW is active and offline reload works', async ({
+  page,
+  context,
+}) => {
+  await loadWithServiceWorker(page)
+  const state = await page.evaluate(async () => (await navigator.serviceWorker.ready).active?.state)
+  expect(state).toBe('activated')
+  await context.setOffline(true)
+  await page.reload()
+  await expect(page.getByRole('heading', { name: strings.appTitle })).toBeVisible()
+})

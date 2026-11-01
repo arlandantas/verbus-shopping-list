@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router'
 import { AuthProvider } from '@/app/AuthProvider'
 import { AppRoutes } from '@/app/routes'
 import { WriteErrorNotice } from '@/components/WriteErrorNotice'
+import { UpdatePrompt } from '@/components/UpdatePrompt'
 import { OfflineBadge } from '@/components/OfflineBadge'
 
 export function App() {
@@ -11,6 +12,7 @@ export function App() {
         <AppRoutes />
         <OfflineBadge />
         <WriteErrorNotice />
+        <UpdatePrompt />
       </AuthProvider>
     </BrowserRouter>
   )

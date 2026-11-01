@@ -5,6 +5,11 @@ export const strings = {
   noCategory: 'Sem categoria',
   writeError: 'Não foi possível sincronizar a alteração. Verifique a conexão e tente novamente.',
   dismiss: 'Fechar aviso',
+  update: {
+    available: 'Nova versão disponível',
+    action: 'Atualizar',
+    offlineReady: 'Pronto para usar sem internet',
+  },
   overlay: { close: 'Fechar', cancel: 'Cancelar', confirm: 'Confirmar' },
   loadError: 'Não foi possível carregar sua família. Verifique a conexão.',
   retry: 'Tentar novamente',
