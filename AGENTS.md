@@ -37,6 +37,7 @@ This file follows the AGENTS.md convention and is the single entry point for any
 - `pnpm lint` — ESLint (flat config) · `pnpm format` / `pnpm format:check` — Prettier
 - `pnpm check:bundle` — builds in a temp dir and fails if the prod bundle has test accounts/panel/emulator hosts (S-086)
 - `pnpm check` — lint + typecheck + test + test:rules + test:data
+- `pnpm ci:local` — mirror of the CI (gitleaks if installed, audit, check, check:bundle, e2e; `--skip-e2e`). No git hook
 
 ## Size limits (split before exceeding)
 
@@ -49,7 +50,8 @@ Logs and history live in git, not in docs. Never append to STATE.md; rewrite it.
 2. Delegate to the `builder` role with: story id + the spec/ADR paths the story lists. Nothing else.
 3. Delegate the diff to the `reviewer` role. Max 2 builder↔reviewer rounds, then ask the user.
 4. On approval: set status `done` in index.md, rewrite STATE.md, commit.
-5. Decide reversible choices alone and record them as an ADR. Ask the user only when blocked
+5. Before closing a delivery or release round (and before any push to main that deploys): run `pnpm ci:local` and report its summary; never skip a failed step.
+6. Decide reversible choices alone and record them as an ADR. Ask the user only when blocked
    (credentials, Firebase project, real devices, real NFC-e samples, scope changes).
 
 ## Roles (`docs/agents/`)
