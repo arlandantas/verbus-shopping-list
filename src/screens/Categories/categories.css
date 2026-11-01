@@ -1,0 +1,20 @@
+.categories-section {
+  margin: 0;
+  padding: 16px 16px 8px;
+  font: var(--md-sys-typescale-title-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
+.categories-empty {
+  margin: 0;
+  padding: 8px 16px;
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
+.categories-new {
+  padding: 16px;
+}
+.categories-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

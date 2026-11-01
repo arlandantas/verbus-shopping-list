@@ -10,8 +10,13 @@ test.beforeEach(async () => {
 
 const t = strings.categories
 const DEFAULTS = ['Mercearia', 'Hortifrúti', 'Carnes', 'Laticínios', 'Limpeza', 'Higiene pessoal']
-const row = (page: Page, name: string) =>
-  page.getByRole('list', { name: t.listLabel }).getByRole('listitem').filter({ hasText: name })
+const row = (page: Page, name: string) => page.getByRole('listitem').filter({ hasText: name })
+
+async function createCategory(page: Page, name: string) {
+  await page.getByRole('button', { name: t.newLabel }).click()
+  await page.getByLabel(t.nameLabel).fill(name)
+  await page.getByRole('button', { name: t.save }).click()
+}
 
 async function signUpWithFamily(page: Page) {
   await page.goto('/')
@@ -35,10 +40,13 @@ test('S-042 AC3: new family sees 6 defaults; create, rename, delete sync to anot
   for (const p of [ana, beto]) {
     await p.goto('/categorias')
     for (const n of DEFAULTS) await expect(row(p, n)).toBeVisible()
-    await expect(row(p, 'Mercearia').getByRole('button')).toHaveCount(0)
+    for (const n of DEFAULTS) {
+      await expect(row(p, n).getByRole('button')).toHaveCount(0)
+      await expect(row(p, n).locator('svg')).toHaveCount(1)
+      await expect(p.getByRole('listitem', { name: t.defaultLocked(n) })).toBeVisible()
+    }
   }
-  await ana.getByLabel(t.newLabel).fill('Pet')
-  await ana.getByRole('button', { name: t.add }).click()
+  await createCategory(ana, 'Pet')
   await expect(row(ana, 'Pet')).toBeVisible()
   await expect(row(beto, 'Pet')).toBeVisible()
 
@@ -49,7 +57,7 @@ test('S-042 AC3: new family sees 6 defaults; create, rename, delete sync to anot
   await expect(row(beto, 'Pets')).toBeVisible()
 
   await ana.getByRole('button', { name: t.deleteFor('Pets') }).click()
-  await expect(ana.getByText(t.confirmDelete('Pets'))).toBeVisible()
+  await expect(ana.getByRole('dialog', { name: t.confirmDelete('Pets') })).toBeVisible()
   await ana.getByRole('button', { name: t.confirm }).click()
   await expect(row(ana, 'Pets')).toHaveCount(0)
   await expect(row(beto, 'Pets')).toHaveCount(0)
@@ -72,8 +80,7 @@ test('S-042 AC5: offline, creating Bebidas shows at once and syncs on reconnect'
   await openFromFamily(page)
   await expect(row(page, 'Mercearia')).toBeVisible()
   await context.setOffline(true)
-  await page.getByLabel(t.newLabel).fill('Bebidas')
-  await page.getByRole('button', { name: t.add }).click()
+  await createCategory(page, 'Bebidas')
   await expect(row(page, 'Bebidas')).toBeVisible()
   await context.setOffline(false)
   await page.reload()

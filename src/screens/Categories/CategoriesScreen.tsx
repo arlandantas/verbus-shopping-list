@@ -1,11 +1,14 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { BackButton } from '@/components/BackButton'
+import { Button } from '@/components/m3/Button'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { addCategory, deleteCategory, renameCategory } from '@/data/categories'
 import { useCategories } from '@/hooks/useCategories'
 import { strings } from '@/strings/pt-BR'
 import { CategoryRow } from './CategoryRow'
+import { NameDialog } from './NameDialog'
+import './categories.css'
 
 const t = strings.categories
 
@@ -13,56 +16,50 @@ export function CategoriesScreen() {
   const { family } = useFamily()
   const familyId = family?.id ?? ''
   const categories = useCategories(family?.id)
-  const [name, setName] = useState('')
-  const [error, setError] = useState(false)
+  const [creating, setCreating] = useState(false)
   if (!family) return null
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    if (!name.trim()) {
-      setError(true)
-      return
-    }
-    addCategory(familyId, name.trim(), categories ?? [])
-    setName('')
-    setError(false)
-  }
+  const all = categories ?? []
+  const own = all.filter((c) => !c.isDefault)
+  const defaults = all.filter((c) => c.isDefault)
+  const row = (c: (typeof all)[number]) => (
+    <CategoryRow
+      key={c.id}
+      category={c}
+      onRename={(id, n) => renameCategory(familyId, id, n)}
+      onDelete={(id) => deleteCategory(familyId, id)}
+    />
+  )
 
   return (
     <main className="mx-auto max-w-md">
       <TopAppBar title={t.title} navigation={<BackButton to="/familia" />} />
-      <form onSubmit={onSubmit} className="flex flex-col gap-2 p-4">
-        <label className="flex flex-col gap-1">
-          {t.newLabel}
-          <input
-            maxLength={40}
-            className="min-h-12 w-full rounded border border-gray-400 px-3 text-base"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </label>
-        {error && (
-          <p role="alert" className="text-red-700">
-            {t.nameEmpty}
-          </p>
-        )}
-        <button
-          type="submit"
-          className="min-h-12 w-full rounded bg-green-700 px-4 text-base font-medium text-white"
-        >
-          {t.add}
-        </button>
-      </form>
-      <ul aria-label={t.listLabel}>
-        {(categories ?? []).map((c) => (
-          <CategoryRow
-            key={c.id}
-            category={c}
-            onRename={(id, n) => renameCategory(familyId, id, n)}
-            onDelete={(id) => deleteCategory(familyId, id)}
-          />
-        ))}
+      <h2 className="categories-section">{t.userSection}</h2>
+      {own.length === 0 && <p className="categories-empty">{t.emptyUser}</p>}
+      <ul aria-label={t.userList} className="categories-list">
+        {own.map(row)}
       </ul>
+      <div className="categories-new">
+        <Button variant="tonal" icon="add" onClick={() => setCreating(true)}>
+          {t.newLabel}
+        </Button>
+      </div>
+      <h2 className="categories-section">{t.defaultSection}</h2>
+      <ul aria-label={t.defaultList} className="categories-list">
+        {defaults.map(row)}
+      </ul>
+      {creating && (
+        <NameDialog
+          title={t.newLabel}
+          label={t.nameLabel}
+          initial=""
+          onClose={() => setCreating(false)}
+          onSave={(n) => {
+            addCategory(familyId, n, all)
+            setCreating(false)
+          }}
+        />
+      )}
     </main>
   )
 }

@@ -148,8 +148,9 @@ test('S-044 AC4: deleting a category moves its items to Sem categoria without re
   const { ana, beto } = await twoMembers(browser, ['pilha'])
   const t = strings.categories
   await ana.goto('/categorias')
-  await ana.getByLabel(t.newLabel).fill('Pets')
-  await ana.getByRole('button', { name: t.add }).click()
+  await ana.getByRole('button', { name: t.newLabel }).click()
+  await ana.getByLabel(t.nameLabel).fill('Pets')
+  await ana.getByRole('button', { name: t.save }).click()
   await expect(ana.getByRole('listitem').filter({ hasText: 'Pets' })).toBeVisible()
   await ana.goto('/')
   await setItemCategory(ana, 'pilha', 'Pets')
