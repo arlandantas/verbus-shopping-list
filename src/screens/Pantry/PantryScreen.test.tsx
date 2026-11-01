@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import { readFileSync } from 'node:fs'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import type { CatalogEntry, Item } from '@/data/converters'
+import { icons } from '@/components/m3/icons'
 import { strings } from '@/strings/pt-BR'
 import { PantryScreen } from './PantryScreen'
 
@@ -96,6 +98,7 @@ describe('S-025 PantryScreen', () => {
     catalog = [entry('Feijão'), entry('Sal', false)]
     items = [item('Sal', 'pending', 's1')]
     renderIt()
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(strings.pantry.othersTitle) }))
     const list = screen.getByRole('list', { name: strings.pantry.othersTitle })
     expect(list).toHaveTextContent('Sal')
     expect(list).not.toHaveTextContent('Feijão')
@@ -152,6 +155,7 @@ describe('S-061 PantryScreen', () => {
     const remove = screen.getByRole('button', { name: strings.pantry.removeRecurringFor('Feijão') })
     expect(remove).toHaveClass('m3-icon-btn')
     expect(remove.closest('li')).toHaveClass('m3-list-item')
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(strings.pantry.othersTitle) }))
     const add = screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') })
     expect(add).toHaveClass('m3-icon-btn')
     expect(add.closest('li')).toHaveClass('m3-list-item')
@@ -160,5 +164,37 @@ describe('S-061 PantryScreen', () => {
   it('AC6: empty state cites "Editar item"', () => {
     renderIt()
     expect(screen.getByText(strings.pantry.empty)).toHaveTextContent('Editar item')
+  })
+})
+
+describe('S-074: "Outros itens já usados" collapsible section', () => {
+  const header = () => screen.getByRole('button', { name: new RegExp(strings.pantry.othersTitle) })
+
+  it('AC1: header button is collapsed by default with title, count and chevron', () => {
+    catalog = [entry('Sal', false), entry('Mel', false)]
+    items = []
+    renderIt()
+    expect(header()).toHaveAttribute('aria-expanded', 'false')
+    expect(header()).toHaveTextContent('2')
+    expect(header().querySelector('path')).toHaveAttribute('d', icons.expand_more)
+    expect(screen.queryByRole('list', { name: strings.pantry.othersTitle })).toBeNull()
+    fireEvent.click(header())
+    expect(header()).toHaveAttribute('aria-expanded', 'true')
+    expect(header().querySelector('path')).toHaveAttribute('d', icons.expand_less)
+  })
+
+  it('AC2: open rows are accessible and styled as tonal containers with radius >= 16px', () => {
+    catalog = [entry('Sal', false)]
+    items = []
+    renderIt()
+    fireEvent.click(header())
+    const list = screen.getByRole('list', { name: strings.pantry.othersTitle })
+    expect(list).toHaveTextContent('Sal')
+    expect(
+      screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') }),
+    ).toBeInTheDocument()
+    const css = readFileSync('src/components/m3/collapsible.css', 'utf8')
+    expect(css).toMatch(/\.m3-section__list > li \{[^}]*surface-container-low/)
+    expect(css).toMatch(/\.m3-section__header \{[^}]*corner-lg[^}]*surface-container\)/)
   })
 })

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Icon } from '@/components/m3/Icon'
+import { CollapsibleSection } from '@/components/m3/CollapsibleSection'
 import { cartCount, groupByCategory, type CategoryLike } from '@/domain/categories'
 import { strings } from '@/strings/pt-BR'
 
@@ -32,31 +32,23 @@ export function CategorySections<
           ? section.items.filter((i) => i.status !== 'bought')
           : section.items
         return (
-          <section key={id} aria-label={section.name}>
-            <h2 className="m-0 pt-4 text-sm font-medium text-on-surface">
-              <button
-                type="button"
-                aria-expanded={open}
-                onClick={() => onToggleCollapsed(id)}
-                className="flex min-h-12 w-full items-center gap-2 px-4 text-left"
-              >
-                <span className="flex-1">{section.name}</span>
-                {done === total && <Icon name="check" />}
-                <span>{`${done}/${total}`}</span>
-                <Icon name={open ? 'expand_less' : 'expand_more'} />
-              </button>
-            </h2>
-            {open && (
-              <>
-                <ul>{visible.map(renderItem)}</ul>
-                {hideBought && done > 0 && (
-                  <p className="px-4 pb-2 text-sm text-on-surface-variant">
-                    {strings.market.hiddenCount(done)}
-                  </p>
-                )}
-              </>
-            )}
-          </section>
+          <CollapsibleSection
+            key={id}
+            title={section.name}
+            count={`${done}/${total}`}
+            done={done === total}
+            open={open}
+            onToggle={() => onToggleCollapsed(id)}
+            footer={
+              hideBought && done > 0 ? (
+                <p className="px-4 pb-2 text-sm text-on-surface-variant">
+                  {strings.market.hiddenCount(done)}
+                </p>
+              ) : undefined
+            }
+          >
+            {visible.map(renderItem)}
+          </CollapsibleSection>
         )
       })}
     </>

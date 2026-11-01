@@ -149,6 +149,17 @@ test('S-025 AC1: "Outros itens já usados" lists non-recurring names; Tornar rec
   await expect(others(page).getByRole('listitem')).toHaveCount(0)
 })
 
+test('S-074 AC4: "Outros itens já usados" opens and closes', async ({ page }) => {
+  await usedNotRecurring(page)
+  const header = page.getByRole('button', { name: new RegExp(strings.pantry.othersTitle) })
+  await expect(header).toHaveAttribute('aria-expanded', 'false')
+  await header.click()
+  await expect(header).toHaveAttribute('aria-expanded', 'true')
+  await expect(others(page).getByRole('listitem').filter({ hasText: 'feijão' })).toBeVisible()
+  await header.click()
+  await expect(others(page)).toBeHidden()
+})
+
 test('S-025 AC2: Remover dos recorrentes drops it; pending item stays with recurring off', async ({
   page,
 }) => {
