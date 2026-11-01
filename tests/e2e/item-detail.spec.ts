@@ -1,6 +1,6 @@
 import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
-import { clearEmulators } from './support/emulator'
+import { clearEmulators, deleteAllItems } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
 test.beforeEach(async () => {
@@ -23,7 +23,7 @@ async function setupWithItem(page: Page, text = '3 kg feijão') {
   await expect(page).toHaveURL(/\/$/)
   await field(page).fill(text)
   await field(page).press('Enter')
-  await expect(row(page, 'feijão')).toBeVisible()
+  await expect(row(page, text.split(' ').pop()!)).toBeVisible()
 }
 
 const openItem = (page: Page) => page.getByRole('link', { name: 'feijão' }).click()
@@ -107,4 +107,29 @@ test('S-021 AC6: unknown id shows "Item não encontrado" with a link to the list
   await expect(page.getByText(strings.item.notFound)).toBeVisible()
   await page.getByRole('link', { name: strings.item.toList }).click()
   await expect(page).toHaveURL(/\/$/)
+})
+
+test('S-043 AC3: category set on the item comes back through autocomplete', async ({ page }) => {
+  await setupWithItem(page, 'leite')
+  await page.getByRole('link', { name: 'leite' }).click()
+  await page.getByLabel(strings.item.category).selectOption({ label: 'Laticínios' })
+  await save(page).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(row(page, 'leite').getByText(strings.list.pendingSync)).toHaveCount(0)
+  await deleteAllItems()
+  await expect(page.getByRole('listitem')).toHaveCount(0)
+  await field(page).fill('lei')
+  await page.getByRole('option', { name: /leite/ }).click()
+  await expect(row(page, 'leite')).toBeVisible()
+  await page.getByRole('link', { name: 'leite' }).click()
+  await expect(page.getByLabel(strings.item.category).locator('option:checked')).toHaveText(
+    'Laticínios',
+  )
+})
+
+test('S-043 AC4: free-text add does not ask for a category', async ({ page }) => {
+  await setupWithItem(page, 'arroz')
+  await expect(page.getByRole('combobox', { name: strings.item.category })).toHaveCount(0)
+  await expect(page).toHaveURL(/\/$/)
+  await expect(row(page, 'arroz')).toBeVisible()
 })

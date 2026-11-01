@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import type { Item } from '@/data/converters'
+import type { Category, Item } from '@/data/converters'
 import type { ItemPatch } from '@/data/items'
 import { UNITS, type Unit } from '@/domain/units'
 import { strings } from '@/strings/pt-BR'
@@ -19,13 +19,17 @@ const unitLabel = (u: Unit) => (u === 'l' ? 'L' : u)
 
 interface Props {
   item: Item
+  categories: readonly Category[]
   onSave: (patch: ItemPatch) => void
   onDelete: () => void
 }
 
-export function ItemForm({ item, onSave, onDelete }: Props) {
+export function ItemForm({ item, categories, onSave, onDelete }: Props) {
   const [quantity, setQuantity] = useState(String(item.quantity).replace('.', ','))
   const [unit, setUnit] = useState<Unit>(item.unit)
+  const known = categories.some((c) => c.id === item.categoryId)
+  const initialCategory = known ? (item.categoryId ?? '') : ''
+  const [categoryId, setCategoryId] = useState(initialCategory)
   const [note, setNote] = useState(item.note ?? '')
   const [recurring, setRecurring] = useState(item.recurring)
   const [confirming, setConfirming] = useState(false)
@@ -37,6 +41,7 @@ export function ItemForm({ item, onSave, onDelete }: Props) {
     const patch: ItemPatch = {}
     if (parsed !== item.quantity) patch.quantity = parsed
     if (unit !== item.unit) patch.unit = unit
+    if (categoryId !== initialCategory) patch.categoryId = categoryId === '' ? null : categoryId
     const newNote = note.trim() === '' ? null : note.trim()
     if (newNote !== item.note) patch.note = newNote
     if (recurring !== item.recurring) patch.recurring = recurring
@@ -67,6 +72,21 @@ export function ItemForm({ item, onSave, onDelete }: Props) {
           {UNITS.map((u) => (
             <option key={u} value={u}>
               {unitLabel(u)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex flex-col gap-1">
+        {strings.item.category}
+        <select
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          className={input}
+        >
+          <option value="">{strings.noCategory}</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
             </option>
           ))}
         </select>

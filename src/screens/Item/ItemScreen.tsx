@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { deleteItem, updateItemDetails, type ItemPatch } from '@/data/items'
+import { useCategories } from '@/hooks/useCategories'
 import { useItems } from '@/screens/List/useItems'
 import { strings } from '@/strings/pt-BR'
 import { ItemForm } from './ItemForm'
@@ -10,8 +11,10 @@ export function ItemScreen() {
   const { family } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
+  const categories = useCategories(familyId)
   const navigate = useNavigate()
-  if (!family || items === null) return <p className="p-4">{strings.loading}</p>
+  if (!family || items === null || categories === null)
+    return <p className="p-4">{strings.loading}</p>
   const item = items.find((i) => i.id === id)
   if (!item)
     return (
@@ -39,7 +42,7 @@ export function ItemScreen() {
         </Link>
         <h1 className="text-xl">{item.name}</h1>
       </header>
-      <ItemForm item={item} onSave={onSave} onDelete={onDelete} />
+      <ItemForm item={item} categories={categories} onSave={onSave} onDelete={onDelete} />
     </main>
   )
 }
