@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { readFileSync } from 'node:fs'
-import { act, fireEvent, render, screen } from '@testing-library/react'
-import { useState } from 'react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { StrictMode, useState } from 'react'
 import { BottomSheet } from './BottomSheet'
 import { Dialog } from './Dialog'
 import { Snackbar } from './Snackbar'
@@ -86,13 +86,12 @@ describe('S-055 AC2: close and focus', () => {
 describe('S-055 AC3: history back', () => {
   it('pushes a state and closes on popstate', () => {
     const onClose = vi.fn()
-    const len = history.length
     render(
       <BottomSheet open title="T" onClose={onClose}>
         x
       </BottomSheet>,
     )
-    expect(history.length).toBe(len + 1)
+    expect(history.state).toMatchObject({ m3overlay: expect.any(Number) })
     act(() => {
       window.dispatchEvent(new PopStateEvent('popstate'))
     })
@@ -221,4 +220,79 @@ describe('S-055 AC7: replacement and offset', () => {
       'bottom: var(--snackbar-offset',
     )
   })
+})
+
+describe('S-055 review fixes', () => {
+  it('S-055 AC3: open/close repeatedly balances history', () => {
+    const back = vi.spyOn(history, 'back')
+    for (let i = 0; i < 3; i++) {
+      const { unmount } = render(
+        <BottomSheet open title="T" onClose={vi.fn()}>
+          x
+        </BottomSheet>,
+      )
+      unmount()
+    }
+    expect(back).toHaveBeenCalledTimes(3)
+    back.mockRestore()
+  })
+  it('S-055 AC3: StrictMode push/back/push does not close the overlay', async () => {
+    const onClose = vi.fn()
+    render(
+      <StrictMode>
+        <BottomSheet open title="T" onClose={onClose}>
+          x
+        </BottomSheet>
+      </StrictMode>,
+    )
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50))
+    })
+    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+  })
+  it('S-055 AC3: close via back does not call history.back again', () => {
+    const back = vi.spyOn(history, 'back')
+    const onClose = vi.fn()
+    const { rerender } = render(
+      <BottomSheet open title="T" onClose={onClose}>
+        x
+      </BottomSheet>,
+    )
+    act(() => {
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+    rerender(
+      <BottomSheet open={false} title="T" onClose={onClose}>
+        x
+      </BottomSheet>,
+    )
+    expect(back).not.toHaveBeenCalled()
+    back.mockRestore()
+  })
+  it('S-055 AC4: Esc works in Dialog without focusable content', () => {
+    const onClose = vi.fn()
+    render(
+      <Dialog open title="T" onClose={onClose}>
+        texto
+      </Dialog>,
+    )
+    expect(screen.getByRole('dialog')).toHaveFocus()
+    fireEvent.keyDown(document.activeElement as Element, { key: 'Escape' })
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+  it('S-055 AC6: action then timeout calls onDismiss once', () => {
+    vi.useFakeTimers()
+    const onDismiss = vi.fn()
+    render(<Snackbar message="Oi" actionLabel="Desfazer" onDismiss={onDismiss} />)
+    fireEvent.click(screen.getByText('Desfazer'))
+    act(() => void vi.advanceTimersByTime(10000))
+    expect(onDismiss).toHaveBeenCalledTimes(1)
+    vi.useRealTimers()
+  })
+})
+
+afterEach(async () => {
+  cleanup()
+  await new Promise((r) => setTimeout(r, 50))
 })

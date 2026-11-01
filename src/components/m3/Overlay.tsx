@@ -8,6 +8,9 @@ const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
 const FIELDS = 'input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
+let overlaySeq = 0
+let selfPops = 0
+
 export type OverlayProps = {
   open: boolean
   title: string
@@ -33,14 +36,19 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
     const panel = panelRef.current
     const first =
       panel?.querySelector<HTMLElement>(FIELDS) ?? panel?.querySelector<HTMLElement>(FOCUSABLE)
-    first?.focus()
+    ;(first ?? panel)?.focus()
 
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
 
     let popped = false
-    history.pushState({ m3overlay: true }, '')
+    const token = ++overlaySeq
+    history.pushState({ m3overlay: token }, '')
     const onPop = () => {
+      if (selfPops > 0) {
+        selfPops = 0
+        return
+      }
       popped = true
       closeRef.current()
     }
@@ -48,7 +56,15 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
 
     return () => {
       window.removeEventListener('popstate', onPop)
-      if (!popped) history.back()
+      const own = (history.state as { m3overlay?: number } | null)?.m3overlay === token
+      if (!popped && own) {
+        selfPops++
+        // popstate may never fire (e.g. no entry to traverse); don't leak the counter
+        setTimeout(() => {
+          selfPops = Math.max(0, selfPops - 1)
+        }, 20)
+        history.back()
+      }
       document.body.style.overflow = prevOverflow
       opener?.focus?.()
     }
@@ -83,6 +99,7 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
       <div
         ref={panelRef}
         className="m3-overlay__panel"
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

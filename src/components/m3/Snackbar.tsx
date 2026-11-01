@@ -16,9 +16,11 @@ export function Snackbar({ message, actionLabel, onAction, onDismiss, duration =
     dismissRef.current = onDismiss
   })
 
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+
   useEffect(() => {
-    const t = setTimeout(() => dismissRef.current(), duration)
-    return () => clearTimeout(t)
+    timerRef.current = setTimeout(() => dismissRef.current(), duration)
+    return () => clearTimeout(timerRef.current)
   }, [message, duration])
 
   return (
@@ -30,6 +32,7 @@ export function Snackbar({ message, actionLabel, onAction, onDismiss, duration =
             type="button"
             className="m3-snackbar__action"
             onClick={() => {
+              clearTimeout(timerRef.current)
               onAction?.()
               onDismiss()
             }}
