@@ -58,6 +58,8 @@ export const strings = {
       n === 1 ? '1 recorrente voltou para a lista' : `${n} recorrentes voltaram para a lista`,
     ok: 'OK',
   },
+  nav: { label: 'Principal', list: 'Lista' },
+  back: 'Voltar',
   list: {
     addLabel: 'Novo item',
     addPlaceholder: 'Ex.: 3 kg feijão',
@@ -121,7 +123,6 @@ export const strings = {
   pantry: {
     title: 'Despensa',
     link: 'Despensa',
-    back: 'Voltar à lista',
     atHome: 'Tenho em casa',
     missing: 'Falta',
     inCart: 'No carrinho',

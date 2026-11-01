@@ -35,7 +35,7 @@ async function addRecurring(page: Page) {
 }
 
 const openPantry = async (page: Page) => {
-  await page.getByRole('link', { name: strings.pantry.link }).click()
+  await page.getByRole('link', { name: strings.pantry.link, exact: true }).click()
   await expect(page).toHaveURL(/\/despensa$/)
 }
 
@@ -63,7 +63,7 @@ test('S-024 AC2: tapping "Tenho em casa" marks Falta and adds a pending item', a
   await expect(row).toContainText(strings.pantry.atHome)
   await row.getByRole('button').first().click()
   await expect(row).toContainText(strings.pantry.missing)
-  await page.getByRole('link', { name: strings.pantry.back }).click()
+  await page.getByRole('link', { name: strings.nav.list, exact: true }).click()
   await expect(listRow(page, 'feijão')).toContainText('3 kg')
   await expect(page.getByRole('region', { name: strings.noCategory })).toContainText('feijão')
 })
@@ -77,7 +77,7 @@ test('S-024 AC3: tapping Falta again returns to Tenho em casa and removes the pe
   await expect(row).toContainText(strings.pantry.missing)
   await row.getByRole('button').first().click()
   await expect(row).toContainText(strings.pantry.atHome)
-  await page.getByRole('link', { name: strings.pantry.back }).click()
+  await page.getByRole('link', { name: strings.nav.list, exact: true }).click()
   await expect(page.getByRole('listitem')).toHaveCount(0)
 })
 
@@ -157,7 +157,7 @@ test('S-025 AC2: Remover dos recorrentes drops it; pending item stays with recur
     .getByRole('button', { name: strings.pantry.removeRecurring })
     .click()
   await expect(recurringList(page).getByRole('listitem')).toHaveCount(0)
-  await page.getByRole('link', { name: strings.pantry.back }).click()
+  await page.getByRole('link', { name: strings.nav.list, exact: true }).click()
   await expect(listRow(page, 'feijão')).toBeVisible()
   await page.getByRole('link', { name: 'feijão' }).click()
   await expect(page.getByLabel(strings.item.recurring)).not.toBeChecked()

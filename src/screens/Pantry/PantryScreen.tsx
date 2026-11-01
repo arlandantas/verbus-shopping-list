@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { addItem, deleteItem, setRecurring } from '@/data/items'
 import type { CatalogEntry } from '@/data/converters'
@@ -40,12 +40,7 @@ export function PantryScreen() {
 
   return (
     <main className="mx-auto max-w-md">
-      <header className="flex min-h-12 items-center justify-between px-4 pt-2">
-        <h1 className="text-xl">{strings.pantry.title}</h1>
-        <Link to="/" className="flex min-h-12 items-center underline">
-          {strings.pantry.back}
-        </Link>
-      </header>
+      <TopAppBar title={strings.pantry.title} />
       {items !== null && rows.length === 0 && <p className="p-4">{strings.pantry.empty}</p>}
       <ul aria-label={strings.pantry.listLabel}>
         {rows.map((row) => (

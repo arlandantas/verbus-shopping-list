@@ -121,7 +121,7 @@ test('S-019 AC6: empty list shows a pt-BR message; header has family name and /f
   await setupFamily(page)
   await expect(page.getByText(strings.list.empty)).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Casa' })).toBeVisible()
-  await page.getByRole('link', { name: strings.family.title }).click()
+  await page.getByRole('link', { name: strings.family.title, exact: true }).click()
   await expect(page).toHaveURL(/\/familia$/)
 })
 
@@ -141,7 +141,7 @@ test('S-044 AC2: list and market group Mercearia, Laticínios, Sem categoria', a
   await expect(
     page.getByRole('region', { name: 'Laticínios' }).getByRole('listitem'),
   ).toContainText(['leite'])
-  await page.getByRole('link', { name: strings.market.enter }).click()
+  await page.getByRole('button', { name: strings.market.enter }).click()
   await expect(page).toHaveURL(/\/mercado$/)
   await expect.poll(() => headings(page)).toEqual(expected)
   await expect(

@@ -64,9 +64,6 @@
   inset-inline: 0;
   inset-block: -4px;
 }
-.m3-btn--has-icon {
-  padding-inline-start: 16px;
-}
 .m3-btn--filled {
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
@@ -82,6 +79,13 @@
 .m3-btn--text {
   padding: 0 12px;
   color: var(--md-sys-color-primary);
+}
+/* After the variants so it wins over --text padding (same specificity). */
+.m3-btn--has-icon {
+  padding-inline-start: 16px;
+}
+.m3-btn--text.m3-btn--has-icon {
+  padding-inline-start: 12px;
 }
 
 /* IconButton: 48x48 touch area, 40px visual */

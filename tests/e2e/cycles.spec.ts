@@ -22,7 +22,7 @@ async function buyRecurringInNovember(browser: Browser) {
   await ana.getByLabel(strings.item.recurring).check()
   await ana.getByRole('button', { name: strings.item.save }).click()
   await expect(ana).toHaveURL(/\/$/)
-  await ana.getByRole('link', { name: strings.market.enter }).click()
+  await ana.getByRole('button', { name: strings.market.enter }).click()
   await ana.getByRole('button', { name: /arroz/ }).click()
   await expect(ana.getByRole('button', { name: /arroz/ })).toHaveAttribute('aria-pressed', 'true')
   await ana.getByRole('link', { name: strings.checkout.link }).click()

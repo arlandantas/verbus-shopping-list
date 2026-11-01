@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { usePurchases } from '@/hooks/useHistory'
 import { cyclesFrom } from '@/domain/history'
@@ -16,12 +17,7 @@ export function HistoryScreen() {
 
   return (
     <main className="mx-auto max-w-md">
-      <header className="flex min-h-12 items-center justify-between px-4 pt-2">
-        <h1 className="text-xl">{strings.history.title}</h1>
-        <Link to="/" className="flex min-h-12 items-center underline">
-          {strings.history.back}
-        </Link>
-      </header>
+      <TopAppBar title={strings.history.title} />
       {purchases === null && <Loading />}
       {purchases !== null && months.length === 0 && <p className="p-4">{strings.history.empty}</p>}
       {months.length > 0 && (

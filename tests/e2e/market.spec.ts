@@ -29,7 +29,7 @@ async function setup(page: Page, items: string[]) {
 }
 
 const goMarket = async (page: Page) => {
-  await page.getByRole('link', { name: strings.market.enter }).click()
+  await page.getByRole('button', { name: strings.market.enter }).click()
   await expect(page).toHaveURL(/\/mercado$/)
 }
 const names = (page: Page) => page.getByRole('listitem').locator('button')

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { BackButton } from '@/components/BackButton'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
 import { addCategory, deleteCategory, renameCategory } from '@/data/categories'
 import { useCategories } from '@/hooks/useCategories'
@@ -29,12 +30,7 @@ export function CategoriesScreen() {
 
   return (
     <main className="mx-auto max-w-md">
-      <header className="flex min-h-12 items-center justify-between px-4 pt-2">
-        <h1 className="text-xl">{t.title}</h1>
-        <Link to="/familia" className="flex min-h-12 items-center underline">
-          {t.back}
-        </Link>
-      </header>
+      <TopAppBar title={t.title} navigation={<BackButton to="/familia" />} />
       <form onSubmit={onSubmit} className="flex flex-col gap-2 p-4">
         <label className="flex flex-col gap-1">
           {t.newLabel}

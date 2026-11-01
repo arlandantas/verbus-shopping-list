@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Link, Navigate, useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { addItem } from '@/data/items'
 import type { PurchaseLine } from '@/data/converters'
@@ -12,6 +12,8 @@ import { isCycle, formatCycle } from '@/domain/cycle'
 import { sumByCategory } from '@/domain/categories'
 import { cycleTotalCents } from '@/domain/history'
 import { formatBRL } from '@/domain/price'
+import { BackButton } from '@/components/BackButton'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 
@@ -55,12 +57,7 @@ export function CycleScreen() {
 
   return (
     <main className="mx-auto max-w-md pb-4">
-      <header className="flex min-h-12 items-center justify-between px-4 pt-2">
-        <h1 className="text-xl">{formatCycle(cycle)}</h1>
-        <Link to="/historico" className="flex min-h-12 items-center underline">
-          {strings.history.backToHistory}
-        </Link>
-      </header>
+      <TopAppBar title={formatCycle(cycle)} navigation={<BackButton to="/historico" />} />
       {!loaded && <Loading />}
       {loaded && mine.length === 0 && lines.length === 0 && (
         <p className="p-4">{strings.history.cycleEmpty}</p>

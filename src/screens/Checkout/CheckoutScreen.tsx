@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router'
+import { Navigate, useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
+import { BackButton } from '@/components/BackButton'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { PriceInput } from '@/components/PriceInput'
 import { checkout } from '@/data/checkout'
 import { setItemPrice } from '@/data/items'
@@ -43,13 +45,8 @@ export function CheckoutScreen() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 p-4 pb-8">
-      <header className="flex min-h-12 items-center justify-between">
-        <h1 className="text-xl">{strings.checkout.title}</h1>
-        <Link to="/mercado" className="flex min-h-12 items-center px-2 underline">
-          {strings.checkout.back}
-        </Link>
-      </header>
+    <main className="mx-auto flex max-w-md flex-col gap-4 pb-8">
+      <TopAppBar title={strings.checkout.title} navigation={<BackButton to="/" />} />
       <p>{strings.checkout.summary(bought.length, pending)}</p>
       <label className="flex flex-col gap-1">
         {strings.checkout.marketLabel}

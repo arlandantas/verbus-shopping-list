@@ -36,7 +36,7 @@ test('S-046 AC3: price + market, only the pending item stays; market is suggeste
   const field = ana.getByLabel(strings.list.addLabel)
   await field.fill('café')
   await field.press('Enter')
-  await ana.getByRole('link', { name: strings.market.enter }).click()
+  await ana.getByRole('button', { name: strings.market.enter }).click()
   await row(ana, 'café').click()
   await finalizeLink(ana).click()
   await expect(ana.locator('datalist option[value="Atacadão"]')).toHaveCount(1)

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { useLocation } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { FamilyProvider, useFamily } from '@/app/FamilyProvider'
+import { AppShell } from '@/app/AppShell'
 import { CheckoutScreen } from '@/screens/Checkout/CheckoutScreen'
 import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
@@ -55,15 +56,21 @@ function FamilyRoutes(): ReactNode {
         element={<AfterLogin fallback={status === 'ready' ? '/' : '/familia'} />}
       />
       <Route path="/convite/:code" element={<InviteScreen />} />
-      <Route path="/familia" element={<FamilyScreen />} />
-      {status === 'ready' && <Route path="/" element={<ListScreen />} />}
-      {status === 'ready' && <Route path="/mercado" element={<MarketScreen />} />}
-      {status === 'ready' && <Route path="/finalizar" element={<CheckoutScreen />} />}
-      {status === 'ready' && <Route path="/historico" element={<HistoryScreen />} />}
-      {status === 'ready' && <Route path="/historico/:cycle" element={<CycleScreen />} />}
-      {status === 'ready' && <Route path="/despensa" element={<PantryScreen />} />}
-      {status === 'ready' && <Route path="/categorias" element={<CategoriesScreen />} />}
-      {status === 'ready' && <Route path="/item/:id" element={<ItemScreen />} />}
+      {status === 'ready' ? (
+        <Route element={<AppShell />}>
+          <Route path="/familia" element={<FamilyScreen />} />
+          <Route path="/" element={<ListScreen />} />
+          <Route path="/mercado" element={<MarketScreen />} />
+          <Route path="/finalizar" element={<CheckoutScreen />} />
+          <Route path="/historico" element={<HistoryScreen />} />
+          <Route path="/historico/:cycle" element={<CycleScreen />} />
+          <Route path="/despensa" element={<PantryScreen />} />
+          <Route path="/categorias" element={<CategoriesScreen />} />
+          <Route path="/item/:id" element={<ItemScreen />} />
+        </Route>
+      ) : (
+        <Route path="/familia" element={<FamilyScreen />} />
+      )}
       <Route path="*" element={<Navigate to={status === 'ready' ? '/' : '/familia'} replace />} />
     </Routes>
   )

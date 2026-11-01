@@ -39,3 +39,17 @@ body {
   color: var(--md-sys-color-on-surface);
   font-family: var(--md-ref-font);
 }
+
+/* App shell (S-053): fixed bottom tabs; content, offline badge and write errors stay above them. */
+:root:has(.app-shell) {
+  --app-bottom-inset: calc(80px + env(safe-area-inset-bottom));
+}
+.app-shell__content {
+  padding-bottom: var(--app-bottom-inset);
+}
+.app-shell__nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 20;
+}

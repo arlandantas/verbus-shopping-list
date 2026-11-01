@@ -76,13 +76,13 @@ describe('S-023 AC6: ListScreen passes catalog recurring', () => {
   })
 })
 
-describe('S-024 AC1: ListScreen links to Despensa', () => {
-  it('header has a Despensa link to /despensa', () => {
+describe('S-053 AC3: ListScreen header', () => {
+  it('has no text nav links, shows the family name and a market icon button', () => {
     renderIt()
-    expect(screen.getByRole('link', { name: strings.pantry.link })).toHaveAttribute(
-      'href',
-      '/despensa',
-    )
+    for (const n of [strings.pantry.link, strings.history.link, strings.family.title])
+      expect(screen.queryByRole('link', { name: n })).toBeNull()
+    expect(screen.getByRole('heading', { level: 1, name: 'Casa' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: strings.market.enter })).toBeInTheDocument()
   })
 })
 

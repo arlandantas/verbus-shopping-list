@@ -29,6 +29,13 @@ describe('Button', () => {
   })
 })
 
+describe('Button padding', () => {
+  it('S-053: has-icon start padding is declared after --text so it is not overridden', () => {
+    expect(css.indexOf('.m3-btn--has-icon {')).toBeGreaterThan(css.indexOf('.m3-btn--text {'))
+    expect(css).toMatch(/\.m3-btn--text\.m3-btn--has-icon\s*\{[^}]*padding-inline-start: 12px/)
+  })
+})
+
 describe('IconButton', () => {
   it('S-052 AC2: label, variant, selected, 48px', () => {
     render(<IconButton icon="close" label="Fechar" variant="tonal" selected />)
@@ -81,6 +88,20 @@ describe('NavigationBar', () => {
     expect(css).toMatch(/\.m3-nav\s*\{[^}]*height: 80px/)
     expect(css).toContain('env(safe-area-inset-bottom)')
     expect(css).toMatch(/aria-current='page'\] \.m3-nav__pill\s*\{[^}]*secondary-container/)
+  })
+})
+
+describe('NavigationBar also', () => {
+  it('S-053 AC1: sub-route prefixes keep the destination active', () => {
+    render(
+      <MemoryRouter initialEntries={['/x/1']}>
+        <NavigationBar
+          label="P"
+          destinations={[{ to: '/a', label: 'A', icon: 'group', also: ['/x'] }]}
+        />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('link', { name: 'A' })).toHaveAttribute('aria-current', 'page')
   })
 })
 

@@ -4,6 +4,8 @@ import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { createFamily } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
+import { IconButton } from '@/components/m3/IconButton'
+import { TopAppBar } from '@/components/m3/TopAppBar'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 import { InviteCard } from './InviteCard'
@@ -41,7 +43,6 @@ export function FamilyScreen() {
   } else if (family.status === 'ready') {
     body = (
       <>
-        <h1 className="min-h-12 text-xl">{family.family.name}</h1>
         <p>{t.members(family.family.members.length)}</p>
         <InviteCard code={family.family.inviteCode} familyName={family.family.name} />
         <Link to="/categorias" className={`${button} flex items-center justify-center bg-gray-200`}>
@@ -59,7 +60,6 @@ export function FamilyScreen() {
   } else {
     body = (
       <>
-        <h1 className="min-h-12 text-xl">{t.title}</h1>
         <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-3">
           <label className="flex flex-col gap-1">
             {t.nameLabel}
@@ -91,11 +91,14 @@ export function FamilyScreen() {
   }
 
   return (
-    <main className="mx-auto flex max-w-sm flex-col gap-4 p-4">
-      {body}
-      <button type="button" onClick={() => void signOut()} className={`${button} bg-gray-200`}>
-        {strings.login.signOut}
-      </button>
+    <main className="mx-auto max-w-sm">
+      <TopAppBar
+        title={family.status === 'ready' ? family.family.name : t.title}
+        actions={
+          <IconButton icon="logout" label={strings.login.signOut} onClick={() => void signOut()} />
+        }
+      />
+      <div className="flex flex-col gap-4 p-4">{body}</div>
     </main>
   )
 }
