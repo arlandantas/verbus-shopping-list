@@ -62,7 +62,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-052 | UX | Componentes base: Button, IconButton, TopAppBar, NavigationBar | done | S-051 |
 | S-053 | UX | Shell com abas inferiores e barras superiores | done | S-052 |
 | S-054 | UX | Componentes de formulário: TextField, MoneyField, Select, Checkbox, Switch | done | S-051 |
-| S-055 | UX | Componentes sobrepostos: BottomSheet, Dialog e Snackbar | todo | S-052 |
+| S-055 | UX | Componentes sobrepostos: BottomSheet, Dialog e Snackbar | done | S-052 |
 | S-056 | UX | Dados e regras: renomear item e valor independente do carrinho (ADR-0022) | todo | — |
 | S-057 | UX | Sheet "Editar item" substitui a tela de detalhe | todo | S-054, S-055, S-056 |
 | S-058 | UX | Lista única: linha com checkbox e editar, fusão do Modo mercado, snackbar Desfazer | todo | S-053, S-055, S-057 |
