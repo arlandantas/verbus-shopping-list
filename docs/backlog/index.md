@@ -98,7 +98,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-083 | M6 | Atualização do app com aviso, sem recarregar sozinho | done | S-082 |
 | S-084 | SEC | CSP por meta tag compatível com Firebase (hospedagem estática) | done | S-083 |
 | S-085 | SEC | CI: varredura de segredos e auditoria de dependências | done | — |
-| S-086 | SEC | Build de produção sem contas de teste nem painel de login rápido | todo | S-085 |
+| S-086 | SEC | Build de produção sem contas de teste nem painel de login rápido | done | S-085 |
 | E-LISTS | LISTS | Épico: vários grupos por usuário ("Grupo" na UI), seletor de grupo ativo, categorias como sugestões (ADR-0024) | todo | S-086 |
 | S-087 | LISTS | Regras: vários grupos por usuário (livro-razão `groupIds`, limite 10) | todo | S-079 |
 | S-088 | LISTS | Camada de dados: criar e entrar com vários grupos, listar meus grupos | todo | S-087 |

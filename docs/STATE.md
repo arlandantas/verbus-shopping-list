@@ -1,31 +1,31 @@
 # Estado atual
 
-**Fase:** E-UX (redesign Material 3, S-051..S-068) e E-UX2 (ajustes da 2ª rodada, S-069..S-074) concluídos; aguardando a 3ª rodada de testes manuais do usuário.
-**Verificação (2026-11-01):** lint, typecheck, 402 unit e E2E completo 100/100 (rodados direto no repo; o `dev:local` é só dev e os agentes podem pará-lo/reiniciá-lo); regras 319 e dados 61 (S-067).
+**Fase:** E-UX/E-UX2 concluídos (aguardam 3ª rodada de testes manuais). E-SEC (S-075..S-079, S-084..S-086) e E-M6 (S-080..S-083) concluídos (ADR-0023). Em seguida: E-LISTS / vários grupos (ADR-0024, S-087..S-092).
+**Verificação (2026-11-01):** lint, typecheck, 430 unit, rules 453, data 62, E2E 107/107, `pnpm check:bundle` verde.
 
 ## Como testar
-`pnpm dev:local` (reinicie se já estiver rodando) + roteiro em `docs/manual-test.md`, que ainda descreve as telas antigas (Home/Mercado) e precisa ser atualizado. Contas Ana, Beto, Carla no login (só emulador).
+`pnpm dev:local` (reinicie se já estiver rodando) + roteiro em `docs/manual-test.md` (atualizado para o Material 3). Contas Ana, Beto, Carla no login (só emulador).
 
-## O que mudou no E-UX
-Material 3 (ADR-0018, cor semente `#1816a6` provisória), abas inferiores e lista única casa+mercado (ADR-0019), sheet "Editar item" com renomear e checkbox de carrinho (ADR-0020), valor independente do carrinho (ADR-0022), histórico agrupado por compra e edição de linhas passadas (ADR-0021).
+## Publicação
+`.github/workflows/deploy-pages.yml` publica no GitHub Pages a cada push em main (base derivada do nome do repo). Falta o usuário: variáveis `VITE_FIREBASE_*` no repositório, Pages com Source = GitHub Actions, domínio no Firebase Auth, projeto Firebase real (S-013).
 
 ## Próximo passo
-Feedback da 2ª rodada de testes. Depois: manual-test.md atualizado, dívidas abaixo, E-SEC (ADR-0016/0017), M6 (aviso iOS, polimento PWA), S-013 (Firebase real). Futuro: E-LISTS (várias listas), E-MCP (agentes de IA).
+S-087..S-092 (vários grupos por usuário, seletor de grupo, categorias como sugestões). Depois: dívidas abaixo, S-013, E-MCP.
 
 ## Pendências do usuário
-- S-013: projeto Firebase (ID, região sugerida `southamerica-east1`), Google + e-mail/senha, config web, `firebase login`.
-- Remoto no GitHub (CI S-006), ícones finais do PWA, nome de marca, teste em iPhone real, escolha da cor final.
+- S-013: projeto Firebase (ID, região sugerida `southamerica-east1`), Google + e-mail/senha, config web, `firebase login`; variáveis do Vite no GitHub.
+- Ícones finais do PWA, nome de marca, cor final, teste em iPhone real (aviso de instalação, S-080).
+- No 1º deploy real: se o login Google violar a CSP, ajustar `vite/csp.ts` (ADR-0026: origens assumidas); rever App Check e proteção contra enumeração de e-mail.
 
 ## Dívidas conhecidas
-- `Overlay` sem callback `onClosed`: `signOut` do diálogo de sair usa fallback de 500 ms (FamilyScreen).
-- Guarda de paleta (tests/tooling.test.ts) só cobre gray/green/red/blue/slate/zinc/neutral/white/black; foco da pílula de adicionar só testado por CSS.
-- Conferência visual no navegador embutido da Despensa colapsável (S-074) e das telas largas ainda por fazer (o pane ficou oculto/instável); coberto só por E2E.
-- Sessão antiga restaurada após reset dos emuladores deixa o app em "Carregando…" até limpar o storage do site (login rápido troca de uid).
-- `OfflineBadge` e `WriteErrorNotice` usam o mesmo `bottom` do campo de adicionar item e podem sobrepô-lo.
+- `Overlay` sem `onClosed`: `signOut` do diálogo de sair usa fallback de 500 ms.
+- Guarda de paleta só cobre algumas famílias de cor; conferência visual da Despensa colapsável, do aviso iOS e de telas largas não feita no navegador embutido.
+- Sessão antiga restaurada após reset dos emuladores deixa o app em "Carregando…" até limpar o storage do site.
 - Tokens de cor aproximados à mão: regenerar com Material Theme Builder na cor final.
-- `parseQuantity` mora em `components/ItemForm.tsx` e é importado por `EditLineSheet`: mover para `src/domain`.
-- Esc do `EditLineSheet` sem teste próprio; E2E depende de cópia com portas alternativas (portas fixas em ~15 arquivos): centralizar em env.
-- Famílias criadas antes do S-037 não têm categorias padrão (sem dados reais).
+- `parseQuantity` mora em `components/ItemForm.tsx`: mover para `src/domain`.
+- Portas fixas em ~15 arquivos de teste: centralizar em env.
+- Riscos aceitos de regras (ADR-0016/0025); ações `actions/*` no CI ainda por tag flutuante.
+- Famílias criadas antes do S-037 não têm categorias padrão.
 
 ## Ambiente
-Node 22, pnpm 11 (use `CI=true`), JDK 21. Repo git local em `main`, sem remoto.
+Node 22, pnpm 11 (use `CI=true`), JDK 21. Remoto `origin` em arlandantas/verbus-shopping-list.
