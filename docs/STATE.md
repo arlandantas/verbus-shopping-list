@@ -10,7 +10,7 @@
 `.github/workflows/deploy-pages.yml` publica no GitHub Pages a cada push em main (base derivada do nome do repo). Falta o usuário: variáveis `VITE_FIREBASE_*` no repositório, Pages com Source = GitHub Actions, domínio no Firebase Auth, projeto Firebase real (S-013).
 
 ## Próximo passo
-Nada em andamento. Publicado em https://nossocarrinho.web.app (Firebase Hosting + regras, `pnpm deploy` / `firebase deploy --project prod --only firestore:rules,hosting`) até a S-092; S-093 (colar lista) e S-094 (Despensa por categoria) concluídas e ainda NÃO publicadas. Depois: 3ª rodada de testes do usuário, dívidas abaixo, E-MCP.
+Nada em andamento. S-095 (landing em `/` para visitantes) concluída. Publicado em https://nossocarrinho.web.app (Firebase Hosting + regras, `pnpm deploy` / `firebase deploy --project prod --only firestore:rules,hosting`) até a S-092; S-093 (colar lista) e S-094 (Despensa por categoria) concluídas e ainda NÃO publicadas. Depois: 3ª rodada de testes do usuário, dívidas abaixo, E-MCP.
 
 ## Pendências do usuário
 - S-013: projeto Firebase (ID, região sugerida `southamerica-east1`), Google + e-mail/senha, config web, `firebase login`; variáveis do Vite no GitHub.

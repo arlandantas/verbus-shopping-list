@@ -108,4 +108,5 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-092 | LISTS | Categorias: sem semente, sugestões com um toque | done | S-091 |
 | S-093 | E-ADD | Colar lista de itens no campo de adicionar (sheet de pré-visualização, ADR-0027) | done | S-060, S-055 |
 | S-094 | E-UX | Despensa agrupada por categoria (recorrentes e "Outros itens"); roda após S-093 | done | S-092 |
+| S-095 | E-UX | Landing page para visitantes: CTA criar conta e CTA de convite (só tokens de cor) | done | S-012 |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |

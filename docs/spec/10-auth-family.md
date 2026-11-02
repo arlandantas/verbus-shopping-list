@@ -8,6 +8,11 @@
 3. Cria um grupo ou entra em um existente por código ou link de convite.
 4. A lista do grupo passa a ser compartilhada entre todos os membros.
 
+## Landing (S-095)
+1. Visitante sem login em `/` vê a landing: proposta de valor, benefícios, passos e aviso de uso offline.
+2. CTA principal "Criar minha conta grátis" leva a `/entrar`. CTA secundário "Recebi um convite" aceita link ou código e leva a `/convite/:code`; inválido mostra erro inline.
+3. Só tokens de cor M3: a troca da paleta vale sem mexer na landing.
+
 ## Vários grupos (E-LISTS, ADR-0024)
 1. O usuário pode criar outros grupos ou entrar em outros por convite a qualquer momento (seletor da Lista ou aba Grupo).
 2. Grupo ativo: escolhido no topo da Lista, lembrado por aparelho. Sem escolha, o mais antigo.
