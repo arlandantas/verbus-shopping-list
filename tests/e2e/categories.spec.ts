@@ -28,7 +28,7 @@ async function createCategory(page: Page, name: string) {
 }
 
 async function signUpWithFamily(page: Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()

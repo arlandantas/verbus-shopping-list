@@ -42,7 +42,7 @@ test('S-051 AC5: dark and light differ, both with contrast >= 4.5', async ({ bro
   for (const colorScheme of ['light', 'dark'] as const) {
     const context = await browser.newContext({ ...devices['Pixel 7'], colorScheme })
     const page = await context.newPage()
-    await page.goto('/')
+    await page.goto('/entrar')
     const { bg, fg, bgRgb } = await bodyColors(page)
     seen.push(bg)
     expect(contrast(fg as Rgb, bgRgb as Rgb)).toBeGreaterThanOrEqual(4.5)
@@ -175,7 +175,7 @@ test('S-070 AC3: every visible text meets contrast in light and dark across scre
       await page.waitForTimeout(300)
       results[at(name)] = await audit(page)
     }
-    await page.goto('/')
+    await page.goto('/entrar')
     await expect(field).toBeVisible()
   }
   const failures = Object.fromEntries(Object.entries(results).filter(([, v]) => v.length > 0))

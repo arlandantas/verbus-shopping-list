@@ -1,3 +1,5 @@
+import { landing } from './landing'
+
 export const strings = {
   appTitle: 'Lista de Compras',
   offline: 'Sem conexão',
@@ -25,6 +27,7 @@ export const strings = {
     signOutNote: 'Você precisará entrar de novo para ver as listas do grupo.',
     signOutCancel: 'Cancelar',
   },
+  landing,
   family: {
     title: 'Grupo',
     nameLabel: 'Nome do grupo',

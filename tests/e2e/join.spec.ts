@@ -16,7 +16,7 @@ async function newPage(browser: Browser): Promise<Page> {
 }
 
 async function signUp(page: Page, email: string) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill(email)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()
@@ -83,7 +83,7 @@ test('S-012 AC3: unknown code shows "Convite não encontrado" and changes nothin
   await expect(page.getByText(strings.invite.notFound)).toBeVisible()
   await expect(page.getByRole('button', { name: strings.invite.confirm })).toHaveCount(0)
 
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page).toHaveURL(/\/grupo$/)
   await expect(page.getByLabel(strings.family.nameLabel)).toBeVisible()
 })

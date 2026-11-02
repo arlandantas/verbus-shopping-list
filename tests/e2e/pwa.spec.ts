@@ -4,7 +4,7 @@ import { strings } from '../../src/strings/pt-BR'
 test.use({ ...devices['Pixel 7'], serviceWorkers: 'allow' })
 
 async function loadWithServiceWorker(page: import('@playwright/test').Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.evaluate(() => navigator.serviceWorker.ready)
   await page.reload() // the first load is not controlled until the SW claims clients
   await page.waitForFunction(() => navigator.serviceWorker.controller !== null)

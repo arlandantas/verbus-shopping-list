@@ -32,7 +32,7 @@ test('S-053 AC5: each tab changes the URL and the bar stays visible', async ({ b
 test('S-053 AC5: the last list item scrolls into view above the bar', async ({ browser }) => {
   const names = Array.from({ length: 16 }, (_, i) => `item${String(i + 1).padStart(2, '0')}`)
   const { ana } = await twoMembers(browser, names)
-  await ana.goto('/')
+  await ana.goto('/entrar')
   const last = ana.getByRole('listitem').filter({ hasText: names.at(-1)! })
   await last.scrollIntoViewIfNeeded()
   await ana.evaluate(() => window.scrollTo(0, document.body.scrollHeight))

@@ -11,7 +11,7 @@ const field = (page: Page) => page.getByLabel(strings.list.addLabel)
 const row = (page: Page, name: string) => page.getByRole('listitem').filter({ hasText: name })
 
 async function setupFamily(page: Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()

@@ -27,7 +27,7 @@ export async function signIn(browser: Browser, email: string, now?: Date): Promi
   })
   if (now) await context.clock.setFixedTime(now)
   const page = await context.newPage()
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill(email)
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signIn, exact: true }).click()
@@ -57,7 +57,7 @@ export async function twoMembers(browser: Browser, items: string[], now?: Date) 
   await beto.getByLabel(strings.family.join.codeLabel).fill(code)
   await beto.getByRole('button', { name: strings.family.join.submit }).click()
   await expect(beto.getByRole('heading', { name: 'Casa' })).toBeVisible()
-  await beto.goto('/')
+  await beto.goto('/entrar')
   await expect(beto.getByLabel(strings.list.addLabel)).toBeVisible()
   return { ana, beto }
 }

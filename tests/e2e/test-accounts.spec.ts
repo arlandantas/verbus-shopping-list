@@ -14,7 +14,7 @@ test.beforeEach(async () => {
 const account = (key: string) => TEST_ACCOUNTS.find((a) => a.key === key)!
 
 test('S-050 AC6: couple account lands on the list with the seeded items', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page).toHaveURL(/\/entrar$/)
   await page.getByRole('button', { name: new RegExp(account('ana').displayName) }).click()
   await expect(page.getByLabel(strings.list.addLabel)).toBeVisible()

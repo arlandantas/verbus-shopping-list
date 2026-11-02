@@ -50,7 +50,7 @@ test('S-048 AC3: re-adding a history line puts it back on the list; history is u
   browser,
 }) => {
   const { ana } = await twoMembers(browser, [])
-  await ana.goto('/')
+  await ana.goto('/entrar')
   await ana.getByLabel(strings.list.addLabel).fill('2 kg feijão')
   await ana.getByLabel(strings.list.addLabel).press('Enter')
   await expect(ana.getByRole('listitem').filter({ hasText: 'feijão' })).toContainText('2 kg')
@@ -70,7 +70,7 @@ test('S-048 AC3: re-adding a history line puts it back on the list; history is u
   await expect(ana.getByText('feijão', { exact: true })).toBeVisible()
   await expect(ana.getByRole('status')).toContainText(strings.history.readded('feijão'))
 
-  await ana.goto('/')
+  await ana.goto('/entrar')
   const item = ana.getByRole('listitem').filter({ hasText: 'feijão' })
   await expect(item).toContainText('2 kg')
   await expect(item).toHaveCount(1)

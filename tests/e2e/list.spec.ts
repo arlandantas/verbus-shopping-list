@@ -13,7 +13,7 @@ const PASSWORD = 'secret123'
 const BASE_URL = 'http://127.0.0.1:4173'
 
 async function signUp(page: Page, email: string) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill(email)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()
@@ -105,7 +105,7 @@ test('S-019 AC5: an item added by one member appears for the other', async ({ pa
   await b.getByLabel(strings.family.join.codeLabel).fill(code)
   await b.getByRole('button', { name: strings.family.join.submit }).click()
   await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
-  await b.goto('/')
+  await b.goto('/entrar')
   await expect(field(b)).toBeVisible()
 
   await field(page).fill('café')
@@ -151,7 +151,7 @@ test('S-044 AC4: deleting a category moves its items to Sem categoria without re
   const { ana, beto } = await twoMembers(browser, ['pilha'])
   const t = strings.categories
   await seedCategory('Pets') // groups start without categories (S-092)
-  await ana.goto('/')
+  await ana.goto('/entrar')
   await setItemCategory(ana, 'pilha', 'Pets')
   await expect(beto.getByRole('region', { name: 'Pets' })).toContainText('pilha')
 

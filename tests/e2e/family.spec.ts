@@ -12,7 +12,7 @@ const PASSWORD = 'secret123'
 const CODE = /^[2-9A-HJKMNP-Z]{8}$/
 
 async function signUp(page: Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill(EMAIL)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()
@@ -27,7 +27,7 @@ async function createFamily(page: Page, name = 'Casa') {
 
 test('S-011 AC1: signed in without family, / redirects to /grupo', async ({ page }) => {
   await signUp(page)
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page).toHaveURL(/\/grupo$/)
   await expect(page.getByLabel(strings.family.nameLabel)).toBeVisible()
 })

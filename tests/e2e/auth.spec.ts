@@ -12,7 +12,7 @@ const EMAIL = 'ana@example.com'
 const PASSWORD = 'secret123'
 
 async function signUp(page: Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill(EMAIL)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()
@@ -24,8 +24,12 @@ async function userDocs(): Promise<unknown[]> {
   return ((await res.json()) as { documents?: unknown[] }).documents ?? []
 }
 
-test('S-010 AC1: signed-out visit to / redirects to /entrar', async ({ page }) => {
+test('S-010 AC1: signed-out visit to / shows the landing; its CTA leads to /entrar', async ({
+  page,
+}) => {
   await page.goto('/')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(strings.landing.heroTitle)
+  await page.getByRole('button', { name: strings.landing.createAccount }).first().click()
   await expect(page).toHaveURL(/\/entrar$/)
 })
 

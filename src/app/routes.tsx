@@ -12,6 +12,7 @@ import { CycleScreen } from '@/screens/History/CycleScreen'
 import { HistoryScreen } from '@/screens/History/HistoryScreen'
 import { PantryScreen } from '@/screens/Pantry/PantryScreen'
 import { ListScreen } from '@/screens/List/ListScreen'
+import { LandingScreen } from '@/screens/Landing/LandingScreen'
 import { LoginScreen } from '@/screens/Login/LoginScreen'
 import { InviteScreen } from '@/screens/Invite/InviteScreen'
 import { peekReturnTo, saveReturnTo } from '@/app/returnTo'
@@ -91,6 +92,7 @@ export function AppRoutes(): ReactNode {
   if (status === 'signedOut')
     return (
       <Routes>
+        <Route path="/" element={<LandingScreen />} />
         <Route path="/entrar" element={<LoginScreen />} />
         <Route path="/convite/:code" element={<InviteLoginRedirect />} />
         <Route path="*" element={<Navigate to="/entrar" replace />} />

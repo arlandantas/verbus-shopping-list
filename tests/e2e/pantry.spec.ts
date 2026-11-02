@@ -13,7 +13,7 @@ const listRow = (page: Page, name: string) => page.getByRole('listitem').filter(
 const pantryRow = (page: Page, name: string) => page.getByRole('listitem').filter({ hasText: name })
 
 async function signUpWithFamily(page: Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()
@@ -196,7 +196,7 @@ test('S-025 AC3: a recurring made by one member shows in the other member Despen
   await beto.goto('/despensa')
   await expect(recurringList(beto).getByRole('listitem')).toHaveCount(0)
 
-  await ana.goto('/')
+  await ana.goto('/entrar')
   await openPantry(ana)
   await makeRecurring(ana)
   await expect(
@@ -253,7 +253,7 @@ test('S-094 AC7: Despensa groups by category in order; collapsing persists after
     .getByRole('button', { name: strings.categories.suggestionChip('Mercearia'), exact: true })
     .click()
   await expect(page.getByRole('list', { name: strings.categories.userList })).toBeVisible()
-  await page.goto('/')
+  await page.goto('/entrar')
   for (const name of ['feijão', 'pilha']) {
     await field(page).fill(name)
     await field(page).press('Enter')

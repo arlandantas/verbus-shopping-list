@@ -14,7 +14,7 @@ const sheet = (page: Page) => page.getByRole('dialog', { name: strings.item.shee
 const save = (page: Page) => page.getByRole('button', { name: strings.item.save })
 
 async function setupWithItem(page: Page, text = '3 kg feijão') {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()

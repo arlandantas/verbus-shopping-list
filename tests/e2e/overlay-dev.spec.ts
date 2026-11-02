@@ -14,7 +14,7 @@ const sheet = (page: Page) => page.getByRole('dialog', { name: strings.item.shee
 test('S-069 AC3: edit sheet opens and stays open on the dev server; Cancel closes', async ({
   page,
 }) => {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()

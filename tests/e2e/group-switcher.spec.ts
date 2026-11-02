@@ -18,7 +18,7 @@ async function newPage(browser: Browser): Promise<Page> {
 }
 
 async function signUpWithGroup(page: Page, email: string, group: string): Promise<string> {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill(email)
   await page.getByLabel(strings.login.password).fill(PASSWORD)
   await page.getByRole('button', { name: strings.login.signUp }).click()

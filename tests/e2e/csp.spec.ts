@@ -15,7 +15,7 @@ test('S-084 AC4: login, list, add item and family tab raise no CSP violation', a
       w.__csp.push(`${e.violatedDirective} ${e.blockedURI}`),
     )
   })
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveCount(1)
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')

@@ -14,7 +14,7 @@ const hint = (page: Page) =>
   page.getByRole('note').filter({ hasText: 'Adicionar à Tela de Início' })
 
 async function signUp(page: Page) {
-  await page.goto('/')
+  await page.goto('/entrar')
   await page.getByLabel(strings.login.email).fill('ana@example.com')
   await page.getByLabel(strings.login.password).fill('secret123')
   await page.getByRole('button', { name: strings.login.signUp }).click()
@@ -27,7 +27,7 @@ test.describe('iPhone Safari', () => {
   test('S-080 AC5: hint on login and in the shell; dismissal persists across reload', async ({
     page,
   }) => {
-    await page.goto('/')
+    await page.goto('/entrar')
     await expect(page).toHaveURL(/\/entrar$/)
     await expect(hint(page)).toBeVisible()
     await signUp(page)

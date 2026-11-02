@@ -9,13 +9,13 @@ test.beforeEach(async () => {
 })
 
 test('S-004 AC2: mobile viewport shows the pt-BR title', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page.getByRole('heading', { name: strings.appTitle })).toBeVisible()
   expect(page.viewportSize()?.width).toBeLessThan(500)
 })
 
 test('S-004 AC3: app is wired to the emulator', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page.locator('html')).toHaveAttribute('data-emulator', 'true')
 })
 

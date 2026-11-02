@@ -36,12 +36,14 @@ vi.mock('@/data/items', () => ({
 describe('App', () => {
   it('S-001 AC3: renders the title from pt-BR strings', async () => {
     render(<App />)
-    expect(await screen.findByRole('heading', { name: strings.appTitle })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: strings.landing.heroTitle }),
+    ).toBeInTheDocument()
   })
 
   it('ADR-0004: registers the write-error handler at the root (pt-BR alert)', async () => {
     render(<App />)
-    await screen.findByRole('heading', { name: strings.appTitle })
+    await screen.findByRole('heading', { name: strings.landing.heroTitle })
     act(() => reportWriteError(new Error('permission-denied')))
     expect(screen.getByRole('alert')).toHaveTextContent(strings.writeError)
   })
