@@ -1,7 +1,7 @@
 import { landing } from './landing.ts'
 
 export const strings = {
-  appTitle: 'Lista de Compras',
+  appTitle: 'Nosso Carrinho',
   offline: 'Sem conexão',
   loading: 'Carregando…',
   noCategory: 'Sem categoria',
@@ -53,7 +53,7 @@ export const strings = {
       link: 'Link',
       share: 'Compartilhar convite',
       copyCode: 'Copiar código',
-      shareText: (name: string) => `Entre no grupo ${name} no Lista de Compras`,
+      shareText: (name: string) => `Entre no grupo ${name} no Nosso Carrinho`,
       copied: 'Link copiado!',
       codeCopied: 'Código copiado!',
       copyFailed: 'Não foi possível copiar. Copie manualmente.',

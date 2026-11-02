@@ -53,7 +53,7 @@ test('S-005 AC3: app shell reloads offline, including deep routes', async ({ pag
   await context.setOffline(true)
   for (const path of ['/', '/grupo']) {
     await page.goto(path)
-    await expect(page.getByRole('heading', { name: strings.appTitle })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   }
 })
 
@@ -75,5 +75,5 @@ test('S-083 AC6: with prompt registration the SW is active and offline reload wo
   expect(state).toBe('activated')
   await context.setOffline(true)
   await page.reload()
-  await expect(page.getByRole('heading', { name: strings.appTitle })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 })

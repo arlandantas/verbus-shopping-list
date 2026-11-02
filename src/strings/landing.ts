@@ -1,5 +1,5 @@
 export const landing = {
-  brand: 'Lista de Compras',
+  brand: 'Nosso Carrinho',
   signIn: 'Entrar',
   heroTitle: 'A lista de compras que a casa toda enxerga',
   heroSubtitle:

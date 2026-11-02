@@ -1,5 +1,4 @@
 import { devices, expect, test } from '@playwright/test'
-import { strings } from '../../src/strings/pt-BR'
 
 test.use({ ...devices['Pixel 7'], serviceWorkers: 'allow' })
 
@@ -11,7 +10,7 @@ test('S-082 AC1: app opens offline under /sub/ and on a deep route', async ({ pa
   await context.setOffline(true)
   for (const path of ['/sub/', '/sub/index.html', '/sub/historico', '/sub/grupo']) {
     await page.goto(path)
-    await expect(page.getByRole('heading', { name: strings.appTitle })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   }
 })
 

@@ -1,4 +1,4 @@
-// Generates placeholder PWA icons (solid green square with a white circle). No external deps.
+// Generates placeholder PWA icons (white shopping cart on the brand green). No external deps.
 import { deflateSync } from 'node:zlib'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
@@ -21,18 +21,50 @@ const chunk = (type, data) => {
   return Buffer.concat([len, body, crc])
 }
 
+// Cart drawn in a 0..1 box, kept inside the maskable safe zone (centre 60%).
+const dist = (px, py, ax, ay, bx, by) => {
+  const dx = bx - ax
+  const dy = by - ay
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+}
+const basket = [
+  [0.385, 0.4],
+  [0.72, 0.4],
+  [0.68, 0.545],
+  [0.43, 0.545],
+]
+const inPoly = (px, py, poly) =>
+  poly.reduce((acc, [x1, y1], i) => {
+    const [x2, y2] = poly[(i + 1) % poly.length]
+    return y1 > py !== y2 > py && px < ((x2 - x1) * (py - y1)) / (y2 - y1) + x1 ? !acc : acc
+  }, false)
+const inCart = (x, y) =>
+  dist(x, y, 0.28, 0.32, 0.36, 0.32) < 0.018 ||
+  dist(x, y, 0.36, 0.32, 0.43, 0.6) < 0.018 ||
+  dist(x, y, 0.43, 0.6, 0.66, 0.6) < 0.018 ||
+  inPoly(x, y, basket) ||
+  Math.hypot(x - 0.47, y - 0.68) < 0.04 ||
+  Math.hypot(x - 0.62, y - 0.68) < 0.04
+
 function png(size) {
-  const bg = [22, 163, 74]
+  const bg = [46, 106, 79] // #2E6A4F (primary)
   const fg = [255, 255, 255]
-  const radius = size * 0.3 // inside the maskable safe zone (40% radius)
   const row = size * 3 + 1
   const raw = Buffer.alloc(row * size)
+  const ss = 4 // supersampling for smooth edges
   for (let y = 0; y < size; y++) {
     raw[y * row] = 0
     for (let x = 0; x < size; x++) {
-      const inside = Math.hypot(x + 0.5 - size / 2, y + 0.5 - size / 2) <= radius
-      const [r, g, b] = inside ? fg : bg
-      raw.set([r, g, b], y * row + 1 + x * 3)
+      let hits = 0
+      for (let j = 0; j < ss; j++)
+        for (let i = 0; i < ss; i++)
+          if (inCart((x + (i + 0.5) / ss) / size, (y + (j + 0.5) / ss) / size)) hits++
+      const a = hits / (ss * ss)
+      raw.set(
+        bg.map((c, k) => Math.round(c + (fg[k] - c) * a)),
+        y * row + 1 + x * 3,
+      )
     }
   }
   const ihdr = Buffer.alloc(13)

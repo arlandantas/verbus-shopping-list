@@ -60,8 +60,8 @@ export default defineConfig({
       registerType: 'prompt',
       strategies: 'generateSW',
       manifest: {
-        name: 'Lista de Compras',
-        short_name: 'Compras',
+        name: 'Nosso Carrinho',
+        short_name: 'Nosso Carrinho',
         lang: 'pt-BR',
         display: 'standalone',
         id: base,
