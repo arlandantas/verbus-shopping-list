@@ -113,3 +113,4 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-099 | E-UX | i18n: strings em pt-BR, en e es (módulo de traduções, seletor de idioma, padrão pelo navegador); exige ADR; pós-MVP | todo | S-095 |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |
 | S-100 | E-UX | Nome "Nosso Carrinho" no app, aba, manifest e landing; ícone PWA de carrinho simples (placeholder verde) | done | S-098 |
+| S-101 | M6 | Aviso de instalação em todas as plataformas (Chromium com botão, iOS, Mac Safari, Firefox Android) | done | S-080 |

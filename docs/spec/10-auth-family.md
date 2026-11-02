@@ -4,7 +4,7 @@
 
 ## Fluxo (primeiro acesso)
 1. Usuário abre o app e faz login (Google ou e-mail).
-2. Se for iOS e o app não estiver instalado, aparece o aviso de instalação pelo Safari.
+2. Se o app não estiver instalado, aparece o aviso de instalação específico do navegador (ver `80-tech-requirements.md`).
 3. Cria um grupo ou entra em um existente por código ou link de convite.
 4. A lista do grupo passa a ser compartilhada entre todos os membros.
 
@@ -24,9 +24,9 @@
 ## Telas
 - Login
 - Criar ou entrar em grupo
-- Aviso de instalação no iOS
+- Aviso de instalação por plataforma
 - Aba Grupo (`/grupo`): nome do grupo ativo, convite (código, copiar e compartilhar com ícones), criar novo grupo, entrar em outro grupo, acesso a Categorias e sair (ícone `logout` na barra superior). Ver `05-ui-shell.md`.
 
 ## Notas
-- Detecção de iOS com banner de instalação (ver `80-tech-requirements.md`).
+- Aviso de instalação por plataforma (ver `80-tech-requirements.md`).
 - Dados: `users` e `families` em `70-data-model.md`.
