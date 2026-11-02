@@ -6,6 +6,7 @@ import {
   type ClipboardEvent,
   type FormEvent,
   type KeyboardEvent,
+  type RefObject,
 } from 'react'
 import type { CatalogEntry } from '@/data/converters'
 import { parseItemText, type ParsedItem } from '@/domain/itemText'
@@ -26,6 +27,8 @@ interface Props {
   onPick?: (entry: CatalogEntry, typed: ParsedItem | null) => void
   /** Called instead of filling the field when the pasted text is a multi-item list (ADR-0027). */
   onPasteList?: (result: PasteResult) => void
+  /** Lets the parent focus the field (S-112). */
+  inputRef?: RefObject<HTMLInputElement | null>
 }
 
 export function AddItemBar({
@@ -34,12 +37,14 @@ export function AddItemBar({
   pendingKeys = NO_KEYS,
   onPick,
   onPasteList,
+  inputRef: externalRef,
 }: Props) {
   const [text, setText] = useState('')
   const [dismissed, setDismissed] = useState(false)
   const [active, setActive] = useState(-1)
   const listId = useId()
-  const inputRef = useRef<HTMLInputElement>(null)
+  const ownRef = useRef<HTMLInputElement>(null)
+  const inputRef = externalRef ?? ownRef
   const blank = text.trim() === ''
 
   const parsed = useMemo(() => parseItemText(text), [text])

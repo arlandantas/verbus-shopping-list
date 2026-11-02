@@ -40,8 +40,10 @@ vi.mock('./AddItemBar', () => ({
     onAdd: (t: string) => void
     onPick: (e: CatalogEntry, t: null) => void
     catalog: CatalogEntry[]
+    inputRef: React.Ref<HTMLInputElement>
   }) => (
     <div>
+      <input aria-label="campo" ref={p.inputRef} />
       <button onClick={() => p.onAdd('arroz')}>free</button>
       <button onClick={() => p.onAdd('leite')}>free-new</button>
       <button onClick={() => p.onPick(p.catalog[0]!, null)}>pick</button>
@@ -302,5 +304,24 @@ describe('S-059 AC3/AC4: hide switch and persisted prefs', () => {
       'aria-expanded',
       'true',
     )
+  })
+})
+
+describe('S-112: empty list action', () => {
+  it('S-112 AC1: empty list shows the button; with items it does not', () => {
+    itemsState.items = []
+    const view = renderIt()
+    expect(screen.getByRole('button', { name: strings.list.emptyAction })).toBeInTheDocument()
+    view.unmount()
+    itemsState.items = [mk()]
+    renderIt()
+    expect(screen.queryByRole('button', { name: strings.list.emptyAction })).toBeNull()
+  })
+
+  it('S-112 AC2: the button focuses the add field', () => {
+    itemsState.items = []
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.list.emptyAction }))
+    expect(screen.getByLabelText('campo')).toHaveFocus()
   })
 })

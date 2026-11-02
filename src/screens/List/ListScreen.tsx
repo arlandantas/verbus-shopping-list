@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
 import { Snackbar } from '@/components/m3/Snackbar'
+import { Button } from '@/components/m3/Button'
 import { Icon } from '@/components/m3/Icon'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { CategorySections } from '@/components/CategorySections'
@@ -37,6 +38,7 @@ export function ListScreen() {
   const categories = useCategories(family?.id)
   const names = useMemberNames(family?.id)
   const uid = useAuth().user?.uid
+  const addRef = useRef<HTMLInputElement>(null)
   const [switching, setSwitching] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [undo, setUndo] = useState<{ itemId: string; key: number } | null>(null)
@@ -114,6 +116,7 @@ export function ListScreen() {
         pendingKeys={pendingKeys}
         onPick={onPick}
         onPasteList={setPasted}
+        inputRef={addRef}
       />
       {list.length > 0 && (
         <div className="px-4 py-2">
@@ -124,7 +127,12 @@ export function ListScreen() {
           />
         </div>
       )}
-      {items?.length === 0 && <p className="p-4">{strings.list.empty}</p>}
+      {items?.length === 0 && (
+        <div className="p-4">
+          <p>{strings.list.empty}</p>
+          <Button onClick={() => addRef.current?.focus()}>{strings.list.emptyAction}</Button>
+        </div>
+      )}
       {items && categories && (
         <CategorySections
           items={items}
