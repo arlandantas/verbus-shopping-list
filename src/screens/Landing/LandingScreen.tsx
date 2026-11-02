@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '@/components/m3/Button'
+import { InstallHint } from '@/components/InstallHint'
 import { Icon, type IconName } from '@/components/m3/Icon'
 import { TextField } from '@/components/m3/TextField'
 import { strings } from '@/strings/pt-BR'
@@ -80,6 +81,7 @@ export function LandingScreen(): ReactNode {
           {t.signIn}
         </Button>
       </header>
+      <InstallHint />
       <main>
         <section className="landing-hero">
           <div className="landing-hero__copy">

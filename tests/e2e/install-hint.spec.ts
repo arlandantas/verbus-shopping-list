@@ -42,7 +42,7 @@ test.describe('iPhone Safari', () => {
     const h = (await hint(page).boundingBox())!
     const n = (await nav.boundingBox())!
     expect(h.y + h.height).toBeLessThanOrEqual(n.y)
-    const close = page.getByRole('button', { name: strings.iosInstall.close })
+    const close = page.getByRole('button', { name: strings.install.close })
     expect((await close.boundingBox())!.height).toBeGreaterThanOrEqual(48)
     await close.click()
     await expect(hint(page)).toHaveCount(0)
@@ -52,10 +52,31 @@ test.describe('iPhone Safari', () => {
   })
 })
 
-test.describe('Pixel 7 default UA', () => {
-  test('S-080 AC5: hint is absent', async ({ page }) => {
+const anyHint = (page: Page) => page.getByRole('note').filter({ hasText: /Instal/ })
+
+test.describe('Pixel 7 default UA (Chromium)', () => {
+  test('S-101: no hint until the browser offers install; then Install button on the landing', async ({
+    page,
+  }) => {
     await page.goto('/entrar')
     await expect(page.getByLabel(strings.login.email)).toBeVisible()
     await expect(hint(page)).toHaveCount(0)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await page.evaluate(() => {
+      const e = new Event('beforeinstallprompt', { cancelable: true })
+      Object.assign(e, { prompt: () => Promise.resolve(), userChoice: new Promise(() => {}) })
+      window.dispatchEvent(e)
+    })
+    await expect(anyHint(page)).toBeVisible()
+    await expect(page.getByRole('button', { name: strings.install.action })).toBeVisible()
+  })
+})
+
+test.describe('iPhone Safari landing', () => {
+  test.use({ userAgent: IPHONE_UA })
+  test('S-101: landing shows the iOS steps', async ({ page }) => {
+    await page.goto('/')
+    await expect(hint(page)).toBeVisible()
   })
 })

@@ -90,11 +90,28 @@ export const strings = {
       n === 1 ? '1 recorrente voltou para a lista' : `${n} recorrentes voltaram para a lista`,
     ok: 'OK',
   },
-  iosInstall: {
-    before: 'Para instalar no iPhone/iPad, toque em',
-    share: 'Compartilhar',
-    then: 'e depois em',
-    add: 'Adicionar à Tela de Início',
+  install: {
+    prompt: 'Instale o Nosso Carrinho para abrir como app, até sem internet.',
+    action: 'Instalar',
+    iosSafari: {
+      before: 'Para instalar no iPhone/iPad, toque em',
+      share: 'Compartilhar',
+      then: 'e depois em',
+      add: 'Adicionar à Tela de Início',
+    },
+    iosOther: 'Para instalar no iPhone/iPad, abra este endereço no Safari e use Compartilhar.',
+    macSafari: {
+      before: 'Para instalar no Mac, clique em',
+      share: 'Compartilhar',
+      then: 'e depois em',
+      add: 'Adicionar ao Dock',
+    },
+    androidFirefox: {
+      before: 'Para instalar, toque no menu',
+      menu: '⋮',
+      then: 'e depois em',
+      add: 'Instalar',
+    },
     close: 'Fechar aviso de instalação',
   },
   nav: { label: 'Principal', list: 'Lista' },

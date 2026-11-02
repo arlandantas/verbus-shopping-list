@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router'
 import { NavigationBar, type NavDestination } from '@/components/m3/NavigationBar'
-import { IosInstallHint } from '@/components/IosInstallHint'
+import { InstallHint } from '@/components/InstallHint'
 import { strings } from '@/strings/pt-BR'
 
 const destinations: NavDestination[] = [
@@ -20,7 +20,7 @@ export function AppShell() {
   return (
     <div className="app-shell">
       <div className="app-shell__content">
-        <IosInstallHint />
+        <InstallHint />
         <Outlet />
       </div>
       <div className="app-shell__nav">

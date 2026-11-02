@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, type FormEvent } from 'react'
 import { Button } from '@/components/m3/Button'
-import { IosInstallHint } from '@/components/IosInstallHint'
+import { InstallHint } from '@/components/InstallHint'
 import { TextField } from '@/components/m3/TextField'
 import { authErrorMessage, signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/data/auth'
 import { strings } from '@/strings/pt-BR'
@@ -38,7 +38,7 @@ export function LoginScreen() {
 
   return (
     <main className="auth-page">
-      <IosInstallHint />
+      <InstallHint />
       <h1 className="auth-title">{strings.appTitle}</h1>
       <form onSubmit={onSubmit} className="auth-form">
         <TextField
