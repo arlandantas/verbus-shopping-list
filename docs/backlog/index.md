@@ -124,7 +124,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-108 | ONB | Tela do Grupo: Ir para a lista, membros colapsáveis, Categorias e toggle com a mesma linha visual | done | S-107 |
 | S-109 | ONB | Apresentação curta na landing e em entrar/criar grupo (sem falar em Não pode faltar) | done | S-107 |
 | S-112 | ONB | Estado vazio da lista com botão "Adicionar primeiro item" | done | S-107 |
-| S-110 | ONB | Boas-vindas pós-grupo (3 passos, Pular; passo 3 oferece ativar Não pode faltar); exige ADR | todo | S-108, S-109 |
+| S-110 | ONB | Boas-vindas pós-grupo (3 passos, Pular; passo 3 oferece ativar Não pode faltar); exige ADR | done | S-108, S-109 |
 | S-111 | ONB | Sugestão de itens essenciais (modelo em dados) na lista de hoje; apaga lista-exemplo.txt | todo | S-110 |
 | S-113 | ONB | To-do: analytics de primeiro uso; pós-MVP, exige ADR | todo | S-110 |
 | S-114 | ONB | To-do: boas-vindas versionadas (novos veem tudo, antigos veem só a novidade); pós-MVP, exige ADR | todo | S-110 |
