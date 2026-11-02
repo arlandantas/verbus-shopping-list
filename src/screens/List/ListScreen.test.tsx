@@ -240,7 +240,9 @@ describe('S-049 AC1: ListScreen shows the returned-recurring notice', () => {
   it('shows the notice when recurring items returned and dismisses via OK', () => {
     cycleState.added = 2
     renderIt()
-    expect(screen.getByRole('status')).toHaveTextContent('2 recorrentes voltaram para a lista')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '2 itens que não podem faltar voltaram para a lista',
+    )
     fireEvent.click(screen.getByRole('button', { name: strings.cycle.ok }))
     expect(cycleState.dismiss).toHaveBeenCalled()
   })

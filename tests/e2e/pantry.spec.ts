@@ -136,7 +136,7 @@ async function makeRecurring(page: Page) {
     .click()
 }
 
-test('S-025 AC1: "Outros itens já usados" lists non-recurring names; Tornar recorrente moves one', async ({
+test('S-025 AC1: "Outros itens já usados" lists non-recurring names; Tornar Não pode faltar moves one', async ({
   page,
 }) => {
   await usedNotRecurring(page)
@@ -172,7 +172,7 @@ test('S-074 AC4: "Outros itens já usados" opens and closes', async ({ page }) =
   await expect(others(page)).toBeHidden()
 })
 
-test('S-025 AC2: Remover dos recorrentes drops it; pending item stays with recurring off', async ({
+test('S-025 AC2: Remover de Não pode faltar drops it; pending item stays with recurring off', async ({
   page,
 }) => {
   await usedNotRecurring(page)

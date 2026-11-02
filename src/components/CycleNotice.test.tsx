@@ -5,12 +5,16 @@ import { CycleNotice } from './CycleNotice'
 describe('S-049 AC1: CycleNotice', () => {
   it('shows the singular message with role=status', () => {
     render(<CycleNotice added={1} onDismiss={() => undefined} />)
-    expect(screen.getByRole('status')).toHaveTextContent('1 recorrente voltou para a lista')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '1 item que não pode faltar voltou para a lista',
+    )
   })
 
   it('shows the plural message', () => {
     render(<CycleNotice added={3} onDismiss={() => undefined} />)
-    expect(screen.getByRole('status')).toHaveTextContent('3 recorrentes voltaram para a lista')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '3 itens que não podem faltar voltaram para a lista',
+    )
   })
 
   it('renders nothing when nothing was added', () => {

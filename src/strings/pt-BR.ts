@@ -39,9 +39,9 @@ export const strings = {
     memberFallback: 'Membro',
     membersSection: 'Membros',
     recurring: {
-      label: 'Despensa e compras recorrentes',
+      label: 'Despensa e Não pode faltar',
       explain:
-        'Itens marcados como "Recorrente mensal" voltam à lista a cada compra fechada. A Despensa mostra o que falta, o que você tem em casa e o que está no carrinho.',
+        'Itens marcados como "Não pode faltar" (compra recorrente) voltam para a lista quando acabam, a cada compra fechada. A Despensa mostra o que falta, o que você tem em casa e o que está no carrinho.',
     },
     join: {
       title: 'Já tem um código?',
@@ -92,7 +92,9 @@ export const strings = {
   },
   cycle: {
     returned: (n: number) =>
-      n === 1 ? '1 recorrente voltou para a lista' : `${n} recorrentes voltaram para a lista`,
+      n === 1
+        ? '1 item que não pode faltar voltou para a lista'
+        : `${n} itens que não podem faltar voltaram para a lista`,
     ok: 'OK',
   },
   install: {
@@ -195,24 +197,24 @@ export const strings = {
     atHome: 'Tenho em casa',
     missing: 'Falta',
     inCart: 'No carrinho',
-    listLabel: 'Recorrentes',
+    listLabel: 'Não pode faltar',
     othersTitle: 'Outros itens já usados',
-    makeRecurring: 'Tornar recorrente',
-    removeRecurring: 'Remover dos recorrentes',
-    makeRecurringFor: (name: string) => `Tornar recorrente: ${name}`,
-    removeRecurringFor: (name: string) => `Remover dos recorrentes: ${name}`,
+    makeRecurring: 'Marcar como Não pode faltar',
+    removeRecurring: 'Tirar de Não pode faltar',
+    makeRecurringFor: (name: string) => `Marcar como Não pode faltar: ${name}`,
+    removeRecurringFor: (name: string) => `Tirar de Não pode faltar: ${name}`,
     empty:
-      'Nenhum item recorrente. Toque em "Editar item" na lista e marque "Recorrente mensal" para ele aparecer aqui.',
+      'Nenhum item em Não pode faltar. Toque em "Editar item" na lista e ative "Não pode faltar" para ele aparecer aqui.',
     intro: 'Itens que você compra todo mês. Marque o que está faltando e ele entra na Lista.',
     learnMore: 'Entenda melhor',
     helpTitle: 'Como funciona a Despensa',
     helpClose: 'Entendi',
     help: [
-      'Recorrente é o item que você compra todo mês, como arroz ou café.',
-      'Para tornar um item recorrente, abra o "Editar item" na lista e marque "Recorrente mensal", ou use "Outros itens já usados" aqui na Despensa.',
+      '"Não pode faltar" são os itens que voltam para a lista quando acabam, como arroz ou café.',
+      'Para marcar um item como "Não pode faltar", abra o "Editar item" na lista e ative "Não pode faltar", ou use "Outros itens já usados" aqui na Despensa.',
       'Cada item tem um estado: "Falta" (já está pendente na Lista), "Tenho em casa" (não precisa comprar) e "No carrinho" (já está marcado como comprado na Lista; não dá para mudar aqui).',
-      'No começo de cada mês, os recorrentes voltam sozinhos para a Lista como pendentes.',
-      'Para remover um item dos recorrentes, toque no ícone de lixeira ao lado dele.',
+      'No começo de cada mês, os itens de "Não pode faltar" voltam sozinhos para a Lista como pendentes.',
+      'Para tirar um item de "Não pode faltar", toque no ícone de lixeira ao lado dele.',
     ],
     markMissingFor: (name: string) => `Marcar ${name} como falta`,
     markAtHomeFor: (name: string) => `Marcar ${name} como tenho em casa`,
@@ -226,7 +228,7 @@ export const strings = {
     quantity: 'Quantidade',
     unit: 'Unidade',
     note: 'Observação',
-    recurring: 'Recorrente mensal',
+    recurring: 'Não pode faltar',
     category: 'Categoria',
     price: 'Valor',
     currencyPrefix: 'R$',

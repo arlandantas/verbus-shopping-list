@@ -12,7 +12,7 @@ const NOVEMBER = new Date('2026-11-15T15:00:00Z')
 const DECEMBER = new Date('2026-12-02T15:00:00Z')
 
 const rows = (page: Page, name: string) => page.getByRole('listitem').filter({ hasText: name })
-const notice = (page: Page) => page.getByRole('status').filter({ hasText: /recorrente/ })
+const notice = (page: Page) => page.getByRole('status').filter({ hasText: /não pode(m)? faltar/ })
 
 /** November: "arroz" is recurring, bought and the purchase finished (nothing left on the list). */
 async function buyRecurringInNovember(browser: Browser) {

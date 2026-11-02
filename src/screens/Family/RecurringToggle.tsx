@@ -7,7 +7,7 @@ interface Props {
   disabled?: boolean
 }
 
-/** "Despensa e compras recorrentes" switch with its explanation (ADR-0028); shared by create form and Grupo screen. */
+/** "Despensa e Não pode faltar" switch with its explanation (ADR-0028); shared by create form and Grupo screen. */
 export function RecurringToggle({ checked, onChange, disabled }: Props) {
   const t = strings.family.recurring
   return (
