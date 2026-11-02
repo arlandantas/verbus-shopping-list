@@ -4,6 +4,9 @@ import type { Item } from '@/data/converters'
 import { strings } from '@/strings/pt-BR'
 import { ItemForm, parseQuantity } from './ItemForm'
 
+const h = vi.hoisted(() => ({ family: null as { recurringEnabled: boolean } | null }))
+vi.mock('@/app/FamilyProvider', () => ({ useFamily: () => ({ family: h.family }) }))
+
 const item: Item = {
   id: 'i1',
   name: 'feijão',
@@ -23,6 +26,31 @@ const item: Item = {
 }
 const save = () => screen.getByRole('button', { name: strings.item.save })
 const qty = () => screen.getByLabelText(strings.item.quantity)
+
+describe('S-105 AC2: recurring field follows the group flag', () => {
+  const show = () =>
+    render(
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    )
+  afterEach(() => {
+    h.family = null
+  })
+  it('shown when the flag is on or unknown, hidden when off', () => {
+    show()
+    expect(screen.getByLabelText(strings.item.recurring)).toBeInTheDocument()
+  })
+  it('hidden when off', () => {
+    h.family = { recurringEnabled: false }
+    show()
+    expect(screen.queryByLabelText(strings.item.recurring)).not.toBeInTheDocument()
+  })
+})
 
 describe('S-021 AC3: parseQuantity', () => {
   it('accepts decimal comma and dot within (0, 9999]', () => {

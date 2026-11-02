@@ -7,10 +7,15 @@ import { strings } from '@/strings/pt-BR'
 
 const h = vi.hoisted(() => ({ signOut: vi.fn() }))
 vi.mock('@/data/auth', () => ({ signOut: h.signOut }))
-const fam = vi.hoisted(() => ({ groups: [{ id: 'f1' }] as { id: string }[], setActive: vi.fn() }))
+const fam = vi.hoisted(() => ({
+  groups: [{ id: 'f1' }] as { id: string }[],
+  setActive: vi.fn(),
+  on: true,
+}))
 vi.mock('@/data/families', () => ({
   MAX_GROUPS_PER_USER: 10,
   createFamily: vi.fn(),
+  setRecurringEnabled: vi.fn(() => Promise.resolve()),
   joinFamilyByCode: vi.fn(),
   InviteNotFound: class extends Error {},
   AlreadyMember: class extends Error {},
@@ -23,7 +28,13 @@ vi.mock('@/app/FamilyProvider', () => ({
     status: 'ready',
     groups: fam.groups,
     setActiveGroup: fam.setActive,
-    family: { id: 'f1', name: 'Casa', inviteCode: 'ABC123', members: ['u1', 'u2'] },
+    family: {
+      id: 'f1',
+      name: 'Casa',
+      inviteCode: 'ABC123',
+      members: ['u1', 'u2'],
+      recurringEnabled: fam.on,
+    },
   }),
 }))
 
@@ -114,6 +125,29 @@ describe('FamilyScreen extra groups (S-091)', () => {
     expect(screen.getByLabelText(strings.family.nameLabel)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: strings.groups.joinAnother }))
     expect(screen.getByLabelText(strings.family.join.codeLabel)).toBeInTheDocument()
+  })
+  it('S-105 AC3: toggle with explanation on the Grupo screen persists the change', async () => {
+    const { setRecurringEnabled } = await import('@/data/families')
+    renderIt()
+    expect(screen.getByText(strings.family.recurring.explain)).toBeInTheDocument()
+    const sw = screen.getByRole('switch', { name: strings.family.recurring.label })
+    expect(sw).toBeChecked()
+    fireEvent.click(sw)
+    expect(setRecurringEnabled).toHaveBeenCalledWith('f1', false)
+  })
+  it('S-105 AC3: the create form has the toggle (default on) and sends the choice', async () => {
+    const { createFamily } = await import('@/data/families')
+    vi.mocked(createFamily).mockResolvedValueOnce({ familyId: 'f9', inviteCode: 'X' })
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.groups.createNew }))
+    const form = screen.getByLabelText(strings.family.nameLabel).closest('form')!
+    const sw = within(form).getByRole('switch', { name: strings.family.recurring.label })
+    expect(sw).toBeChecked()
+    expect(within(form).getByText(strings.family.recurring.explain)).toBeInTheDocument()
+    fireEvent.click(sw)
+    fireEvent.change(screen.getByLabelText(strings.family.nameLabel), { target: { value: 'Novo' } })
+    fireEvent.click(screen.getByRole('button', { name: strings.family.create }))
+    await waitFor(() => expect(createFamily).toHaveBeenCalledWith('Novo', false))
   })
   it('S-091 AC2: creating a group activates it and returns to the list', async () => {
     const { createFamily } = await import('@/data/families')

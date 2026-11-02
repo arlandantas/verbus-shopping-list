@@ -5,6 +5,7 @@ import { deleteItem, updateItemDetails } from '@/data/items'
 import { strings } from '@/strings/pt-BR'
 import { EditItemSheet } from './EditItemSheet'
 
+vi.mock('@/app/FamilyProvider', () => ({ useFamily: () => ({ family: null }) }))
 vi.mock('@/data/items', () => ({ updateItemDetails: vi.fn(), deleteItem: vi.fn() }))
 beforeEach(() => {
   vi.mocked(updateItemDetails).mockClear()

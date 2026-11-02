@@ -6,6 +6,7 @@ import {
   onSnapshot,
   query,
   serverTimestamp,
+  updateDoc,
   where,
   writeBatch,
   type Unsubscribe,
@@ -66,6 +67,7 @@ async function freshInviteCode(): Promise<string> {
 /** Single batch: family + invite + profile.groupIds; no categories (S-092). Needs an existing profile (ensureUserProfile). */
 export async function createFamily(
   name: string,
+  recurringEnabled = true,
 ): Promise<{ familyId: string; inviteCode: string }> {
   const uid = currentUid()
   const inviteCode = await freshInviteCode()
@@ -78,6 +80,7 @@ export async function createFamily(
     members: [uid],
     ownerId: uid,
     inviteCode,
+    recurringEnabled,
     createdAt: serverTimestamp(),
   })
   batch.set(doc(db, 'invites', inviteCode), {
@@ -92,6 +95,11 @@ export async function createFamily(
   addMemberProfileToBatch(batch, familyRef.id, uid, profile.data()?.displayName ?? '')
   await batch.commit()
   return { familyId: familyRef.id, inviteCode }
+}
+
+/** Turns the pantry/recurring feature on or off for the group (ADR-0028). Optimistic; never awaited by the UI. */
+export function setRecurringEnabled(familyId: string, enabled: boolean): Promise<void> {
+  return updateDoc(doc(db, 'families', familyId), { recurringEnabled: enabled })
 }
 
 /** One batch (no transaction, ADR-0004): new invite + family.inviteCode + old invite deleted. Returns the new code. */
@@ -161,12 +169,18 @@ export function watchMyGroups(
     collection(db, 'families').withConverter(familyConverter),
     where('members', 'array-contains', uid),
   )
+  const accepted = new Set<string>()
   return onSnapshot(
     q,
     { includeMetadataChanges: true },
     (snap) => {
       const groups = snap.docs
-        .filter((d) => !d.metadata.hasPendingWrites) // not accepted server-side yet
+        .filter((d) => {
+          // A new group stays hidden until the server accepts it; once accepted, later local edits
+          // (e.g. the recurring toggle, ADR-0028) must not hide it again.
+          if (!d.metadata.hasPendingWrites) accepted.add(d.id)
+          return accepted.has(d.id)
+        })
         .map((d) => d.data({ serverTimestamps: 'estimate' }))
         .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       cb(groups)

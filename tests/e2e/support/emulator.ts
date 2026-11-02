@@ -86,3 +86,19 @@ export async function seedCategory(name: string): Promise<void> {
     if (!res.ok) throw new Error(`PATCH ${id} failed: ${res.status}`)
   }
 }
+
+/** Removes `recurringEnabled` from every family via the admin API: stands in for a pre-S-105 (legacy) group. */
+export async function makeFamiliesLegacy(): Promise<void> {
+  const base = `${FIRESTORE}/v1/projects/${PROJECT}/databases/(default)/documents`
+  const headers = { Authorization: 'Bearer owner', 'Content-Type': 'application/json' }
+  const fams = (await (await fetch(`${base}/families`, { headers })).json()) as DocList
+  for (const fam of fams.documents ?? []) {
+    const path = fam.name.split('/documents/')[1]!
+    const res = await fetch(`${base}/${path}?updateMask.fieldPaths=recurringEnabled`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ fields: {} }),
+    })
+    if (!res.ok) throw new Error(`PATCH ${path} failed: ${res.status}`)
+  }
+}

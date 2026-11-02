@@ -78,7 +78,7 @@ service cloud.firestore {
     }
 
     function validFamilyCreate(data, familyId) {
-      return data.keys().hasOnly(['name', 'members', 'ownerId', 'inviteCode', 'createdAt'])
+      return data.keys().hasOnly(['name', 'members', 'ownerId', 'inviteCode', 'createdAt', 'recurringEnabled'])
         && data.keys().hasAll(['name', 'members', 'ownerId', 'inviteCode', 'createdAt'])
         && data.name is string
         && data.name.size() >= 1 && data.name.size() <= 60
@@ -89,6 +89,7 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/invites/$(data.inviteCode)).data.familyId == familyId
         && getAfter(/databases/$(database)/documents/invites/$(data.inviteCode)).data.createdBy == request.auth.uid
         && data.createdAt == request.time
+        && data.get('recurringEnabled', true) is bool
         && profileJoins(familyId);
     }
 
@@ -114,6 +115,14 @@ service cloud.firestore {
         && after.inviteCode != resource.data.get('inviteCode', null)
         && getAfter(/databases/$(database)/documents/invites/$(after.inviteCode)).data.familyId == familyId
         && getAfter(/databases/$(database)/documents/invites/$(after.inviteCode)).data.createdBy == request.auth.uid;
+    }
+
+    // ADR-0028: any member toggles the optional recurring/pantry feature; nothing else changes.
+    function validRecurringToggle(familyId) {
+      let after = request.resource.data;
+      return isMember(familyId)
+        && after.diff(resource.data).affectedKeys().hasOnly(['recurringEnabled'])
+        && after.recurringEnabled is bool;
     }
 
     function validInvite(data, code) {
@@ -305,7 +314,7 @@ service cloud.firestore {
     match /families/{familyId} {
       allow read: if isSignedIn() && request.auth.uid in resource.data.members;
       allow create: if isSignedIn() && validFamilyCreate(request.resource.data, familyId);
-      allow update: if validJoin(familyId) || validRotate(familyId);
+      allow update: if validJoin(familyId) || validRotate(familyId) || validRecurringToggle(familyId);
       allow delete: if false;
 
       match /items/{itemId} {

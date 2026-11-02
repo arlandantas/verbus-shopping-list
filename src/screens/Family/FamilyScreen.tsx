@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
-import { MAX_GROUPS_PER_USER } from '@/data/families'
+import { MAX_GROUPS_PER_USER, setRecurringEnabled } from '@/data/families'
 import { Dialog } from '@/components/m3/Dialog'
 import { Button } from '@/components/m3/Button'
 import { Icon } from '@/components/m3/Icon'
@@ -12,6 +12,8 @@ import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useMemberNames } from '@/hooks/useMemberNames'
 import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
+import { fireAndForget } from '@/data/writeErrors'
+import { RecurringToggle } from './RecurringToggle'
 import { InviteCard } from './InviteCard'
 import { CreateForm } from './CreateForm'
 import { JoinForm } from './JoinForm'
@@ -69,6 +71,10 @@ export function FamilyScreen() {
             />
           ))}
         </ul>
+        <RecurringToggle
+          checked={family.family.recurringEnabled}
+          onChange={(v) => fireAndForget(setRecurringEnabled(family.family.id, v))}
+        />
         <ul className="family-list">
           <ListItem
             leading={<Icon name="category" />}

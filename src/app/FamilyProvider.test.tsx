@@ -65,6 +65,7 @@ const group = (id: string, age = 0): Family => ({
   members: ['u1'],
   ownerId: 'u1',
   inviteCode: 'ABCD2345',
+  recurringEnabled: true,
   createdAt: new Date(2026, 0, 1 + age),
 })
 
@@ -83,6 +84,23 @@ beforeEach(() => {
   ensureMemberProfile.mockClear()
   openCycleIfNeeded.mockClear()
   openCycleIfNeeded.mockResolvedValue({ added: 0 })
+})
+
+describe('FamilyProvider recurrence (S-105 AC2)', () => {
+  it('passes the group flag to the month opening and hides the notice when off', async () => {
+    openCycleIfNeeded.mockResolvedValue({ added: 2 })
+    setup(profile(), [{ ...group('g1'), recurringEnabled: false }])
+    await act(() => Promise.resolve())
+    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', expect.any(String), false)
+    expect(screen.getByText('added:0')).toBeInTheDocument()
+  })
+  it('on: flag true and the notice shows', async () => {
+    openCycleIfNeeded.mockResolvedValue({ added: 2 })
+    setup(profile(), [group('g1')])
+    await act(() => Promise.resolve())
+    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', expect.any(String), true)
+    expect(screen.getByText('added:2')).toBeInTheDocument()
+  })
 })
 
 describe('FamilyProvider', () => {
@@ -129,12 +147,12 @@ describe('FamilyProvider', () => {
     openCycleIfNeeded.mockResolvedValueOnce({ added: 2 })
     setup(profile(), [group('g1', 0), group('g2', 1)])
     expect(ensureMemberProfile).toHaveBeenCalledWith('g1', 'u1', 'Ana')
-    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', cycleOf(new Date()))
+    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', cycleOf(new Date()), true)
     expect(await screen.findByText('added:2')).toBeInTheDocument()
     act(() => screen.getByText('switch-g2').click())
     expect(screen.getByText('added:0')).toBeInTheDocument()
     expect(ensureMemberProfile).toHaveBeenCalledWith('g2', 'u1', 'Ana')
-    expect(openCycleIfNeeded).toHaveBeenCalledWith('g2', cycleOf(new Date()))
+    expect(openCycleIfNeeded).toHaveBeenCalledWith('g2', cycleOf(new Date()), true)
     act(() => screen.getByText('switch-g1').click())
     expect(ensureMemberProfile).toHaveBeenCalledTimes(2)
     expect(openCycleIfNeeded).toHaveBeenCalledTimes(2)

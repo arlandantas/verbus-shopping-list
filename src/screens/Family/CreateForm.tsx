@@ -4,6 +4,7 @@ import { TextField } from '@/components/m3/TextField'
 import { GroupLimitReached, createFamily } from '@/data/families'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { strings } from '@/strings/pt-BR'
+import { RecurringToggle } from './RecurringToggle'
 import '../auth.css'
 
 /** Create a group by name. First access relies on the snapshot to switch screens; otherwise `onCreated` runs. */
@@ -11,6 +12,7 @@ export function CreateForm({ onCreated }: { onCreated?: (familyId: string) => vo
   const t = strings.family
   const online = useOnlineStatus()
   const [name, setName] = useState('')
+  const [recurring, setRecurring] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -21,7 +23,7 @@ export function CreateForm({ onCreated }: { onCreated?: (familyId: string) => vo
     setBusy(true)
     setError(null)
     try {
-      const { familyId } = await createFamily(trimmed)
+      const { familyId } = await createFamily(trimmed, recurring)
       onCreated?.(familyId)
     } catch (err) {
       setError(err instanceof GroupLimitReached ? strings.invite.groupLimit : t.createError)
@@ -39,6 +41,7 @@ export function CreateForm({ onCreated }: { onCreated?: (familyId: string) => vo
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
+      <RecurringToggle checked={recurring} onChange={setRecurring} />
       {!online && <p className="auth-warning">{t.offlineWarning}</p>}
       {error && (
         <p role="alert" className="auth-error">

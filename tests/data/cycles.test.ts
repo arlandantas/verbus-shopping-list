@@ -62,6 +62,17 @@ describe('S-041 AC1: opens the cycle and returns at-home recurring', () => {
   })
 })
 
+describe('S-105 AC2: recurrence off', () => {
+  it('opens the month (marker) but returns nothing', async () => {
+    const { familyId } = await setup()
+    await seed(familyId)
+    const r = await openCycleIfNeeded(familyId, '2026-12', false)
+    expect(r).toEqual({ added: 0 })
+    expect(await col(familyId, 'cycles')).toHaveLength(1)
+    expect(await col(familyId, 'items')).toHaveLength(3)
+  })
+})
+
 describe('S-041 AC2: no duplicates, no reported error', () => {
   it('a second call and two concurrent calls add nothing more', async () => {
     const { familyId } = await setup()

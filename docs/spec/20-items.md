@@ -20,7 +20,7 @@
 - Botão editar à direita abre o sheet "Editar item".
 
 ## Editar item (bottom sheet)
-1. Título "Editar item". Campos: nome (editável), quantidade, unidade, categoria, observação, recorrente mensal, "Já coloquei no carrinho", valor (R$).
+1. Título "Editar item". Campos: nome (editável), quantidade, unidade, categoria, observação, recorrente mensal (só com a recorrência ligada no grupo, ADR-0028), "Já coloquei no carrinho", valor (R$).
 2. Ações: Apagar (pede confirmação), Cancelar e Salvar. Fechar sem salvar não grava nada.
 3. Renomear vale só para este item; a Despensa e o autocompletar passam a usar o nome novo. Compras passadas mantêm o nome antigo.
 4. Valor e carrinho são independentes (ADR-0022): informar o valor não marca o item (dá para anotar o preço só para conferir); "Já coloquei no carrinho" muda só o status e não apaga o valor.

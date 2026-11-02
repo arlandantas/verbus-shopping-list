@@ -64,7 +64,16 @@ function FamilyRoutes(): ReactNode {
           <Route path="/finalizar" element={<CheckoutScreen />} />
           <Route path="/historico" element={<HistoryScreen />} />
           <Route path="/historico/:cycle" element={<CycleScreen />} />
-          <Route path="/despensa" element={<PantryScreen />} />
+          <Route
+            path="/despensa"
+            element={
+              family.family?.recurringEnabled === false ? (
+                <Navigate to="/" replace />
+              ) : (
+                <PantryScreen />
+              )
+            }
+          />
           <Route path="/categorias" element={<CategoriesScreen />} />
           <Route path="/item/:id" element={<Navigate to="/" replace />} />
         </Route>

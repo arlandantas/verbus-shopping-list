@@ -31,7 +31,11 @@ const code = (e: unknown) => (e as Partial<FirestoreError> | null)?.code
  * create is denied and the whole batch fails: that `permission-denied` is swallowed, no duplicates.
  * Awaiting is fine here: this runs in the background, never on a UI path.
  */
-export async function openCycleIfNeeded(familyId: string, cycle: string): Promise<OpenCycleResult> {
+export async function openCycleIfNeeded(
+  familyId: string,
+  cycle: string,
+  recurringEnabled = true,
+): Promise<OpenCycleResult> {
   const uid = auth.currentUser?.uid
   if (!uid) throw new Error('not-signed-in')
   const family = ['families', familyId] as const
@@ -56,9 +60,12 @@ export async function openCycleIfNeeded(familyId: string, cycle: string): Promis
     throw e
   }
 
-  const returning = pantryState(catalog, items)
-    .filter((p) => p.state === 'atHome')
-    .slice(0, MAX_RECURRING_PER_CYCLE)
+  // ADR-0028: with recurrence off the month still opens (marker) but nothing returns.
+  const returning = recurringEnabled
+    ? pantryState(catalog, items)
+        .filter((p) => p.state === 'atHome')
+        .slice(0, MAX_RECURRING_PER_CYCLE)
+    : []
 
   const batch = writeBatch(db)
   batch.set(markerRef, {

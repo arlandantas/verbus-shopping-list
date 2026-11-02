@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useFamily } from '@/app/FamilyProvider'
 import type { Category, Item } from '@/data/converters'
 import type { ItemPatch } from '@/data/items'
 import { Button } from '@/components/m3/Button'
@@ -34,6 +35,7 @@ interface Props {
 
 /** Fields + footer of the "Editar item" sheet. Price and cart status are independent (ADR-0022). */
 export function ItemForm({ item, categories, onSave, onCancel, onDelete }: Props) {
+  const { family } = useFamily()
   const [name, setName] = useState(item.name)
   const [quantity, setQuantity] = useState(String(item.quantity).replace('.', ','))
   const [unit, setUnit] = useState<Unit>(item.unit)
@@ -119,11 +121,13 @@ export function ItemForm({ item, categories, onSave, onCancel, onDelete }: Props
         counter
         onChange={(e) => setNote(e.target.value)}
       />
-      <Checkbox
-        label={strings.item.recurring}
-        checked={recurring}
-        onChange={(e) => setRecurring(e.target.checked)}
-      />
+      {family?.recurringEnabled !== false && (
+        <Checkbox
+          label={strings.item.recurring}
+          checked={recurring}
+          onChange={(e) => setRecurring(e.target.checked)}
+        />
+      )}
       <Checkbox
         label={strings.item.inCart}
         checked={inCart}

@@ -14,6 +14,8 @@ export interface Family {
   members: string[]
   ownerId: string
   inviteCode: string
+  /** ADR-0028: absent in the document counts as on. */
+  recurringEnabled: boolean
   createdAt: Date
 }
 
@@ -40,6 +42,7 @@ export const familyConverter: FirestoreDataConverter<Family> = {
     members: f.members,
     ownerId: f.ownerId,
     inviteCode: f.inviteCode,
+    recurringEnabled: f.recurringEnabled,
     createdAt: f.createdAt,
   }),
   fromFirestore(snap, options) {
@@ -50,6 +53,7 @@ export const familyConverter: FirestoreDataConverter<Family> = {
       members: d.members,
       ownerId: d.ownerId,
       inviteCode: d.inviteCode,
+      recurringEnabled: d.recurringEnabled !== false,
       createdAt: d.createdAt.toDate(),
     }
   },

@@ -74,6 +74,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
       resolved[0] ??
       null)
   const activeId = active?.id
+  const recurringOn = active?.recurringEnabled ?? true
 
   useEffect(() => {
     if (!uid || !activeId || !displayName || ensured.current.has(`${uid}/${activeId}`)) return
@@ -86,7 +87,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     if (!uid || !activeId) return
     let current = true
     const open = () => {
-      openCycleIfNeeded(activeId, cycleOf(new Date()))
+      openCycleIfNeeded(activeId, cycleOf(new Date()), recurringOn)
         .then((r) => {
           if (current && r.added > 0) setRecurringAdded(r.added)
         })
@@ -101,7 +102,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
       current = false
       window.removeEventListener('online', open)
     }
-  }, [uid, activeId])
+  }, [uid, activeId, recurringOn])
 
   const retry = () => {
     setFailed(false)
@@ -121,7 +122,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   }
 
   const common = {
-    recurringAdded,
+    recurringAdded: recurringOn ? recurringAdded : 0,
     dismissRecurringNotice: () => setRecurringAdded(0),
     groups: resolved ?? [],
     setActiveGroup,

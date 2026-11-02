@@ -38,6 +38,11 @@ export const strings = {
     members: (n: number) => (n === 1 ? '1 membro' : `${n} membros`),
     memberFallback: 'Membro',
     membersSection: 'Membros',
+    recurring: {
+      label: 'Despensa e compras recorrentes',
+      explain:
+        'Itens marcados como "Recorrente mensal" voltam à lista a cada compra fechada. A Despensa mostra o que falta, o que você tem em casa e o que está no carrinho.',
+    },
     join: {
       title: 'Já tem um código?',
       codeLabel: 'Código do convite',
