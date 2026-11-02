@@ -89,7 +89,7 @@ export function ListScreen() {
   const done = list.filter((i) => i.status === 'bought').length
 
   return (
-    <main className="list-screen mx-auto max-w-md">
+    <main className="mx-auto max-w-md">
       <TopAppBar
         title={family.name}
         titleLabel={strings.groups.switchLabel}

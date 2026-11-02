@@ -57,7 +57,8 @@ body {
   --add-bar-zone: 80px;
 }
 .app-shell__content {
-  padding-bottom: var(--app-bottom-inset);
+  /* One place for every shell screen: clear the tabs, the floating add-bar (when present) and breathe. */
+  padding-bottom: calc(var(--app-bottom-inset) + var(--add-bar-zone, 0px) + 16px);
 }
 .app-shell__nav {
   position: fixed;
@@ -96,10 +97,6 @@ body {
   padding: 0;
   border: 0;
   outline: none;
-}
-/* Room so the last item is not covered by the bar. */
-.list-screen {
-  padding-bottom: 96px;
 }
 
 /* Loading screen (S-102): same look as the static splash in index.html. */

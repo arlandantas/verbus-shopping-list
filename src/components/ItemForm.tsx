@@ -76,24 +76,26 @@ export function ItemForm({ item, categories, onSave, onCancel, onDelete }: Props
         onChange={(e) => setName(e.target.value)}
         error={nameEmpty ? strings.item.nameEmpty : undefined}
       />
-      <TextField
-        label={strings.item.quantity}
-        inputMode="decimal"
-        value={quantity}
-        onChange={(e) => setQuantity(e.target.value)}
-        error={parsed === null ? strings.item.quantityInvalid : undefined}
-      />
-      <Select
-        label={strings.item.unit}
-        value={unit}
-        onChange={(e) => setUnit(e.target.value as Unit)}
-      >
-        {UNITS.map((u) => (
-          <option key={u} value={u}>
-            {unitLabel(u)}
-          </option>
-        ))}
-      </Select>
+      <div className="grid grid-cols-2 gap-4 [&>*]:min-w-0">
+        <TextField
+          label={strings.item.quantity}
+          inputMode="decimal"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          error={parsed === null ? strings.item.quantityInvalid : undefined}
+        />
+        <Select
+          label={strings.item.unit}
+          value={unit}
+          onChange={(e) => setUnit(e.target.value as Unit)}
+        >
+          {UNITS.map((u) => (
+            <option key={u} value={u}>
+              {unitLabel(u)}
+            </option>
+          ))}
+        </Select>
+      </div>
       {categories.length === 0 ? (
         <p className="m-0 text-sm text-on-surface-variant">{strings.categories.noneForItem}</p>
       ) : (

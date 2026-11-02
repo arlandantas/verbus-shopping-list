@@ -220,7 +220,7 @@ export const strings = {
     inCart: 'Já coloquei no carrinho',
     quantity: 'Quantidade',
     unit: 'Unidade',
-    note: 'Observação (marca)',
+    note: 'Observação',
     recurring: 'Recorrente mensal',
     category: 'Categoria',
     price: 'Valor',

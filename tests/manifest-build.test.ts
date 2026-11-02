@@ -20,7 +20,7 @@ test('S-081 AC3: build under VITE_BASE=/sub/ resolves manifest and html links un
     scope: string
     theme_color: string
     background_color: string
-    icons: { src: string }[]
+    icons: { src: string; purpose?: string }[]
   }
   expect(m.id).toBe('/sub/')
   expect(m.start_url).toBe('/sub/')
@@ -28,6 +28,11 @@ test('S-081 AC3: build under VITE_BASE=/sub/ resolves manifest and html links un
   for (const i of m.icons) {
     expect(new URL(i.src, `http://x${m.start_url}`).pathname.startsWith('/sub/icons/')).toBe(true)
   }
+  const any = m.icons.filter((i) => i.purpose === 'any').map((i) => i.src)
+  const maskable = m.icons.filter((i) => i.purpose === 'maskable').map((i) => i.src)
+  expect(any.length).toBeGreaterThan(0)
+  expect(maskable.length).toBeGreaterThan(0)
+  expect(any.some((src) => maskable.includes(src))).toBe(false) // S-103 AC4: distinct files
   const html = readFileSync(join(out, 'index.html'), 'utf8')
   const light =
     /<meta name="theme-color" content="([^"]+)" media="\(prefers-color-scheme: light\)"/.exec(html)

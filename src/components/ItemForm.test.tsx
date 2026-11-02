@@ -197,3 +197,22 @@ describe('S-092 AC7: no categories', () => {
     expect(screen.queryByText(strings.categories.noneForItem)).not.toBeInTheDocument()
   })
 })
+
+describe('S-103 AC3: layout and labels', () => {
+  it('shows Quantidade and Unidade in the same grid row; note label is just Observação', () => {
+    render(
+      <ItemForm
+        item={item}
+        categories={[]}
+        onSave={vi.fn()}
+        onCancel={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    )
+    const row = qty().closest('.grid') as HTMLElement
+    expect(row).toHaveClass('grid-cols-2')
+    expect(row).toContainElement(screen.getByLabelText(strings.item.unit))
+    expect(screen.getByLabelText('Observação')).toBeInTheDocument()
+    expect(strings.item.note).toBe('Observação')
+  })
+})

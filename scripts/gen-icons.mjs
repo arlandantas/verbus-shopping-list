@@ -39,15 +39,18 @@ const inPoly = (px, py, poly) =>
     const [x2, y2] = poly[(i + 1) % poly.length]
     return y1 > py !== y2 > py && px < ((x2 - x1) * (py - y1)) / (y2 - y1) + x1 ? !acc : acc
   }, false)
-const inCart = (x, y) =>
-  dist(x, y, 0.28, 0.32, 0.36, 0.32) < 0.018 ||
-  dist(x, y, 0.36, 0.32, 0.43, 0.6) < 0.018 ||
-  dist(x, y, 0.43, 0.6, 0.66, 0.6) < 0.018 ||
+const inCartBox = (x, y) =>
+  dist(x, y, 0.28, 0.32, 0.36, 0.32) < 0.035 ||
+  dist(x, y, 0.36, 0.32, 0.43, 0.6) < 0.035 ||
+  dist(x, y, 0.43, 0.6, 0.66, 0.6) < 0.035 ||
   inPoly(x, y, basket) ||
-  Math.hypot(x - 0.47, y - 0.68) < 0.04 ||
-  Math.hypot(x - 0.62, y - 0.68) < 0.04
+  Math.hypot(x - 0.47, y - 0.68) < 0.055 ||
+  Math.hypot(x - 0.62, y - 0.68) < 0.055
 
-function png(size) {
+// `scale` grows the cart around the centre: `any` icons fill more, maskable ones stay in the safe zone.
+const inCart = (x, y, scale) => inCartBox((x - 0.5) / scale + 0.5, (y - 0.5) / scale + 0.5)
+
+function png(size, scale) {
   const bg = [46, 106, 79] // #2E6A4F (primary)
   const fg = [255, 255, 255]
   const row = size * 3 + 1
@@ -59,7 +62,7 @@ function png(size) {
       let hits = 0
       for (let j = 0; j < ss; j++)
         for (let i = 0; i < ss; i++)
-          if (inCart((x + (i + 0.5) / ss) / size, (y + (j + 0.5) / ss) / size)) hits++
+          if (inCart((x + (i + 0.5) / ss) / size, (y + (j + 0.5) / ss) / size, scale)) hits++
       const a = hits / (ss * ss)
       raw.set(
         bg.map((c, k) => Math.round(c + (fg[k] - c) * a)),
@@ -80,4 +83,6 @@ function png(size) {
 }
 
 mkdirSync('public/icons', { recursive: true })
-for (const size of [192, 512]) writeFileSync(`public/icons/icon-${size}.png`, png(size))
+// Cart extent is ±0.22 of the side at scale 1. Maskable safe zone = circle of radius 0.4 (corner 0.31 at 1.15).
+for (const size of [192, 512]) writeFileSync(`public/icons/icon-${size}.png`, png(size, 1.45))
+writeFileSync('public/icons/icon-maskable-512.png', png(512, 1.15))
