@@ -25,10 +25,4 @@ describe('repo hygiene', () => {
     })
     expect(bad).toEqual([])
   })
-
-  it('deploy workflow has no hardcoded Firebase key', () => {
-    const wf = readFileSync('.github/workflows/deploy-pages.yml', 'utf8')
-    expect(wf).not.toContain('AIza')
-    expect(wf).toMatch(/\$\{\{\s*(vars|secrets)\.VITE_FIREBASE_API_KEY\s*\}\}/)
-  })
 })

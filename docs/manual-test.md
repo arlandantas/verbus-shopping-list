@@ -47,8 +47,6 @@ Navegação: abas inferiores **Lista**, **Despensa**, **Histórico**, **Grupo**.
 
 Anote o que estranhar (comportamento, textos, layout). Reiniciar o `dev:local` apaga os dados e recarrega a semente.
 
-## Publicação (GitHub Pages)
+## Publicação (Firebase Hosting)
 
-O deploy roda em `.github/workflows/deploy-pages.yml`. Em Settings → Secrets and variables → Actions → **Variables**, defina:
-`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`.
-Sem elas o workflow falha na etapa "Require Firebase config". Adicione o domínio publicado em Authentication → Domínios autorizados.
+`pnpm deploy` publica o hosting; regras com `pnpm exec firebase deploy --project prod --only firestore:rules`. O domínio publicado deve constar em Authentication → Domínios autorizados.
