@@ -116,3 +116,6 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-101 | M6 | Aviso de instalação em todas as plataformas (Chromium com botão, iOS, Mac Safari, Firefox Android) | done | S-080 |
 | S-102 | E-UX | Ajustes 3ª rodada: barra do Android escura, tela de carregamento com ícone e spinner, margem do "já adicionados", toggle ativo | done | S-101 |
 | S-103 | E-UX | Layout mobile: último item e botão do Grupo atrás das barras, margens laterais, Quantidade/Unidade lado a lado, rótulo Observação, ícone mais forte | done | S-102 |
+| S-104 | E-UX | Feedback de produção: scroll travado após modal, ordem alfabética, margens das linhas, barra do Android escura (manifest), apagados fora do histórico | done | S-103 |
+| S-105 | E-UX | Recorrência opcional por grupo (toggle na criação + explicação); exige ADR e regras | todo | S-104 |
+| S-106 | E-UX | Item apagado não aparece no histórico (marcar/apagar linhas do ciclo; mexe nas regras, ADR) | todo | S-104 |

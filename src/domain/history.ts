@@ -1,3 +1,4 @@
+import { sortByName } from './categories'
 import { stripAccents } from './units'
 
 interface PurchaseLike {
@@ -71,7 +72,9 @@ export interface PurchaseGroup<L> {
 }
 
 /** One group per purchase, newest first; lines of unknown purchases go last (partial cache). */
-export function groupByPurchase<L extends { purchaseId: string; priceCents: number | null }>(
+export function groupByPurchase<
+  L extends { purchaseId: string; name: string; priceCents: number | null },
+>(
   lines: readonly L[],
   purchases: readonly { id: string; market: string | null; purchasedAt: Date }[],
 ): PurchaseGroup<L>[] {
@@ -82,7 +85,7 @@ export function groupByPurchase<L extends { purchaseId: string; priceCents: numb
     ...rest,
     totalCents: mine.some((l) => l.priceCents !== null) ? cycleTotalCents(mine) : null,
     itemCount: mine.length,
-    lines: mine,
+    lines: sortByName(mine),
   })
   const known = new Set(purchases.map((p) => p.id))
   const groups = [...purchases]

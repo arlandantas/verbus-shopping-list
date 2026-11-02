@@ -50,6 +50,7 @@ describe('knownMarkets', () => {
 describe('S-066 AC1: groupByPurchase', () => {
   const ln = (id: string, purchaseId: string, priceCents: number | null) => ({
     id,
+    name: `n${id}`,
     purchaseId,
     priceCents,
   })

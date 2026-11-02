@@ -35,7 +35,7 @@ describe('S-044 AC1: CategorySections', () => {
     expect(headings).toEqual(['Mercearia', 'Laticínios', 'Sem categoria'])
   })
 
-  it('puts each item under its own section, in the given order', () => {
+  it('puts each item under its own section, alphabetically (S-104)', () => {
     render(
       <CategorySections
         items={items}
@@ -46,8 +46,8 @@ describe('S-044 AC1: CategorySections', () => {
     )
     const none = screen.getByRole('region', { name: 'Sem categoria' })
     expect(Array.from(none.querySelectorAll('li')).map((l) => l.textContent)).toEqual([
-      'pilha',
       'orfão',
+      'pilha',
     ])
   })
 

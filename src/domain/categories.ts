@@ -24,6 +24,11 @@ export function categorySuggestions(existing: readonly { name: string }[]): stri
   return DEFAULT_CATEGORIES.map((c) => c.name).filter((n) => !have.has(toNameKey(n)))
 }
 
+/** Copy sorted by name, pt-BR, accent- and case-insensitive (S-104). */
+export function sortByName<T extends { name: string }>(items: readonly T[]): T[] {
+  return [...items].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }))
+}
+
 export interface CategorySection<T> {
   /** null = "Sem categoria" */
   id: string | null

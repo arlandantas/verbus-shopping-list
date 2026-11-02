@@ -29,6 +29,10 @@ async function sideExtents(page: Page) {
       const b = el.getBoundingClientRect()
       if (b.width > 0) out.push({ what: el.tagName, left: b.left, right: b.right })
     }
+    for (const el of main.querySelectorAll('.m3-list-item')) {
+      const b = el.getBoundingClientRect()
+      if (b.width > 0) out.push({ what: 'row', left: b.left, right: b.right })
+    }
     return { width: document.documentElement.clientWidth, out }
   })
 }

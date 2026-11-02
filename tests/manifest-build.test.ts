@@ -34,11 +34,11 @@ test('S-081 AC3: build under VITE_BASE=/sub/ resolves manifest and html links un
   expect(maskable.length).toBeGreaterThan(0)
   expect(any.some((src) => maskable.includes(src))).toBe(false) // S-103 AC4: distinct files
   const html = readFileSync(join(out, 'index.html'), 'utf8')
-  const light =
-    /<meta name="theme-color" content="([^"]+)" media="\(prefers-color-scheme: light\)"/.exec(html)
-  expect(light?.[1]).toBeTruthy()
-  expect(m.theme_color).toBe(light?.[1])
-  expect(m.background_color).toBe(light?.[1])
+  const dark =
+    /<meta name="theme-color" content="([^"]+)" media="\(prefers-color-scheme: dark\)"/.exec(html)
+  expect(dark?.[1]).toBeTruthy()
+  expect(m.theme_color).toBe(dark?.[1]) // S-104 AC4: system bars follow the dark manifest color
+  expect(m.background_color).toBe(dark?.[1])
   expect(html).toMatch(/rel="apple-touch-icon" href="\/sub\/icons\/icon-192\.png"/)
   expect(html).toMatch(
     /rel="icon"[^>]*href="\/sub\/icons\/icon-192\.png"|href="\/sub\/icons\/icon-192\.png"[^>]*rel="icon"/,

@@ -14,7 +14,7 @@ import { useHistoryGroup } from './useHistoryGroup'
 import { SegmentedButton } from '@/components/m3/SegmentedButton'
 import { useCycleLines, usePurchases } from '@/hooks/useHistory'
 import { isCycle, formatCycle } from '@/domain/cycle'
-import { sumByCategory } from '@/domain/categories'
+import { sortByName, sumByCategory } from '@/domain/categories'
 import { cycleTotalCents } from '@/domain/history'
 import { formatBRL } from '@/domain/price'
 import { BackButton } from '@/components/BackButton'
@@ -64,7 +64,9 @@ export function CycleScreen() {
   const byPurchase = group === 'purchase'
   const groups = sums.rows.map((r) => ({
     name: r.name,
-    lines: (lines ?? []).filter((l) => (l.categoryName ?? strings.noCategory) === r.name),
+    lines: sortByName(
+      (lines ?? []).filter((l) => (l.categoryName ?? strings.noCategory) === r.name),
+    ),
   }))
   const loaded = purchases !== null && lines !== null
 

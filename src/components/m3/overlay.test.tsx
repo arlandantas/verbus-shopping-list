@@ -400,3 +400,28 @@ describe('S-057 review: overlay history stack', () => {
     expect(history.state?.m3overlay).toBeUndefined()
   })
 })
+
+describe('S-104 AC1: stacked overlays restore body scroll in any close order', () => {
+  it.each([
+    ['inner first', true],
+    ['outer first', false],
+  ])('%s', (_, innerFirst) => {
+    document.body.style.overflow = ''
+    const two = (a: boolean, b: boolean) => (
+      <>
+        <BottomSheet open={a} title="A" onClose={vi.fn()}>
+          x
+        </BottomSheet>
+        <Dialog open={b} title="B" onClose={vi.fn()}>
+          y
+        </Dialog>
+      </>
+    )
+    const { rerender } = render(two(true, true))
+    expect(document.body.style.overflow).toBe('hidden')
+    rerender(innerFirst ? two(true, false) : two(false, true))
+    expect(document.body.style.overflow).toBe('hidden')
+    rerender(two(false, false))
+    expect(document.body.style.overflow).toBe('')
+  })
+})

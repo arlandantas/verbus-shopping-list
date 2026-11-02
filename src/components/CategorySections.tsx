@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
 import { CollapsibleSection } from '@/components/m3/CollapsibleSection'
-import { cartCount, groupByCategory, type CategoryLike } from '@/domain/categories'
+import { cartCount, groupByCategory, sortByName, type CategoryLike } from '@/domain/categories'
 import { strings } from '@/strings/pt-BR'
 
 /** Items grouped under one collapsible header per non-empty category; the caller supplies the row. */
 export function CategorySections<
-  T extends { id: string; categoryId: string | null; status: string },
+  T extends { id: string; name: string; categoryId: string | null; status: string },
 >({
   items,
   categories,
@@ -24,7 +24,13 @@ export function CategorySections<
 }) {
   return (
     <>
-      {groupByCategory(items, categories).map((section) => {
+      {groupByCategory(
+        // Alphabetical, bought ones stay at the end of their section (S-028).
+        [...sortByName(items)].sort(
+          (a, b) => Number(a.status === 'bought') - Number(b.status === 'bought'),
+        ),
+        categories,
+      ).map((section) => {
         const id = section.id ?? 'none'
         const { done, total } = cartCount(section.items)
         const open = !collapsed.includes(id)

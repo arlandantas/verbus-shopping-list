@@ -111,3 +111,12 @@ describe('S-092 AC3: categorySuggestions', () => {
     expect(categorySuggestions(DEFAULT_CATEGORIES)).toEqual([])
   })
 })
+
+describe('S-104 AC2: sortByName', () => {
+  it('sorts pt-BR ignoring case and accents, without mutating', async () => {
+    const { sortByName } = await import('./categories')
+    const input = [{ name: 'maçã' }, { name: 'Zebra' }, { name: 'abacate' }, { name: 'Água' }]
+    expect(sortByName(input).map((i) => i.name)).toEqual(['abacate', 'Água', 'maçã', 'Zebra'])
+    expect(input[0].name).toBe('maçã')
+  })
+})

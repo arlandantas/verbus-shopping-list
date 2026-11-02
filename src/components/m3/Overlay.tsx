@@ -9,6 +9,17 @@ const FOCUSABLE =
 const FIELDS = 'input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
 let overlaySeq = 0
+let scrollLocks = 0
+let savedOverflow = ''
+function lockScroll() {
+  if (scrollLocks++ === 0) {
+    savedOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+  }
+}
+function unlockScroll() {
+  if (--scrollLocks === 0) document.body.style.overflow = savedOverflow
+}
 /** Open overlays, bottom first. Each owns one history entry, so depth in history = stack order. */
 const stack: { token: number; close: () => void; pending: boolean }[] = []
 
@@ -48,8 +59,7 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
       panel?.querySelector<HTMLElement>(FIELDS) ?? panel?.querySelector<HTMLElement>(FOCUSABLE)
     ;(first ?? panel)?.focus()
 
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    lockScroll()
 
     // A cleanup only marks the entry pending; the history unwind runs in a microtask and is
     // skipped when the same component re-registers first (StrictMode's simulated remount).
@@ -89,7 +99,7 @@ export function Overlay({ open, title, onClose, children, actions, kind }: Props
           above.forEach((close) => close())
         })
       }
-      document.body.style.overflow = prevOverflow
+      unlockScroll()
       opener?.focus?.()
     }
   }, [open])
