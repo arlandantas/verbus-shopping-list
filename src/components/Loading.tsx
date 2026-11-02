@@ -10,7 +10,14 @@ export function Loading({ timeoutMs = LOADING_TIMEOUT_MS }: { timeoutMs?: number
     const t = setTimeout(() => setSlow(true), timeoutMs)
     return () => clearTimeout(t)
   }, [timeoutMs])
-  if (!slow) return <p className="p-4">{strings.loading}</p>
+  if (!slow)
+    return (
+      <div className="splash" role="status">
+        <img src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="" />
+        <div className="splash__spinner" aria-hidden="true" />
+        <p>{strings.loading}</p>
+      </div>
+    )
   return (
     <div className="mx-auto flex max-w-sm flex-col gap-4 p-4">
       <p role="alert">{strings.loadTimeout}</p>

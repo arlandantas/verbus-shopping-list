@@ -141,7 +141,7 @@
   width: 24px;
   height: 24px;
   background: var(--md-sys-color-on-primary);
-  transform: translateX(14px) translateX(-6px);
+  transform: translateX(12px);
 }
 .m3-switch__input:focus-visible ~ .m3-switch__track {
   outline: 3px solid var(--md-sys-color-primary);

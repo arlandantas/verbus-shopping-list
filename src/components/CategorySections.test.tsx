@@ -112,6 +112,11 @@ describe('S-059 AC3: hide bought', () => {
     expect(screen.queryByText('arroz')).toBeNull()
     expect(screen.getByText('feijão')).toBeInTheDocument()
     expect(screen.getAllByText(strings.market.hiddenCount(1))).toHaveLength(2)
+    expect(screen.getAllByText(strings.market.hiddenCount(1))[0]).toHaveClass(
+      'px-4',
+      'pt-2',
+      'pb-3',
+    )
     expect(screen.queryByText('leite')).toBeNull()
     expect(screen.getByRole('button', { name: /Laticínios/ })).toBeInTheDocument()
   })

@@ -38,6 +38,11 @@
   --shadow-m3-3: var(--md-sys-elevation-3);
 }
 
+html {
+  background-color: var(--md-sys-color-surface);
+  color-scheme: light dark;
+}
+
 body {
   background-color: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
@@ -95,4 +100,40 @@ body {
 /* Room so the last item is not covered by the bar. */
 .list-screen {
   padding-bottom: 96px;
+}
+
+/* Loading screen (S-102): same look as the static splash in index.html. */
+.splash {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.splash img {
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+}
+.splash__spinner {
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  border: 4px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: splash-spin 0.9s linear infinite;
+}
+@keyframes splash-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash__spinner {
+    animation: none;
+    border-top-color: currentColor;
+  }
 }

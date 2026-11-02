@@ -41,7 +41,7 @@ export function CategorySections<
             onToggle={() => onToggleCollapsed(id)}
             footer={
               hideBought && done > 0 ? (
-                <p className="px-4 pb-2 text-sm text-on-surface-variant">
+                <p className="mt-2 px-4 pt-2 pb-3 text-sm text-on-surface-variant">
                   {strings.market.hiddenCount(done)}
                 </p>
               ) : undefined

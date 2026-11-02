@@ -6,6 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
     />
+    <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f6fbf6" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1511" media="(prefers-color-scheme: dark)" />
     <meta
@@ -17,9 +18,62 @@
     <meta name="apple-mobile-web-app-title" content="Nosso Carrinho" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Nosso Carrinho</title>
+    <style>
+      html {
+        background-color: #f6fbf6;
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: #0f1511;
+          color: #e1e3de;
+        }
+      }
+      .splash {
+        display: flex;
+        min-height: 100dvh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        font-family: system-ui, sans-serif;
+      }
+      .splash img {
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
+      }
+      .splash__spinner {
+        width: 32px;
+        height: 32px;
+        box-sizing: border-box;
+        border: 4px solid currentColor;
+        border-top-color: transparent;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: splash-spin 0.9s linear infinite;
+      }
+      @keyframes splash-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash__spinner {
+          animation: none;
+          border-top-color: currentColor;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="splash" role="status">
+        <img src="/icons/icon-192.png" alt="" />
+        <div class="splash__spinner" aria-hidden="true"></div>
+        <p>Carregando…</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

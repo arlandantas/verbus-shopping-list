@@ -14,4 +14,10 @@ describe('Loading', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(strings.loadTimeout)
     expect(screen.getByRole('button', { name: strings.retry })).toBeInTheDocument()
   })
+
+  it('S-102 AC2: shows icon, status indicator and text', () => {
+    const { container } = render(<Loading />)
+    expect(screen.getByRole('status')).toHaveTextContent(strings.loading)
+    expect(container.querySelector('img[src="/icons/icon-192.png"]')).not.toBeNull()
+  })
 })

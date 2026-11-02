@@ -59,6 +59,13 @@ describe('S-050 AC1: dev:local is wired and documented', () => {
 })
 
 describe('S-060 AC4: viewport meta', () => {
+  it('S-102 AC1: index.html declares color-scheme and a themed html background', () => {
+    const html = readFileSync(join(root, 'index.html'), 'utf8')
+    expect(html).toContain('<meta name="color-scheme" content="light dark" />')
+    expect(html).toMatch(/html \{\s*background-color: #f6fbf6/)
+    expect(html).toMatch(/dark\) \{\s*html \{\s*background-color: #0f1511/)
+  })
+
   it('S-060 AC4: index.html resizes content with the keyboard', () => {
     expect(readFileSync(join(root, 'index.html'), 'utf8')).toContain(
       'content="width=device-width, initial-scale=1, interactive-widget=resizes-content"',
