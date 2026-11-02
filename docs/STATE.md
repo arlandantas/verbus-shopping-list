@@ -22,7 +22,7 @@ Nada em andamento. Publicado em https://nossocarrinho.web.app (Firebase Hosting 
 - Sair/remover de grupo não existe: ledger `groupIds` é append-only, quem sai não volta (ADR-0024).
 - Guarda de paleta só cobre algumas famílias de cor; conferência visual (Despensa agrupada, folha 'Colar lista', aviso iOS, telas largas) não feita no navegador embutido; só E2E.
 - Sessão antiga restaurada após reset dos emuladores deixa o app em "Carregando…" até limpar o storage do site.
-- Tokens de cor aproximados à mão: regenerar com Material Theme Builder na cor final.
+- Cores vêm do doc do designer (S-098); papéis que o doc omite foram derivados da mesma semente. Ideias não feitas: S-096 (progresso), S-097 (etiquetas), cor por categoria, tipografia Plus Jakarta Sans.
 - `parseQuantity` mora em `components/ItemForm.tsx`: mover para `src/domain`.
 - Portas fixas em ~15 arquivos de teste: centralizar em env.
 - Riscos aceitos de regras (ADR-0016/0025); ações `actions/*` no CI ainda por tag flutuante.

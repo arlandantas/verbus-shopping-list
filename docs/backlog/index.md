@@ -109,4 +109,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-093 | E-ADD | Colar lista de itens no campo de adicionar (sheet de pré-visualização, ADR-0027) | done | S-060, S-055 |
 | S-094 | E-UX | Despensa agrupada por categoria (recorrentes e "Outros itens"); roda após S-093 | done | S-092 |
 | S-095 | E-UX | Landing page para visitantes: CTA criar conta e CTA de convite (só tokens de cor) | done | S-012 |
+| S-098 | E-UX | Paleta verde do designer nos tokens M3 (semente #2E6A4F, claro e escuro) | done | S-095 |
+| S-096 | E-UX | Barra de progresso de itens no carrinho sobre o total, no topo da Lista (inspirada no doc do designer); pós-MVP | todo | S-095 |
+| S-097 | E-UX | Etiqueta por item (ex.: Urgente, Desejo, Essencial): campo novo no modelo, regras e sheet de edição; exige ADR; pós-MVP | todo | S-095 |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |
