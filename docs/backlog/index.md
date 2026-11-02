@@ -85,13 +85,13 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-072 | UX | Shell: abas centralizadas, barra de adicionar flutuante, avisos empilhados | done | S-070 |
 | S-073 | UX | Confirmar sair da conta | done | S-069 |
 | S-074 | UX | Despensa: "Outros itens já usados" como seção colapsável | done | S-070 |
-| E-SEC | SEC | Épico: endurecimento de segurança (retomado pela ADR-0023; spec 85). Regras primeiro, web por último | todo | — |
+| E-SEC | SEC | Épico: endurecimento de segurança (retomado pela ADR-0023; spec 85). Regras primeiro, web por último | done | — |
 | S-075 | SEC | Regras: isolamento entre famílias e enumeração (suíte adversarial) | done | — |
 | S-076 | SEC | Regras: convites e entrar na família (suíte adversarial) | done | S-075 |
 | S-077 | SEC | Trocar o código de convite (rotação) | done | S-076 |
 | S-078 | SEC | Regras: escalada de papel e de campos, limites de tamanho | done | S-075 |
 | S-079 | SEC | Regras: preços, compras, linhas e ciclos (suíte adversarial) | done | S-078 |
-| E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA (spec 80) | todo | S-005 |
+| E-M6 | M6 | Épico: aviso de instalação iOS, polimento PWA (spec 80) | done | S-005 |
 | S-080 | M6 | Aviso "Adicionar à Tela de Início" no iOS | done | — |
 | S-081 | M6 | Manifest e metas Apple coerentes com o tema e o base path | done | S-080 |
 | S-082 | M6 | Fallback offline sob base path e rotas profundas | done | S-081 |
@@ -99,7 +99,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-084 | SEC | CSP por meta tag compatível com Firebase (hospedagem estática) | done | S-083 |
 | S-085 | SEC | CI: varredura de segredos e auditoria de dependências | done | — |
 | S-086 | SEC | Build de produção sem contas de teste nem painel de login rápido | done | S-085 |
-| E-LISTS | LISTS | Épico: vários grupos por usuário ("Grupo" na UI), seletor de grupo ativo, categorias como sugestões (ADR-0024) | todo | S-086 |
+| E-LISTS | LISTS | Épico: vários grupos por usuário ("Grupo" na UI), seletor de grupo ativo, categorias como sugestões (ADR-0024) | done | S-086 |
 | S-087 | LISTS | Regras: vários grupos por usuário (livro-razão `groupIds`, limite 10) | done | S-079 |
 | S-088 | LISTS | Camada de dados: criar e entrar com vários grupos, listar meus grupos | done | S-087 |
 | S-089 | LISTS | Grupo ativo: provider resolve e lembra o grupo por aparelho | done | S-088 |

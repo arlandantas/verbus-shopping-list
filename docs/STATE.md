@@ -1,6 +1,6 @@
 # Estado atual
 
-**Fase:** E-UX/E-UX2 concluídos (aguardam 3ª rodada de testes manuais). E-SEC (S-075..S-079, S-084..S-086) e E-M6 (S-080..S-083) concluídos (ADR-0023). E-LISTS / vários grupos (ADR-0024, S-087..S-092) concluído. App já publicado no GitHub Pages; o usuário validou login, adicionar itens e marcar no carrinho (2026-11-01).
+**Fase:** Épicos E-UX, E-UX2, E-SEC, E-M6, E-LISTS marcados `done` no backlog; E-UX/E-UX2 concluídos (aguardam 3ª rodada de testes manuais). E-SEC (S-075..S-079, S-084..S-086) e E-M6 (S-080..S-083) concluídos (ADR-0023). E-LISTS / vários grupos (ADR-0024, S-087..S-092) concluído. App já publicado no GitHub Pages; o usuário validou login, adicionar itens e marcar no carrinho (2026-11-01).
 **Verificação (2026-11-01):** lint, typecheck, 430 unit, rules 453, data 62, E2E 107/107, `pnpm check:bundle` verde.
 
 ## Como testar
