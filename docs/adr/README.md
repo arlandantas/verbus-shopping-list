@@ -34,3 +34,4 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0028](0028-optional-recurring-per-group.md) | Despensa e compras recorrentes opcionais por grupo (emenda 0010, 0013) | aceito |
 | [0029](0029-welcome-seen-local.md) | Onde guardar "já viu as boas-vindas" (local por aparelho, S-110) | aceito |
 | [0030](0030-manual-pantry-and-group-rename.md) | Despensa só manual, "Marcar todos como faltando" e renomear grupo (emenda 0013, 0028) | aceito |
+| [0031](0031-firebase-hosting-and-local-ci.md) | Produção no Firebase Hosting e CI só local (amenda 0006, 0026) | aceito |

@@ -1,7 +1,7 @@
 # Backlog
 Uma linha por história. Status: `todo` · `doing` · `done` · `blocked`.
 Detalhe da história: `stories/S-NNN.md`. Linhas `E-Mx` são épicos: o Arquiteto os detalha em histórias antes de iniciar o marco.
-Ordem = ordem de execução. Tudo até S-068 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
+Ordem = ordem de execução. Tudo até S-068 roda só com emuladores (sem input do usuário); S-013 (Firebase real) concluída.
 E-SEC/E-M6 (ADR-0023): regras S-075..S-079 → PWA S-080..S-083 → web S-084..S-086; tudo sem input do usuário.
 E-LISTS (ADR-0024): S-087..S-092 rodam no fim, depois de S-086 (não logo após S-079): S-087 reescreve `users`/`families` em `firestore.rules` e as suítes de S-076..S-079, S-088 mexe no seed que S-086 também toca, e o portão de lançamento da ADR-0023 não deve atrasar. Tudo sem input do usuário.
 E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) → lista/mercado (S-058..S-060) → demais telas (S-061..S-065) → histórico por compra (S-066) → editar histórico (S-067, S-068).
@@ -27,7 +27,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-019 | M2 | Tela Lista atual e adicionar item | done | S-018, S-012 |
 | S-020 | M2 | Autocompletar a partir do catálogo | done | S-019 |
 | S-021 | M2 | Detalhe do item | done | S-019 |
-| S-013 | M1 | Projeto Firebase real e deploy manual (input: projeto + login) | todo | S-012 |
+| S-013 | M1 | Projeto Firebase real e deploy manual (input: projeto + login) | done | S-012 |
 | S-022 | M3 | Regras: `recurring` opcional no catálogo | done | S-021 |
 | S-023 | M3 | Camada de dados: recorrentes e estado da Despensa | done | S-022 |
 | S-024 | M3 | Tela Despensa / Recorrentes | done | S-023 |

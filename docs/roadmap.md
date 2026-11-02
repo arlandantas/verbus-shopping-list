@@ -2,8 +2,8 @@
 
 | Marco | Escopo | Specs | Status |
 |---|---|---|---|
-| M0 | Esqueleto: Vite + TS + PWA, Firebase emulators, lint/test, CI | 80 | done |
-| M1 | Login e família (criar/entrar, convite), regras de segurança | 10, 70 | done (S-013 aguarda o usuário) |
+| M0 | Esqueleto: Vite + TS + PWA, Firebase emulators, lint/test, CI local | 80 | done |
+| M1 | Login e família (criar/entrar, convite), regras de segurança | 10, 70 | done (S-013: Firebase real em produção, ADR-0031) |
 | M2 | Lista atual, adicionar item, texto livre, autocompletar, detalhe | 20 | done |
 | M3 | Despensa / recorrentes | 30 | done |
 | M4 | Modo mercado: tempo real, offline, desfazer | 40 | done |

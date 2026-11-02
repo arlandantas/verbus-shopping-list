@@ -1,4 +1,4 @@
-// Local mirror of .github/workflows/ci.yml, for the manager to run before closing a delivery or a
+// The project's only CI (no GitHub workflows, ADR-0031), for the manager to run before closing a delivery or a
 // release round (no git hook). Runs every step, then prints a summary. Run: pnpm ci:local
 // Options: --skip-e2e (skip Playwright; say so in the report).
 import { spawnSync } from 'node:child_process'

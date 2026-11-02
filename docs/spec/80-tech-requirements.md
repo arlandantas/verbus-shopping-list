@@ -10,7 +10,8 @@
 - Campo de adicionar fixo embaixo: viewport com `interactive-widget=resizes-content` para ficar acima do teclado no Android.
 
 ## PWA (M6)
-- Deploy estático com base path (`VITE_BASE`, ex.: `/verbus-shopping-list/`); todo URL do app (manifest, ícones, SW, fallback, links) usa `import.meta.env.BASE_URL`, nunca `/` fixo.
+- **Produção:** Firebase Hosting em https://nossocarrinho.web.app (projeto `prod`, base `/`); deploy manual com `pnpm deploy` e regras com `firebase deploy --only firestore:rules` (ADR-0031). Sem CI no GitHub: `pnpm ci:local` antes de cada entrega.
+- Deploy estático com base path (`VITE_BASE`, padrão `/` em produção; subcaminho suportado); todo URL do app (manifest, ícones, SW, fallback, links) usa `import.meta.env.BASE_URL`, nunca `/` fixo.
 - Aviso de instalação (S-080, S-101): card no fluxo, fechável, lembrado no aparelho (`localStorage`), nunca em modo standalone, não bloqueia o uso. Aparece na landing, no login, na criação de grupo e no shell. Por navegador (`detectInstallPlatform`):
   - Chrome/Edge/Samsung/Opera (Android e desktop): só depois do `beforeinstallprompt`; botão "Instalar" abre o diálogo do navegador; `appinstalled` esconde.
   - Safari iPhone/iPad (inclui iPadOS com UA de Mac): "Compartilhar → Adicionar à Tela de Início".

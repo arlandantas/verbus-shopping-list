@@ -37,7 +37,8 @@ This file follows the AGENTS.md convention and is the single entry point for any
 - `pnpm lint` — ESLint (flat config) · `pnpm format` / `pnpm format:check` — Prettier
 - `pnpm check:bundle` — builds in a temp dir and fails if the prod bundle has test accounts/panel/emulator hosts (S-086)
 - `pnpm check` — lint + typecheck + test + test:rules + test:data
-- `pnpm ci:local` — mirror of the CI (gitleaks if installed, audit, check, check:bundle, e2e; `--skip-e2e`). No git hook
+- `pnpm ci:local` — the only CI (no GitHub workflows, ADR-0031): gitleaks if installed, audit, check, check:bundle, e2e; `--skip-e2e`. No git hook
+- `pnpm deploy` — build + Firebase Hosting (prod). Rules: `pnpm exec firebase deploy --project prod --only firestore:rules`
 
 ## Size limits (split before exceeding)
 

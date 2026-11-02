@@ -14,14 +14,14 @@ Decisão de retomar: ADR-0023. Riscos aceitos: ADR-0016. Modelo: ADR-0003, spec 
 4. **Escalada de papel/campo:** ninguém altera `ownerId`, `name`, `inviteCode` (fora da rotação), `members` (fora de entrar), `createdBy`, `createdAt`, `isDefault`, nem o perfil de outro membro; `markedBy` só o próprio uid ou `null`; strings com tamanho máximo.
 5. **Preços e compras:** centavos inteiros e limitados; `purchases` só muda `totalCents`; `purchaseLines` só `quantity`, `unit`, `priceCents`; nada é apagado; `cycles` só criado.
 
-## Web (hospedagem estática, GitHub Pages)
-- Sem cabeçalhos HTTP próprios: CSP via `<meta http-equiv="Content-Security-Policy">` injetada no build, com `default-src 'self'`, sem `unsafe-eval`, sem scripts inline.
+## Web (Firebase Hosting em produção, ADR-0031)
+- CSP por meta (ADR-0026), embora o Hosting permita cabeçalhos próprios; CSP via `<meta http-equiv="Content-Security-Policy">` injetada no build, com `default-src 'self'`, sem `unsafe-eval`, sem scripts inline.
 - Origens Firebase permitidas (produção): `connect-src` para `firestore.googleapis.com`, `identitytoolkit.googleapis.com`, `securetoken.googleapis.com` e `https://<authDomain>`; `frame-src https://<authDomain>` (popup/redirect do Google); `script-src` inclui `https://apis.google.com` só se o login Google exigir. Emulador: `http://127.0.0.1:*`/`localhost` só em build de dev/emulador.
-- `frame-ancestors` não funciona em meta: risco de clickjacking aceito no GitHub Pages (registrar na ADR da história).
+- `frame-ancestors` não funciona em meta: risco de clickjacking aceito (migrar para cabeçalho em `firebase.json` é possível, sem história aberta).
 - `<meta name="referrer" content="strict-origin-when-cross-origin">`.
 - Config web do Firebase não é segredo, mas vem de variáveis `VITE_*` no build; `.env*.local` fica fora do git.
-- CI: varredura de segredos e `pnpm audit` (falha em `high`/`critical` de dependência de produção).
+- Qualidade local (`pnpm ci:local`): varredura de segredos (gitleaks, se instalado) e `pnpm audit` (falha em `high`/`critical` de dependência de produção). Sem CI no GitHub (ADR-0031).
 - Build de produção não contém contas de teste, senhas nem painel de login rápido (S-050, ADR-0017).
 
-## Fora do código (input do usuário, S-013)
+## Fora do código (console do Firebase; projeto já em produção)
 App Check, domínios autorizados no Auth, proteção contra enumeração de e-mail, alertas de cota/faturamento.
