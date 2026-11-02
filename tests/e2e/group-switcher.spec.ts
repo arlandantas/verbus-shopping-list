@@ -1,5 +1,6 @@
 import { devices, expect, test, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators, waitForItemCount } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
@@ -24,6 +25,8 @@ async function signUpWithGroup(page: Page, email: string, group: string): Promis
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill(group)
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   const code = (await page.getByTestId('invite-code').textContent()) ?? ''
   await page.getByRole('link', { name: strings.nav.list, exact: true }).click()
   return code
@@ -72,7 +75,7 @@ test('S-090 AC2/AC5: switching groups changes Lista, Despensa and Histórico; su
 
   await page.goto(`/convite/${code}`)
   await page.getByRole('button', { name: strings.invite.confirm }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await skipWelcome(page)
   await expect(page.getByRole('heading', { name: 'Outra' })).toBeVisible()
   await expect(page.getByRole('checkbox', { name: /feijão/ })).toBeVisible()
   await expect(page.getByRole('checkbox', { name: /arroz/ })).toHaveCount(0)

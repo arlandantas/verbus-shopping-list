@@ -1,5 +1,6 @@
 import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
@@ -22,6 +23,8 @@ async function signUp(page: Page) {
 async function createFamily(page: Page, name = 'Casa') {
   await page.getByLabel(strings.family.nameLabel).fill(name)
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   await expect(page.getByTestId('invite-code')).toBeVisible()
 }
 
@@ -108,6 +111,6 @@ test('S-091 AC1/AC2: a user with a group creates another from the Grupo tab and 
   await page.getByRole('button', { name: strings.groups.createNew }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Sítio')
   await page.getByRole('button', { name: strings.family.create }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await skipWelcome(page)
   await expect(page.getByRole('heading', { name: 'Sítio' })).toBeVisible()
 })

@@ -1,4 +1,5 @@
 import { devices, expect, test, type Page } from '@playwright/test'
+import { skipWelcome } from './support/welcome'
 import { strings } from '../../src/strings/pt-BR'
 import { setItemCategory } from './support/categorize'
 import { clearEmulators, deleteAllItems, waitForItemCount } from './support/emulator'
@@ -129,6 +130,7 @@ test('S-070 AC3: every visible text meets contrast in light and dark across scre
   await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
   await page
     .getByRole('navigation', { name: strings.nav.label })
     .getByRole('link', { name: strings.nav.list, exact: true })

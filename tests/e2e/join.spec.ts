@@ -1,5 +1,6 @@
 import { devices, expect, test, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
@@ -26,6 +27,8 @@ async function createFamily(page: Page, name: string): Promise<string> {
   await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill(name)
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   await expect(page.getByTestId('invite-code')).toBeVisible()
   return (await page.getByTestId('invite-code').textContent()) ?? ''
 }
@@ -45,6 +48,8 @@ test('S-012 AC1: B joins by typing the code and A sees B in real time', async ({
     .getByLabel(strings.family.join.codeLabel)
     .fill(`${code.slice(0, 4).toLowerCase()}-${code.slice(4)}`)
   await b.getByRole('button', { name: strings.family.join.submit }).click()
+  await skipWelcome(b)
+  await b.goto('/grupo')
   await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await expect(b.getByText(strings.family.members(2))).toBeVisible()
 
@@ -69,7 +74,7 @@ test('S-012 AC2: signed-out B opens the invite, logs in, returns, confirms and j
   await expect(b).toHaveURL(new RegExp(`/convite/${code}$`))
   await expect(b.getByRole('heading', { name: strings.invite.title('Casa') })).toBeVisible()
   await b.getByRole('button', { name: strings.invite.confirm }).click()
-  await expect(b).toHaveURL(/\/$/)
+  await skipWelcome(b)
   await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await b.context().close()
 })
@@ -102,7 +107,7 @@ test('S-089: a member of group A opens the invite for group B, previews, confirm
   await page.goto(`/convite/${otherCode}`)
   await expect(page.getByRole('heading', { name: strings.invite.title('Outra') })).toBeVisible()
   await page.getByRole('button', { name: strings.invite.confirm }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await skipWelcome(page)
   await page.goto('/grupo')
   await expect(page.getByRole('heading', { name: 'Outra' })).toBeVisible()
   await expect(page.getByText(strings.family.members(2))).toBeVisible()
@@ -148,7 +153,7 @@ test('S-091 AC6: A joins B by link, B is active, back to A via the switcher, ite
 
   await page.goto(`/convite/${otherCode}`)
   await page.getByRole('button', { name: strings.invite.confirm }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await skipWelcome(page)
   await expect(page.getByRole('heading', { name: 'Outra' })).toBeVisible()
   await expect(page.getByRole('checkbox', { name: /arroz/ })).toHaveCount(0)
 

@@ -18,6 +18,7 @@ import { InviteCard } from './InviteCard'
 import { GroupRow } from './GroupRow'
 import { CreateForm } from './CreateForm'
 import { JoinForm } from './JoinForm'
+import { WELCOME_ROUTE } from '../Welcome/welcomeSeen'
 import '../auth.css'
 
 export function FamilyScreen() {
@@ -27,7 +28,7 @@ export function FamilyScreen() {
   const atLimit = family.groups.length >= MAX_GROUPS_PER_USER
   const done = (id: string) => {
     family.setActiveGroup(id)
-    void navigate('/')
+    void navigate(WELCOME_ROUTE)
   }
   const [action, setAction] = useState<'create' | 'join' | null>(() => {
     const a = (location.state as { action?: unknown } | null)?.action

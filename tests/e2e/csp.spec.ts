@@ -1,5 +1,6 @@
 import { devices, expect, test } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
@@ -23,6 +24,8 @@ test('S-084 AC4: login, list, add item and family tab raise no CSP violation', a
   await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   await expect(page.getByTestId('invite-code')).toBeVisible()
   const nav = page.getByRole('navigation', { name: strings.nav.label })
   await nav.getByRole('link', { name: strings.nav.list, exact: true }).click()

@@ -32,3 +32,4 @@ Uma decisão por arquivo (`docs/templates/adr.md`). Nunca editar o conteúdo de 
 | [0026](0026-csp-meta-tag.md) | CSP por meta tag no GitHub Pages (origens liberadas, riscos aceitos) | aceito |
 | [0027](0027-paste-item-list.md) | Colar lista de itens no campo de adicionar (pré-visualização, separadores, limites) | aceito |
 | [0028](0028-optional-recurring-per-group.md) | Despensa e compras recorrentes opcionais por grupo (emenda 0010, 0013) | aceito |
+| [0029](0029-welcome-seen-local.md) | Onde guardar "já viu as boas-vindas" (local por aparelho, S-110) | aceito |

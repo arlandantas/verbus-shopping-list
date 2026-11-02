@@ -1,6 +1,7 @@
 import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
 import { setItemCategory } from './support/categorize'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators } from './support/emulator'
 import { twoMembers } from './support/members'
 
@@ -17,6 +18,8 @@ async function setup(page: Page, items: string[]) {
   await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   await expect(page.getByTestId('invite-code')).toBeVisible()
   await page
     .getByRole('navigation', { name: strings.nav.label })

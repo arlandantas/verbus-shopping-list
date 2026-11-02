@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { cancelWelcome, requestWelcome } from '../Welcome/welcomeSeen'
 import { Button } from '@/components/m3/Button'
 import { TextField } from '@/components/m3/TextField'
 import { GroupLimitReached, createFamily } from '@/data/families'
@@ -23,9 +24,11 @@ export function CreateForm({ onCreated }: { onCreated?: (familyId: string) => vo
     setBusy(true)
     setError(null)
     try {
+      requestWelcome()
       const { familyId } = await createFamily(trimmed, recurring)
       onCreated?.(familyId)
     } catch (err) {
+      cancelWelcome()
       setError(err instanceof GroupLimitReached ? strings.invite.groupLimit : t.createError)
     } finally {
       setBusy(false)

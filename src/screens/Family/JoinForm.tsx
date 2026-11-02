@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { cancelWelcome, requestWelcome } from '../Welcome/welcomeSeen'
 import { useFamily } from '@/app/FamilyProvider'
 import { Button } from '@/components/m3/Button'
 import { TextField } from '@/components/m3/TextField'
@@ -24,10 +25,12 @@ export function JoinForm({ onJoined }: { onJoined?: (familyId: string) => void }
     setError(null)
     setInfo(null)
     try {
+      requestWelcome()
       const { familyId } = await joinFamilyByCode(code)
       setActiveGroup(familyId)
       onJoined?.(familyId)
     } catch (err) {
+      cancelWelcome()
       if (err instanceof InviteNotFound) setError(t.notFound)
       else if (err instanceof AlreadyMember) {
         setActiveGroup(err.familyId)

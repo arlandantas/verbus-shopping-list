@@ -1,4 +1,5 @@
 import { devices, expect, test, type Page } from '@playwright/test'
+import { skipWelcome } from './support/welcome'
 import { strings } from '../../src/strings/pt-BR'
 import { clearEmulators } from './support/emulator'
 
@@ -20,6 +21,7 @@ test('S-069 AC3: edit sheet opens and stays open on the dev server; Cancel close
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
   await page
     .getByRole('navigation', { name: strings.nav.label })
     .getByRole('link', { name: strings.nav.list, exact: true })

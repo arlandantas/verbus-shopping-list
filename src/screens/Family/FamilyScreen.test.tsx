@@ -44,6 +44,7 @@ function renderIt(state?: unknown) {
       <Routes>
         <Route path="/grupo" element={<FamilyScreen />} />
         <Route path="/" element={<p>lista page</p>} />
+        <Route path="/boas-vindas" element={<p>welcome page</p>} />
         <Route path="/categorias" element={<p>cats page</p>} />
       </Routes>
     </MemoryRouter>,
@@ -194,7 +195,7 @@ describe('FamilyScreen extra groups (S-091)', () => {
     fireEvent.change(screen.getByLabelText(strings.family.nameLabel), { target: { value: 'Novo' } })
     fireEvent.click(screen.getByRole('button', { name: strings.family.create }))
     await waitFor(() => expect(fam.setActive).toHaveBeenCalledWith('f9'))
-    expect(await screen.findByText('lista page')).toBeInTheDocument()
+    expect(await screen.findByText('welcome page')).toBeInTheDocument()
   })
   it('S-091 AC2: joining by code activates the group and returns to the list', async () => {
     const { joinFamilyByCode } = await import('@/data/families')
@@ -206,7 +207,7 @@ describe('FamilyScreen extra groups (S-091)', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: strings.family.join.submit }))
     await waitFor(() => expect(fam.setActive).toHaveBeenCalledWith('f8'))
-    expect(await screen.findByText('lista page')).toBeInTheDocument()
+    expect(await screen.findByText('welcome page')).toBeInTheDocument()
   })
   it('S-091 AC5: with 10 groups the actions are disabled and the limit notice shows', () => {
     fam.groups = Array.from({ length: 10 }, (_, i) => ({ id: `g${i}` }))

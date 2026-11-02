@@ -10,6 +10,8 @@ import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
 import { CycleScreen } from '@/screens/History/CycleScreen'
 import { HistoryScreen } from '@/screens/History/HistoryScreen'
+import { WelcomeGate } from '@/screens/Welcome/WelcomeGate'
+import { WelcomeScreen } from '@/screens/Welcome/WelcomeScreen'
 import { PantryScreen } from '@/screens/Pantry/PantryScreen'
 import { ListScreen } from '@/screens/List/ListScreen'
 import { LandingScreen } from '@/screens/Landing/LandingScreen'
@@ -58,7 +60,15 @@ function FamilyRoutes(): ReactNode {
       <Route path="/convite/:code" element={<InviteScreen />} />
       {status === 'ready' ? (
         <Route element={<AppShell />}>
-          <Route path="/grupo" element={<FamilyScreen />} />
+          <Route
+            path="/grupo"
+            element={
+              <WelcomeGate>
+                <FamilyScreen />
+              </WelcomeGate>
+            }
+          />
+          <Route path="/boas-vindas" element={<WelcomeScreen />} />
           <Route path="/" element={<ListScreen />} />
           <Route path="/mercado" element={<Navigate to="/" replace />} />
           <Route path="/finalizar" element={<CheckoutScreen />} />

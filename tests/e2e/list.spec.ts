@@ -1,6 +1,7 @@
 import { devices, expect, test, type Browser, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
 import { setItemCategory } from './support/categorize'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators, seedCategory } from './support/emulator'
 import { twoMembers } from './support/members'
 
@@ -24,6 +25,8 @@ async function setupFamily(page: Page): Promise<string> {
   await expect(page).toHaveURL(/\/grupo$/)
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   await expect(page.getByTestId('invite-code')).toBeVisible()
   const code = (await page.getByTestId('invite-code').textContent()) ?? ''
   await page
@@ -104,7 +107,7 @@ test('S-019 AC5: an item added by one member appears for the other', async ({ pa
   await expect(b).toHaveURL(/\/grupo$/)
   await b.getByLabel(strings.family.join.codeLabel).fill(code)
   await b.getByRole('button', { name: strings.family.join.submit }).click()
-  await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
+  await skipWelcome(b)
   await b.goto('/entrar')
   await expect(field(b)).toBeVisible()
 

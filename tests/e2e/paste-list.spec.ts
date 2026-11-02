@@ -1,5 +1,6 @@
 import { devices, expect, test, type Page } from '@playwright/test'
 import { strings } from '../../src/strings/pt-BR'
+import { skipWelcome } from './support/welcome'
 import { clearEmulators } from './support/emulator'
 
 test.use({ ...devices['Pixel 7'] })
@@ -17,6 +18,8 @@ async function setupFamily(page: Page) {
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
+  await page.goto('/grupo')
   await expect(page.getByTestId('invite-code')).toBeVisible()
   await page
     .getByRole('navigation', { name: strings.nav.label })

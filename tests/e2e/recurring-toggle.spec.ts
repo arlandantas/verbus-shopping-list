@@ -1,4 +1,5 @@
 import { devices, expect, test } from '@playwright/test'
+import { skipWelcome } from './support/welcome'
 import { strings } from '../../src/strings/pt-BR'
 import { clearEmulators, makeFamiliesLegacy } from './support/emulator'
 
@@ -25,6 +26,7 @@ test('S-105 AC4: legacy group keeps Despensa; off removes the tab, on brings it 
   await expect(page.getByText(strings.family.recurring.explain)).toBeVisible()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
   await expect(pantryTab(page)).toBeVisible()
 
   await makeFamiliesLegacy() // field absent == on
@@ -51,6 +53,7 @@ test('S-108 AC3: Grupo screen go-to-list, categories and toggle persistence', as
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
   await nav(page).getByRole('link', { name: strings.family.title, exact: true }).click()
   await page.getByRole('link', { name: strings.categories.link }).click()
   await expect(page).toHaveURL(/categorias/)

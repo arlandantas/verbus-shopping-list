@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router'
+import { WELCOME_ROUTE } from '../Welcome/welcomeSeen'
 import { clearReturnTo } from '@/app/returnTo'
 import { useFamily } from '@/app/FamilyProvider'
 import {
@@ -54,7 +55,7 @@ export function InviteScreen() {
   useEffect(() => {
     if (joined && !busy && family.status === 'ready') {
       joinPending = false
-      void navigate('/', { replace: true })
+      void navigate(WELCOME_ROUTE, { replace: true })
     }
   }, [joined, busy, family.status, navigate])
 

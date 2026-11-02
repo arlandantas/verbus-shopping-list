@@ -1,4 +1,5 @@
 import { devices, expect, test, type Page } from '@playwright/test'
+import { skipWelcome } from './support/welcome'
 import { strings } from '../../src/strings/pt-BR'
 import { clearEmulators, deleteAllItems, seedCategory } from './support/emulator'
 
@@ -20,6 +21,7 @@ async function setupWithItem(page: Page, text = '3 kg feijão') {
   await page.getByRole('button', { name: strings.login.signUp }).click()
   await page.getByLabel(strings.family.nameLabel).fill('Casa')
   await page.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(page)
   await page
     .getByRole('navigation', { name: strings.nav.label })
     .getByRole('link', { name: strings.nav.list, exact: true })

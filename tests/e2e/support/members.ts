@@ -1,4 +1,5 @@
 import { devices, expect, type Browser, type Page } from '@playwright/test'
+import { skipWelcome } from './welcome'
 import { strings } from '../../../src/strings/pt-BR'
 import { waitForItemCount } from './emulator'
 
@@ -40,6 +41,8 @@ export async function twoMembers(browser: Browser, items: string[], now?: Date) 
   await expect(ana).toHaveURL(/\/grupo$/)
   await ana.getByLabel(strings.family.nameLabel).fill('Casa')
   await ana.getByRole('button', { name: strings.family.create }).click()
+  await skipWelcome(ana)
+  await ana.goto('/grupo')
   const code = (await ana.getByTestId('invite-code').textContent()) ?? ''
   await ana
     .getByRole('navigation', { name: strings.nav.label })
@@ -56,7 +59,7 @@ export async function twoMembers(browser: Browser, items: string[], now?: Date) 
   await expect(beto).toHaveURL(/\/grupo$/)
   await beto.getByLabel(strings.family.join.codeLabel).fill(code)
   await beto.getByRole('button', { name: strings.family.join.submit }).click()
-  await expect(beto.getByRole('heading', { name: 'Casa' })).toBeVisible()
+  await skipWelcome(beto)
   await beto.goto('/entrar')
   await expect(beto.getByLabel(strings.list.addLabel)).toBeVisible()
   return { ana, beto }
