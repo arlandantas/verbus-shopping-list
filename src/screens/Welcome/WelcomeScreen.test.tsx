@@ -17,7 +17,7 @@ function renderIt() {
     <MemoryRouter initialEntries={['/boas-vindas']}>
       <Routes>
         <Route path="/boas-vindas" element={<WelcomeScreen />} />
-        <Route path="/" element={<p>lista page</p>} />
+        <Route path="/sugestao" element={<p>lista page</p>} />
       </Routes>
     </MemoryRouter>,
   )

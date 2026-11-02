@@ -1,7 +1,9 @@
 import { landing } from './landing.ts'
+import { suggest } from './suggest.ts'
 import { welcome } from './welcome.ts'
 
 export const strings = {
+  suggest,
   welcome,
   appTitle: 'Nosso Carrinho',
   offline: 'Sem conexão',

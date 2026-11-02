@@ -25,6 +25,7 @@ vi.mock('@/screens/Categories/CategoriesScreen', () => ({ CategoriesScreen: () =
 vi.mock('@/screens/History/HistoryScreen', () => ({ HistoryScreen: () => null }))
 vi.mock('@/screens/History/CycleScreen', () => ({ CycleScreen: () => null }))
 vi.mock('@/screens/List/ListScreen', () => ({ ListScreen: () => null }))
+vi.mock('@/screens/Suggest/SuggestScreen', () => ({ SuggestScreen: () => null }))
 vi.mock('@/screens/Login/LoginScreen', () => ({ LoginScreen: () => null }))
 vi.mock('@/screens/Invite/InviteScreen', () => ({ InviteScreen: () => null }))
 vi.mock('@/app/FamilyProvider', () => ({ FamilyProvider: () => null, useFamily: vi.fn() }))

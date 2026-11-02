@@ -10,6 +10,7 @@ import { CategoriesScreen } from '@/screens/Categories/CategoriesScreen'
 import { FamilyScreen } from '@/screens/Family/FamilyScreen'
 import { CycleScreen } from '@/screens/History/CycleScreen'
 import { HistoryScreen } from '@/screens/History/HistoryScreen'
+import { SuggestScreen } from '@/screens/Suggest/SuggestScreen'
 import { WelcomeGate } from '@/screens/Welcome/WelcomeGate'
 import { WelcomeScreen } from '@/screens/Welcome/WelcomeScreen'
 import { PantryScreen } from '@/screens/Pantry/PantryScreen'
@@ -69,6 +70,7 @@ function FamilyRoutes(): ReactNode {
             }
           />
           <Route path="/boas-vindas" element={<WelcomeScreen />} />
+          <Route path="/sugestao" element={<SuggestScreen />} />
           <Route path="/" element={<ListScreen />} />
           <Route path="/mercado" element={<Navigate to="/" replace />} />
           <Route path="/finalizar" element={<CheckoutScreen />} />

@@ -5,10 +5,11 @@ import {
   onSnapshot,
   setDoc,
   updateDoc,
+  writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from '@/data/firebase'
-import { nextCategoryOrder } from '@/domain/categories'
+import { MAX_CATEGORY_ORDER, nextCategoryOrder } from '@/domain/categories'
 import { categoryConverter, type Category } from './converters'
 import { fireAndForget } from './writeErrors'
 
@@ -61,4 +62,26 @@ export function renameCategory(familyId: string, id: string, name: string): void
 
 export function deleteCategory(familyId: string, id: string): void {
   fireAndForget(deleteDoc(categoryRef(familyId, id)))
+}
+
+/** Many categories in one un-awaited batch (S-111); order continues after `existing`. Returns the new ids. */
+export function addCategories(
+  familyId: string,
+  names: readonly string[],
+  existing: readonly { order: number }[],
+): string[] {
+  if (names.length === 0) return []
+  const batch = writeBatch(db)
+  const start = nextCategoryOrder(existing)
+  const ids = names.map((name, i) => {
+    const ref = doc(categoriesCol(familyId))
+    batch.set(ref, {
+      name: name.trim(),
+      isDefault: false,
+      order: Math.min(start + i, MAX_CATEGORY_ORDER),
+    })
+    return ref.id
+  })
+  fireAndForget(batch.commit())
+  return ids
 }

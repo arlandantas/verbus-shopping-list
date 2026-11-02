@@ -1,5 +1,5 @@
-/** Where to go once the welcome steps end or are skipped. S-111 hooks the item-suggestion screen here. */
-export const WELCOME_NEXT = '/'
+/** Where to go once the welcome steps end or are skipped: the item suggestion (S-111), which forwards to the list when it does not apply. */
+export const WELCOME_NEXT = '/sugestao'
 
 /** Route that shows the welcome steps; navigate here after creating or joining a group (ADR-0029). */
 export const WELCOME_ROUTE = '/boas-vindas'
@@ -19,6 +19,25 @@ export function markWelcomeSeen(uid: string, groupId: string): void {
     localStorage.setItem(key(uid, groupId), '1')
   } catch {
     // storage unavailable: the welcome may show again
+  }
+}
+
+const suggestKey = (uid: string, groupId: string) => `suggestHandled:${uid}:${groupId}`
+
+/** The suggestion is offered once per user and group (even if skipped). */
+export function isSuggestHandled(uid: string, groupId: string): boolean {
+  try {
+    return localStorage.getItem(suggestKey(uid, groupId)) !== null
+  } catch {
+    return false
+  }
+}
+
+export function markSuggestHandled(uid: string, groupId: string): void {
+  try {
+    localStorage.setItem(suggestKey(uid, groupId), '1')
+  } catch {
+    // storage unavailable: the suggestion may show again, only for an empty group
   }
 }
 
