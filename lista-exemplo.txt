@@ -1,0 +1,109 @@
+ALIMENTOS
+Arroz
+Feijão
+Macarrão
+Sal
+Açúcar
+Café
+Óleo
+Azeite
+Vinagre
+Farinha de trigo
+Farinha de mandioca
+Fermento
+Cuscuz
+Goma de tapioca
+Massa de wrap
+Cream cracker
+Cereais
+Granola
+Leite em pó
+Farinha láctea
+Achocolatado
+Milho verde
+Ervilha
+Milho de pipoca
+Molho de tomate
+Creme de leite
+Leite condensado
+Ketchup
+Maionese
+Batata palha
+Colorau
+Páprica
+Açafrão
+
+HORTIFRUTI
+Alho
+Cebola
+Tomate
+Batata
+Cenoura
+Macaxeira
+Abóbora
+Brócolis
+Limão
+Maçã
+Banana
+Maracujá
+Frutas da estação
+
+PADARIA E GELADEIRA
+Pão de forma
+Ovos
+Leite
+Iogurte
+Margarina
+Queijos
+Presunto
+Salsicha
+Calabresa
+Massa de pastel
+
+CARNES
+Carne
+Carne moída
+Carne para feijão
+Peito de frango
+
+LIMPEZA
+Água sanitária
+Desinfetante
+Detergente
+Multiuso
+Limpa-vidros
+Lustra-móveis
+Sabão em pó
+Sabão líquido
+Sabão em barra
+Amaciante
+Álcool
+Esponja
+Palha de aço
+Pano descartável de limpeza
+Saco de lixo
+Papel toalha
+Papel higiênico
+Pedra de banheiro
+
+HIGIENE PESSOAL
+Shampoo
+Condicionador
+Creme de pentear
+Máscara de hidratação
+Hidratante corporal
+Desodorante
+Sabonete líquido
+Sabonete em barra
+Sabonete íntimo
+Creme dental
+Escova de dente
+Lâmina de depilação
+Absorvente
+Cotonete
+Acetona
+Esmalte
+
+UTILIDADES
+Lâmpada
+Repelente de tomada
