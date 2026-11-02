@@ -10,12 +10,9 @@ const toggleItemStatus = vi.hoisted(() => vi.fn())
 const setItemStatus = vi.hoisted(() => vi.fn())
 const itemsState = vi.hoisted(() => ({ items: [] as unknown[] }))
 vi.mock('@/data/items', () => ({ addItem, toggleItemStatus, setItemStatus }))
-const cycleState = vi.hoisted(() => ({ added: 0, dismiss: vi.fn() }))
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({
     family: { id: 'f1', name: 'Casa' },
-    recurringAdded: cycleState.added,
-    dismissRecurringNotice: cycleState.dismiss,
   }),
 }))
 vi.mock('@/app/AuthProvider', () => ({ useAuth: () => ({ user: { uid: 'u1' } }) }))
@@ -231,27 +228,6 @@ describe('S-058 AC7: snackbar Desfazer', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: 'arroz' }))
     expect(snack()).toBeNull()
     expect(toggleItemStatus).toHaveBeenCalled()
-  })
-})
-
-describe('S-049 AC1: ListScreen shows the returned-recurring notice', () => {
-  afterEach(() => {
-    cycleState.added = 0
-  })
-
-  it('shows the notice when recurring items returned and dismisses via OK', () => {
-    cycleState.added = 2
-    renderIt()
-    expect(screen.getByRole('status')).toHaveTextContent(
-      '2 itens que não podem faltar voltaram para a lista',
-    )
-    fireEvent.click(screen.getByRole('button', { name: strings.cycle.ok }))
-    expect(cycleState.dismiss).toHaveBeenCalled()
-  })
-
-  it('shows nothing when none returned', () => {
-    renderIt()
-    expect(screen.queryByRole('status')).toBeNull()
   })
 })
 

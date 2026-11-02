@@ -19,7 +19,8 @@
 3. Lista, Despensa, Histórico, Categorias e catálogo são de cada grupo.
 4. Convite de grupo em que já está: só troca para ele. Limite: 10 grupos por usuário, 10 membros por grupo.
 5. Contas antigas: a família existente vira o primeiro grupo, sem migração.
-6. Fora do escopo: sair, excluir ou renomear grupo.
+6. Renomear: só o criador (`ownerId`), pela tela do Grupo ("Renomear grupo"); o nome do convite acompanha (S-118, ADR-0030).
+7. Fora do escopo: sair ou excluir grupo.
 
 ## Telas
 - Login

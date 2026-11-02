@@ -9,6 +9,7 @@ import {
   createFamily,
   getInvitePreview,
   joinFamilyByCode,
+  renameFamily,
   rotateInviteCode,
   watchFamily,
   watchMyGroups,
@@ -264,5 +265,24 @@ describe('S-077 AC4: rotateInviteCode', () => {
       createdBy: user.uid,
     })
     expect((await getDoc(doc(db, 'invites', inviteCode))).exists()).toBe(false)
+  })
+})
+
+describe('S-118 AC3: renameFamily', () => {
+  it('writes the group and its invite in one batch; non-owner is denied', async () => {
+    const owner = await signUp('Ana')
+    const { familyId, inviteCode } = await createFamily('Casa')
+    await renameFamily(familyId, inviteCode, 'Nossa Casa')
+    expect((await getDoc(doc(db, 'families', familyId))).data()?.name).toBe('Nossa Casa')
+    expect((await getInvitePreview(inviteCode))?.familyName).toBe('Nossa Casa')
+    expect(owner.uid).toBeTruthy()
+
+    await logout()
+    const other = await signUp('Beto')
+    await joinFamilyByCode(inviteCode)
+    expect(other.uid).not.toBe(owner.uid)
+    await expect(renameFamily(familyId, inviteCode, 'Do Beto')).rejects.toMatchObject({
+      code: 'permission-denied',
+    })
   })
 })

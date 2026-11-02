@@ -283,3 +283,15 @@ test('S-094 AC7: Despensa groups by category in order; collapsing persists after
   await expect(pantryRow(page, 'feijão')).toHaveCount(0)
   await expect(pantryRow(page, 'pilha')).toBeVisible()
 })
+
+test('S-117 AC3: "Marcar todos como faltando" adds the items at home to the list', async ({
+  page,
+}) => {
+  await recurringAtHome(page)
+  await expect(listRow(page, 'feijão')).toContainText(strings.pantry.atHome)
+  await page.getByRole('button', { name: strings.pantry.markAllMissing }).click()
+  await expect(listRow(page, 'feijão')).toContainText(strings.pantry.missing)
+  await expect(page.getByRole('button', { name: strings.pantry.markAllMissing })).toHaveCount(0)
+  await page.getByRole('link', { name: strings.nav.list, exact: true }).click()
+  await expect(listRow(page, 'feijão')).toContainText('3 kg')
+})

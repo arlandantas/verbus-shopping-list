@@ -25,8 +25,6 @@ vi.mock('@/data/items', () => ({
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({
     family: { id: 'g2', name: 'Casa' },
-    recurringAdded: 0,
-    dismissRecurringNotice: vi.fn(),
   }),
 }))
 vi.mock('@/app/AuthProvider', () => ({ useAuth: () => ({ user: { uid: 'u1' } }) }))

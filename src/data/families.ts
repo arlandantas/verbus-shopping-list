@@ -102,6 +102,14 @@ export function setRecurringEnabled(familyId: string, enabled: boolean): Promise
   return updateDoc(doc(db, 'families', familyId), { recurringEnabled: enabled })
 }
 
+/** Owner-only rename (ADR-0030): group and its invite in one batch so the invite preview matches. Optimistic; never awaited by the UI. */
+export function renameFamily(familyId: string, inviteCode: string, name: string): Promise<void> {
+  const batch = writeBatch(db)
+  batch.update(doc(db, 'families', familyId), { name })
+  batch.update(doc(db, 'invites', inviteCode), { familyName: name })
+  return batch.commit()
+}
+
 /** One batch (no transaction, ADR-0004): new invite + family.inviteCode + old invite deleted. Returns the new code. */
 export async function rotateInviteCode(familyId: string): Promise<string> {
   const uid = currentUid()

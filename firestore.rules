@@ -125,6 +125,25 @@ service cloud.firestore {
         && after.recurringEnabled is bool;
     }
 
+    // ADR-0030: only the creator renames the group; nothing else changes.
+    function validRename(familyId) {
+      let after = request.resource.data;
+      return isMember(familyId)
+        && resource.data.ownerId == request.auth.uid
+        && after.diff(resource.data).affectedKeys().hasOnly(['name'])
+        && after.name is string
+        && after.name.size() >= 1 && after.name.size() <= 60;
+    }
+
+    // ADR-0030: the invite carries the group name (ADR-0007); a member keeps it in step with the group.
+    function validInviteRename(data) {
+      return isMember(resource.data.familyId)
+        && data.diff(resource.data).affectedKeys().hasOnly(['familyName'])
+        && data.familyName is string
+        && data.familyName.size() >= 1 && data.familyName.size() <= 60
+        && data.familyName == getAfter(/databases/$(database)/documents/families/$(resource.data.familyId)).data.name;
+    }
+
     function validInvite(data, code) {
       return data.keys().hasOnly(['familyId', 'familyName', 'createdBy', 'createdAt'])
         && data.keys().hasAll(['familyId', 'familyName', 'createdBy', 'createdAt'])
@@ -314,7 +333,8 @@ service cloud.firestore {
     match /families/{familyId} {
       allow read: if isSignedIn() && request.auth.uid in resource.data.members;
       allow create: if isSignedIn() && validFamilyCreate(request.resource.data, familyId);
-      allow update: if validJoin(familyId) || validRotate(familyId) || validRecurringToggle(familyId);
+      allow update: if validJoin(familyId) || validRotate(familyId) || validRecurringToggle(familyId)
+        || validRename(familyId);
       allow delete: if false;
 
       match /items/{itemId} {
@@ -385,7 +405,7 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if false;
       allow create: if isSignedIn() && validInvite(request.resource.data, code);
-      allow update: if false;
+      allow update: if validInviteRename(request.resource.data);
       allow delete: if isMember(resource.data.familyId);
     }
 

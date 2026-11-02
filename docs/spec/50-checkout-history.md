@@ -1,11 +1,11 @@
 # 50 — Fechamento da compra e histórico
 
-> Modelo: compras e linhas (ADR-0012); edição de linhas passadas (ADR-0021); ciclo = mês civil local, recorrentes voltam na 1ª abertura do mês via marcador `cycles` (ADR-0013). Histórias S-039…S-049, E-UX S-063, S-065…S-068.
+> Modelo: compras e linhas (ADR-0012); edição de linhas passadas (ADR-0021); ciclo = mês civil local, retorno automático dos recorrentes removido (ADR-0030, emenda 0013). Histórias S-039…S-049, E-UX S-063, S-065…S-068.
 
 ## Fechamento
 1. Usuário toca em "Finalizar compra" (na Lista, com ≥1 item no carrinho).
 2. Itens comprados são arquivados no histórico do mês. Itens não comprados permanecem pendentes.
-3. Itens recorrentes voltam como pendentes no início do próximo mês (ou ao iniciar novo ciclo).
+3. Itens da Despensa não voltam sozinhos: o usuário os marca como "falta" (ADR-0030).
 4. Pergunta opcional: em qual mercado foi feita (lista dos já usados); registra a data (ver `60-`).
 
 ## Histórico

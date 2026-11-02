@@ -71,7 +71,6 @@ describe('S-078 AC1: families fields are immutable for members', () => {
   })
   it.each([
     ['ownerId', { ownerId: 'bob' }],
-    ['name', { name: 'Outro' }],
     ['members', { members: ['alice'] }],
     ['members append', { members: ['alice', 'bob', 'carol'] }],
     ['createdAt', { createdAt: new Date(1) }],
@@ -79,6 +78,9 @@ describe('S-078 AC1: families fields are immutable for members', () => {
   ])('denies a member changing %s', async (_n, over) => {
     await assertFails(updateDoc(fam('bob'), over))
     await assertFails(updateDoc(fam('alice'), over))
+  })
+  it('denies a non-owner member changing name (owner may: S-118)', async () => {
+    await assertFails(updateDoc(fam('bob'), { name: 'Outro' }))
   })
   it('denies deleting the family, even by the owner', async () => {
     await assertFails(deleteDoc(fam('alice')))

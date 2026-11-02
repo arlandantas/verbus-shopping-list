@@ -15,11 +15,11 @@ export const welcome = {
       text: 'Na loja, toque no item para riscá-lo. Todo mundo do grupo vê na hora o que já foi pego.',
     },
     {
-      title: 'Não pode faltar',
-      text: 'Itens marcados como "Não pode faltar" voltam para a lista a cada compra fechada, para nada acabar em casa.',
+      title: 'Despensa',
+      text: 'Guarde na Despensa o que você sempre compra, como arroz e café. Quando acabar, é só marcar como "Falta" e o item entra na lista.',
     },
   ],
-  activate: 'Ativar Não pode faltar',
-  activated: 'Não pode faltar ativado.',
+  activate: 'Usar a Despensa',
+  activated: 'Despensa ativada.',
   activateHint: 'Está desligado neste grupo. Você pode ativar agora.',
 }

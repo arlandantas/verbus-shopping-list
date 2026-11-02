@@ -43,10 +43,16 @@ export const strings = {
     memberFallback: 'Membro',
     membersSection: 'Membros',
     goToList: 'Ir para a lista',
+    rename: {
+      row: 'Renomear grupo',
+      title: 'Renomear grupo',
+      save: 'Salvar',
+      cancel: 'Cancelar',
+    },
     recurring: {
-      label: 'Despensa e Não pode faltar',
+      label: 'Usar a Despensa',
       explain:
-        'Itens marcados como "Não pode faltar" (compra recorrente) voltam para a lista quando acabam, a cada compra fechada. A Despensa mostra o que falta, o que você tem em casa e o que está no carrinho.',
+        'Guarde os itens que você sempre compra, como arroz e café. Quando acabarem, é só marcar como "Falta" e eles entram na lista.',
     },
     join: {
       title: 'Já tem um código?',
@@ -94,13 +100,6 @@ export const strings = {
     groupLimit: 'Limite de 10 grupos atingido',
     error: 'Não foi possível entrar no grupo. Tente novamente.',
     back: 'Voltar',
-  },
-  cycle: {
-    returned: (n: number) =>
-      n === 1
-        ? '1 item que não pode faltar voltou para a lista'
-        : `${n} itens que não podem faltar voltaram para a lista`,
-    ok: 'OK',
   },
   install: {
     prompt: 'Instale o Nosso Carrinho para abrir como app, até sem internet.',
@@ -216,12 +215,13 @@ export const strings = {
     helpTitle: 'Como funciona a Despensa',
     helpClose: 'Entendi',
     help: [
-      '"Não pode faltar" são os itens que voltam para a lista quando acabam, como arroz ou café.',
+      '"Não pode faltar" são os itens que você compra sempre, como arroz ou café. Eles ficam guardados aqui na Despensa.',
       'Para marcar um item como "Não pode faltar", abra o "Editar item" na lista e ative "Não pode faltar", ou use "Outros itens já usados" aqui na Despensa.',
       'Cada item tem um estado: "Falta" (já está pendente na Lista), "Tenho em casa" (não precisa comprar) e "No carrinho" (já está marcado como comprado na Lista; não dá para mudar aqui).',
-      'No começo de cada mês, os itens de "Não pode faltar" voltam sozinhos para a Lista como pendentes.',
+      'Nada volta sozinho para a Lista: quando um item acabar, marque como "Falta". Para pedir tudo de uma vez, use "Marcar todos como faltando".',
       'Para tirar um item de "Não pode faltar", toque no ícone de lixeira ao lado dele.',
     ],
+    markAllMissing: 'Marcar todos como faltando',
     markMissingFor: (name: string) => `Marcar ${name} como falta`,
     markAtHomeFor: (name: string) => `Marcar ${name} como tenho em casa`,
     inCartFor: (name: string) => `${name} já está no carrinho`,

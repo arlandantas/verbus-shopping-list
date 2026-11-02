@@ -3,7 +3,7 @@ import { Button } from '@/components/m3/Button'
 import { Dialog } from '@/components/m3/Dialog'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { useFamily } from '@/app/FamilyProvider'
-import { addItem, deleteItem, setRecurring } from '@/data/items'
+import { addItem, addItems, deleteItem, setRecurring } from '@/data/items'
 import type { CatalogEntry } from '@/data/converters'
 import { groupForPantry, pantryState, type PantryEntry } from '@/domain/pantry'
 import { useCategories } from '@/hooks/useCategories'
@@ -14,6 +14,9 @@ import { useItems } from '@/screens/List/useItems'
 import { strings } from '@/strings/pt-BR'
 import { CatalogPicker } from './CatalogPicker'
 import { PantryRow } from './PantryRow'
+
+/** addItems writes 2 docs per item; keep each batch well under 500 writes. */
+const MARK_ALL_CHUNK = 100
 
 const isStrings = (v: unknown): v is string[] =>
   Array.isArray(v) && v.every((x) => typeof x === 'string')
@@ -45,6 +48,19 @@ export function PantryScreen() {
     else if (state === 'missing' && pendingId) deleteItem(familyId, pendingId)
   }
 
+  const atHome = rows.filter((r) => r.state === 'atHome')
+  const markAllMissing = () => {
+    const inputs = atHome.map(({ entry }) => ({
+      name: entry.name,
+      quantity: entry.quantity,
+      unit: entry.unit,
+      categoryId: entry.categoryId,
+      recurring: true,
+    }))
+    for (let i = 0; i < inputs.length; i += MARK_ALL_CHUNK)
+      addItems(familyId, inputs.slice(i, i + MARK_ALL_CHUNK))
+  }
+
   const onRemove = ({ entry }: PantryEntry) =>
     setRecurring(familyId, entry.nameKey, false, items ?? [])
   const onPromote = (entry: CatalogEntry) =>
@@ -67,6 +83,11 @@ export function PantryScreen() {
         <Button variant="text" icon="info" onClick={() => setHelpOpen(true)}>
           {strings.pantry.learnMore}
         </Button>
+        {atHome.length > 0 && (
+          <Button variant="tonal" icon="shopping_cart" onClick={markAllMissing}>
+            {strings.pantry.markAllMissing}
+          </Button>
+        )}
       </div>
       <Dialog
         open={helpOpen}

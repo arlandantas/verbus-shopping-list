@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
+import { useAuth } from '@/app/AuthProvider'
 import { useFamily } from '@/app/FamilyProvider'
 import { signOut } from '@/data/auth'
 import { MAX_GROUPS_PER_USER, setRecurringEnabled } from '@/data/families'
@@ -14,6 +15,7 @@ import { Loading } from '@/components/Loading'
 import { strings } from '@/strings/pt-BR'
 import { fireAndForget } from '@/data/writeErrors'
 import { RecurringToggle } from './RecurringToggle'
+import { RenameGroup } from './RenameGroup'
 import { InviteCard } from './InviteCard'
 import { GroupRow } from './GroupRow'
 import { CreateForm } from './CreateForm'
@@ -23,6 +25,7 @@ import '../auth.css'
 
 export function FamilyScreen() {
   const family = useFamily()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const atLimit = family.groups.length >= MAX_GROUPS_PER_USER
@@ -86,6 +89,13 @@ export function FamilyScreen() {
           to="/categorias"
           trailing={<Icon name="chevron_right" />}
         />
+        {family.family.ownerId === user?.uid && (
+          <RenameGroup
+            familyId={family.family.id}
+            inviteCode={family.family.inviteCode}
+            name={family.family.name}
+          />
+        )}
         <RecurringToggle
           asRow
           checked={family.family.recurringEnabled}

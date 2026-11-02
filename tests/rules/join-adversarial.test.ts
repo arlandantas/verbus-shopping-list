@@ -204,9 +204,9 @@ describe('S-076 AC7: deleting and updating invites', () => {
     await assertSucceeds(deleteDoc(doc(asUser(env, 'alice'), 'invites/ABCD2345')))
   })
 
-  it('denies any update, even by a member; delete still allowed (control)', async () => {
+  it('denies updates except the S-118 rename; delete still allowed (control)', async () => {
     const a = asUser(env, 'alice')
-    await assertFails(updateDoc(doc(a, 'invites/ABCD2345'), { familyName: 'Casa' }))
+    await assertFails(updateDoc(doc(a, 'invites/ABCD2345'), { familyName: 'Outro' }))
     await assertFails(updateDoc(doc(a, 'invites/ABCD2345'), { familyId: 'F2' }))
     await assertSucceeds(deleteDoc(doc(a, 'invites/ABCD2345')))
   })

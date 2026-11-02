@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom/vitest'
 import { act, render, screen } from '@testing-library/react'
-import { cycleOf } from '@/domain/cycle'
 import { FamilyProvider, useFamily } from '@/app/FamilyProvider'
 import type { Family, UserProfile } from '@/data/converters'
 
@@ -10,9 +9,6 @@ let failGroups: () => void = () => undefined
 const watchMyGroups = vi.fn()
 const unsubscribeGroups = vi.fn()
 const ensureMemberProfile = vi.fn()
-const openCycleIfNeeded = vi.fn<(...args: unknown[]) => Promise<unknown>>(() =>
-  Promise.resolve({ added: 0 }),
-)
 
 vi.mock('@/app/AuthProvider', () => ({
   useAuth: () => ({ status: 'signedIn', user: { uid: 'u1', displayName: 'A', email: 'a@b.co' } }),
@@ -25,9 +21,6 @@ vi.mock('@/data/users', () => ({
 }))
 vi.mock('@/data/members', () => ({
   ensureMemberProfile: (...args: unknown[]) => ensureMemberProfile(...args),
-}))
-vi.mock('@/data/cycles', () => ({
-  openCycleIfNeeded: (...args: unknown[]) => openCycleIfNeeded(...args),
 }))
 vi.mock('@/data/families', () => ({
   watchMyGroups: (uid: string, cb: (g: Family[]) => void, onError?: () => void) => {
@@ -43,9 +36,7 @@ function Probe() {
   return (
     <>
       <p>{`${state.status}:${state.family?.id ?? '-'}`}</p>
-      <p>{`added:${state.recurringAdded}`}</p>
       <p>{`groups:${state.groups.map((g) => g.id).join(',')}`}</p>
-      <button onClick={state.dismissRecurringNotice}>dismiss-notice</button>
       <button onClick={() => state.setActiveGroup('g2')}>switch-g2</button>
       <button onClick={() => state.setActiveGroup('g1')}>switch-g1</button>
       {state.status === 'error' && <button onClick={state.retry}>retry</button>}
@@ -82,25 +73,6 @@ function setup(user: UserProfile | null, groups: Family[]) {
 beforeEach(() => {
   localStorage.clear()
   ensureMemberProfile.mockClear()
-  openCycleIfNeeded.mockClear()
-  openCycleIfNeeded.mockResolvedValue({ added: 0 })
-})
-
-describe('FamilyProvider recurrence (S-105 AC2)', () => {
-  it('passes the group flag to the month opening and hides the notice when off', async () => {
-    openCycleIfNeeded.mockResolvedValue({ added: 2 })
-    setup(profile(), [{ ...group('g1'), recurringEnabled: false }])
-    await act(() => Promise.resolve())
-    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', expect.any(String), false)
-    expect(screen.getByText('added:0')).toBeInTheDocument()
-  })
-  it('on: flag true and the notice shows', async () => {
-    openCycleIfNeeded.mockResolvedValue({ added: 2 })
-    setup(profile(), [group('g1')])
-    await act(() => Promise.resolve())
-    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', expect.any(String), true)
-    expect(screen.getByText('added:2')).toBeInTheDocument()
-  })
 })
 
 describe('FamilyProvider', () => {
@@ -143,19 +115,13 @@ describe('FamilyProvider', () => {
     expect(localStorage.getItem('activeGroup:u1')).toBe('g2')
   })
 
-  it('S-089 AC4: runs ensureMemberProfile/openCycleIfNeeded once per group and drops the notice', async () => {
-    openCycleIfNeeded.mockResolvedValueOnce({ added: 2 })
+  it('S-089 AC4: runs ensureMemberProfile once per group', () => {
     setup(profile(), [group('g1', 0), group('g2', 1)])
     expect(ensureMemberProfile).toHaveBeenCalledWith('g1', 'u1', 'Ana')
-    expect(openCycleIfNeeded).toHaveBeenCalledWith('g1', cycleOf(new Date()), true)
-    expect(await screen.findByText('added:2')).toBeInTheDocument()
     act(() => screen.getByText('switch-g2').click())
-    expect(screen.getByText('added:0')).toBeInTheDocument()
     expect(ensureMemberProfile).toHaveBeenCalledWith('g2', 'u1', 'Ana')
-    expect(openCycleIfNeeded).toHaveBeenCalledWith('g2', cycleOf(new Date()), true)
     act(() => screen.getByText('switch-g1').click())
     expect(ensureMemberProfile).toHaveBeenCalledTimes(2)
-    expect(openCycleIfNeeded).toHaveBeenCalledTimes(2)
   })
 
   it('S-089: switching keeps one groups listener, which is released on unmount', () => {
@@ -175,27 +141,10 @@ describe('FamilyProvider', () => {
     expect(unsubscribeGroups).toHaveBeenCalledTimes(1)
   })
 
-  it('S-041 AC4: re-opens the cycle on the online event', () => {
-    setup(profile(), [group('g1')])
-    expect(openCycleIfNeeded).toHaveBeenCalledTimes(1)
-    act(() => {
-      window.dispatchEvent(new Event('online'))
-    })
-    expect(openCycleIfNeeded).toHaveBeenCalledTimes(2)
-  })
-
   it('S-089 AC5: a stored group that vanished falls back without error', () => {
     localStorage.setItem('activeGroup:u1', 'gone')
     setup(profile(), [group('g1', 0), group('g2', 1)])
     expect(screen.getByText('ready:g1')).toBeInTheDocument()
-  })
-
-  it('S-049 AC1: dismiss resets the recurring notice', async () => {
-    openCycleIfNeeded.mockResolvedValueOnce({ added: 2 })
-    setup(profile(), [group('g1')])
-    expect(await screen.findByText('added:2')).toBeInTheDocument()
-    act(() => screen.getByText('dismiss-notice').click())
-    expect(screen.getByText('added:0')).toBeInTheDocument()
   })
 
   it('exposes an error state when the groups watch fails, and retry resubscribes', () => {

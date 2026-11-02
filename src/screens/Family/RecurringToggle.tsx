@@ -10,7 +10,7 @@ interface Props {
   asRow?: boolean
 }
 
-/** "Despensa e Não pode faltar" switch with its explanation (ADR-0028); shared by create form and Grupo screen. */
+/** "Usar a Despensa" switch with its explanation (ADR-0028); shared by create form and Grupo screen. */
 export function RecurringToggle({ checked, onChange, disabled, asRow }: Props) {
   const t = strings.family.recurring
   if (asRow) {

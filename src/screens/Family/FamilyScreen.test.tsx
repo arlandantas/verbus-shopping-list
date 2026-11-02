@@ -11,11 +11,15 @@ const fam = vi.hoisted(() => ({
   groups: [{ id: 'f1' }] as { id: string }[],
   setActive: vi.fn(),
   on: true,
+  owner: 'u1',
+  rename: vi.fn(() => Promise.resolve()),
 }))
+vi.mock('@/app/AuthProvider', () => ({ useAuth: () => ({ user: { uid: 'u1' } }) }))
 vi.mock('@/data/families', () => ({
   MAX_GROUPS_PER_USER: 10,
   createFamily: vi.fn(),
   setRecurringEnabled: vi.fn(() => Promise.resolve()),
+  renameFamily: fam.rename,
   joinFamilyByCode: vi.fn(),
   InviteNotFound: class extends Error {},
   AlreadyMember: class extends Error {},
@@ -31,6 +35,7 @@ vi.mock('@/app/FamilyProvider', () => ({
     family: {
       id: 'f1',
       name: 'Casa',
+      ownerId: fam.owner,
       inviteCode: 'ABC123',
       members: ['u1', 'u2'],
       recurringEnabled: fam.on,
@@ -231,5 +236,47 @@ describe('FamilyScreen route action (S-091)', () => {
     renderIt()
     expect(screen.queryByLabelText(strings.family.nameLabel)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(strings.family.join.codeLabel)).not.toBeInTheDocument()
+  })
+})
+
+describe('FamilyScreen rename (S-118 AC4)', () => {
+  const rowName = new RegExp(strings.family.rename.row)
+  afterEach(() => {
+    fam.owner = 'u1'
+    fam.rename.mockClear()
+  })
+
+  it('owner renames: dialog saves the trimmed name for the group and its invite', () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: rowName }))
+    const dlg = screen.getByRole('dialog', { name: strings.family.rename.title })
+    fireEvent.change(within(dlg).getByLabelText(strings.family.nameLabel), {
+      target: { value: '  Nossa Casa  ' },
+    })
+    fireEvent.click(within(dlg).getByRole('button', { name: strings.family.rename.save }))
+    expect(fam.rename).toHaveBeenCalledWith('f1', 'ABC123', 'Nossa Casa')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('empty name does not save; unchanged name writes nothing', () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: rowName }))
+    const dlg = screen.getByRole('dialog')
+    fireEvent.change(within(dlg).getByLabelText(strings.family.nameLabel), {
+      target: { value: ' ' },
+    })
+    fireEvent.click(within(dlg).getByRole('button', { name: strings.family.rename.save }))
+    expect(fam.rename).not.toHaveBeenCalled()
+    fireEvent.change(within(dlg).getByLabelText(strings.family.nameLabel), {
+      target: { value: 'Casa' },
+    })
+    fireEvent.click(within(dlg).getByRole('button', { name: strings.family.rename.save }))
+    expect(fam.rename).not.toHaveBeenCalled()
+  })
+
+  it('non-owner does not see the rename row', () => {
+    fam.owner = 'u2'
+    renderIt()
+    expect(screen.queryByRole('button', { name: rowName })).not.toBeInTheDocument()
   })
 })

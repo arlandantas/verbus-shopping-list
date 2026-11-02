@@ -18,6 +18,16 @@ test('S-110 AC3: welcome shows after creating a group, skip goes to the list, no
   await page.getByRole('button', { name: strings.family.create }).click()
   await expect(page).toHaveURL(/\/boas-vindas$/)
   await expect(page.getByRole('heading', { name: strings.welcome.steps[0].title })).toBeVisible()
+  // S-116 AC2: the modal covers the bottom navigation and the page does not scroll
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  const navBox = await page.getByRole('navigation', { name: strings.nav.label }).boundingBox()
+  const topmostIsModal = await page.evaluate(
+    ({ x, y }) => !!document.elementFromPoint(x, y)?.closest('.m3-overlay'),
+    { x: navBox!.x + navBox!.width / 2, y: navBox!.y + navBox!.height / 2 },
+  )
+  expect(topmostIsModal).toBe(true)
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden')
   await page.getByRole('button', { name: strings.welcome.skip }).click()
   await expect(page).toHaveURL(/\/sugestao$/)
   await page.getByRole('button', { name: strings.suggest.empty }).click()

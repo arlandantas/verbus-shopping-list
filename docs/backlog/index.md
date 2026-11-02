@@ -128,3 +128,7 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-111 | ONB | Sugestão de itens essenciais (modelo em dados) na lista de hoje; apaga lista-exemplo.txt | done | S-110 |
 | S-113 | ONB | To-do: analytics de primeiro uso; pós-MVP, exige ADR | todo | S-110 |
 | S-114 | ONB | To-do: boas-vindas versionadas (novos veem tudo, antigos veem só a novidade); pós-MVP, exige ADR | todo | S-110 |
+| S-115 | UX | Texto do switch da Despensa ("Usar a Despensa") mais claro | done | S-107 |
+| S-116 | UX | Boas-vindas em modal flutuante sobre a navegação | done | S-110 |
+| S-117 | UX | Despensa manual (sem retorno automático) + botão "Marcar todos como faltando"; ADR-0030 | done | S-105 |
+| S-118 | UX | Criador renomeia o grupo (regras + convite); ADR-0030 | done | S-108 |

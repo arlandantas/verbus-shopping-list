@@ -6,7 +6,12 @@ import { icons } from '@/components/m3/icons'
 import { strings } from '@/strings/pt-BR'
 import { PantryScreen } from './PantryScreen'
 
-const h = vi.hoisted(() => ({ addItem: vi.fn(), deleteItem: vi.fn(), setRecurring: vi.fn() }))
+const h = vi.hoisted(() => ({
+  addItem: vi.fn(),
+  addItems: vi.fn(),
+  deleteItem: vi.fn(),
+  setRecurring: vi.fn(),
+}))
 vi.mock('@/data/items', () => h)
 vi.mock('@/app/FamilyProvider', () => ({
   useFamily: () => ({ family: { id: 'f1', name: 'Casa' } }),
@@ -46,6 +51,7 @@ const renderIt = () =>
 
 beforeEach(() => {
   h.addItem.mockReset()
+  h.addItems.mockReset()
   h.deleteItem.mockReset()
   h.setRecurring.mockReset()
   catalog = []
@@ -271,5 +277,27 @@ describe('S-094 PantryScreen grouped by category', () => {
     ])
     fireEvent.click(screen.getByRole('button', { name: strings.pantry.makeRecurringFor('Sal') }))
     expect(h.setRecurring).toHaveBeenCalledWith('f1', 'sal', true, [])
+  })
+})
+
+describe('S-117 AC1: Marcar todos como faltando', () => {
+  const markAll = () => screen.queryByRole('button', { name: strings.pantry.markAllMissing })
+
+  it('adds only the items that are at home, in one batch', () => {
+    catalog = [entry('Arroz'), entry('Feijão'), entry('Café')]
+    items = [item('Café', 'pending')]
+    renderIt()
+    fireEvent.click(markAll()!)
+    expect(h.addItems).toHaveBeenCalledTimes(1)
+    const [familyId, inputs] = h.addItems.mock.calls[0] as [string, { name: string }[]]
+    expect(familyId).toBe('f1')
+    expect(inputs.map((i) => i.name).sort()).toEqual(['Arroz', 'Feijão'])
+  })
+
+  it('is hidden when nothing is at home', () => {
+    catalog = [entry('Café')]
+    items = [item('Café', 'pending')]
+    renderIt()
+    expect(markAll()).toBeNull()
   })
 })

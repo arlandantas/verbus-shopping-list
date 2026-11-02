@@ -7,7 +7,6 @@ import { Button } from '@/components/m3/Button'
 import { Icon } from '@/components/m3/Icon'
 import { TopAppBar } from '@/components/m3/TopAppBar'
 import { CategorySections } from '@/components/CategorySections'
-import { CycleNotice } from '@/components/CycleNotice'
 import { EditItemSheet } from '@/components/EditItemSheet'
 import { Switch } from '@/components/m3/Switch'
 import { useLocalPref } from '@/hooks/useLocalPref'
@@ -31,7 +30,7 @@ const isStrings = (v: unknown): v is string[] =>
   Array.isArray(v) && v.every((x) => typeof x === 'string')
 
 export function ListScreen() {
-  const { family, recurringAdded, dismissRecurringNotice } = useFamily()
+  const { family } = useFamily()
   const familyId = family?.id ?? ''
   const items = useItems(familyId)
   const catalog = useCatalog(familyId)
@@ -109,7 +108,6 @@ export function ListScreen() {
       {list.length > 0 && done === list.length && (
         <p className="px-4 pb-2 text-on-surface-variant">{strings.market.allDone}</p>
       )}
-      <CycleNotice added={recurringAdded} onDismiss={dismissRecurringNotice} />
       <AddItemBar
         onAdd={onAdd}
         catalog={catalog}
