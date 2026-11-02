@@ -35,8 +35,8 @@ test('S-005 AC1: manifest is installable', async ({ request }) => {
   expect(m.id).toBe('/')
   expect(m.description).toBeTruthy()
   expect(m.orientation).toBe('portrait')
-  expect(m.theme_color).toBe('#fbf8ff')
-  expect(m.background_color).toBe('#fbf8ff')
+  expect(m.theme_color).toBe('#f6fbf6')
+  expect(m.background_color).toBe('#f6fbf6')
   for (const sizes of ['192x192', '512x512']) {
     expect(m.icons.some((i) => i.sizes === sizes && i.type === 'image/png')).toBe(true)
   }

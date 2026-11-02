@@ -16,6 +16,9 @@
   --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
   --color-outline: var(--md-sys-color-outline);
   --color-outline-variant: var(--md-sys-color-outline-variant);
+  --color-tertiary: var(--md-sys-color-tertiary);
+  --color-tertiary-container: var(--md-sys-color-tertiary-container);
+  --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
   --color-error: var(--md-sys-color-error);
   --color-on-error: var(--md-sys-color-on-error);
   --color-inverse-surface: var(--md-sys-color-inverse-surface);

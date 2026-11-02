@@ -1,24 +1,27 @@
-/* Material 3 tokens. Hand-approximated from seed #1816a6 (provisional, ADR-0018); regenerate with Material Theme Builder when the final seed is chosen. */
+/* Material 3 tokens. Palette from the designer's M3 doc (seed #2E6A4F, green); roles the doc omits (surface containers, outline-variant, inverse) come from the same seed's neutral tones. Regenerate with Material Theme Builder if the seed changes. */
 :root {
-  --md-sys-color-primary: #4d4fc1;
+  --md-sys-color-primary: #2e6a4f;
   --md-sys-color-on-primary: #ffffff;
-  --md-sys-color-primary-container: #e1e0ff;
-  --md-sys-color-on-primary-container: #07006c;
-  --md-sys-color-secondary-container: #e1e0f9;
-  --md-sys-color-on-secondary-container: #1b1a2c;
-  --md-sys-color-surface: #fbf8ff;
-  --md-sys-color-surface-container-low: #f5f2fa;
-  --md-sys-color-surface-container: #efedf4;
-  --md-sys-color-surface-container-high: #e9e7ef;
-  --md-sys-color-on-surface: #1b1b21;
-  --md-sys-color-on-surface-variant: #46464f;
-  --md-sys-color-outline: #777680;
-  --md-sys-color-outline-variant: #c7c5d0;
+  --md-sys-color-primary-container: #b4f0ce;
+  --md-sys-color-on-primary-container: #002113;
+  --md-sys-color-secondary-container: #beeaf7;
+  --md-sys-color-on-secondary-container: #061f27;
+  --md-sys-color-tertiary: #9c4328;
+  --md-sys-color-tertiary-container: #ffdbd1;
+  --md-sys-color-on-tertiary-container: #3b0900;
+  --md-sys-color-surface: #f6fbf6;
+  --md-sys-color-surface-container-low: #f2f4f0;
+  --md-sys-color-surface-container: #eceeea;
+  --md-sys-color-surface-container-high: #e7e9e5;
+  --md-sys-color-on-surface: #191c1a;
+  --md-sys-color-on-surface-variant: #404943;
+  --md-sys-color-outline: #707973;
+  --md-sys-color-outline-variant: #c0c9c1;
   --md-sys-color-error: #ba1a1a;
   --md-sys-color-on-error: #ffffff;
-  --md-sys-color-inverse-surface: #303036;
-  --md-sys-color-inverse-on-surface: #f2effa;
-  --md-sys-color-inverse-primary: #c0c1ff;
+  --md-sys-color-inverse-surface: #2e312f;
+  --md-sys-color-inverse-on-surface: #eff1ed;
+  --md-sys-color-inverse-primary: #98d3b3;
 
   --md-sys-typescale-title-large: 400 22px/28px var(--md-ref-font);
   --md-sys-typescale-title-medium: 500 16px/24px var(--md-ref-font);
@@ -41,24 +44,27 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --md-sys-color-primary: #c0c1ff;
-    --md-sys-color-on-primary: #1d1d9a;
-    --md-sys-color-primary-container: #3535ad;
-    --md-sys-color-on-primary-container: #e1e0ff;
-    --md-sys-color-secondary-container: #444559;
-    --md-sys-color-on-secondary-container: #e1e0f9;
-    --md-sys-color-surface: #121318;
-    --md-sys-color-surface-container-low: #1b1b21;
-    --md-sys-color-surface-container: #1f1f25;
-    --md-sys-color-surface-container-high: #292a2f;
-    --md-sys-color-on-surface: #e4e1e9;
-    --md-sys-color-on-surface-variant: #c7c5d0;
-    --md-sys-color-outline: #918f9a;
-    --md-sys-color-outline-variant: #46464f;
+    --md-sys-color-primary: #98d3b3;
+    --md-sys-color-on-primary: #003824;
+    --md-sys-color-primary-container: #125138;
+    --md-sys-color-on-primary-container: #b4f0ce;
+    --md-sys-color-secondary-container: #224c58;
+    --md-sys-color-on-secondary-container: #beeaf7;
+    --md-sys-color-tertiary: #ffb5a0;
+    --md-sys-color-tertiary-container: #7d2c15;
+    --md-sys-color-on-tertiary-container: #ffdbd1;
+    --md-sys-color-surface: #0f1511;
+    --md-sys-color-surface-container-low: #191c1a;
+    --md-sys-color-surface-container: #1d201e;
+    --md-sys-color-surface-container-high: #272b28;
+    --md-sys-color-on-surface: #e2e3de;
+    --md-sys-color-on-surface-variant: #c0c9c2;
+    --md-sys-color-outline: #8a938c;
+    --md-sys-color-outline-variant: #404943;
     --md-sys-color-error: #ffb4ab;
     --md-sys-color-on-error: #690005;
-    --md-sys-color-inverse-surface: #e4e1e9;
-    --md-sys-color-inverse-on-surface: #303036;
-    --md-sys-color-inverse-primary: #4d4fc1;
+    --md-sys-color-inverse-surface: #e1e3df;
+    --md-sys-color-inverse-on-surface: #2e312f;
+    --md-sys-color-inverse-primary: #2e6a4f;
   }
 }
