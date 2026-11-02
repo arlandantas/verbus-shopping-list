@@ -1,4 +1,4 @@
-import { landing } from './landing'
+import { landing } from './landing.ts'
 
 export const strings = {
   appTitle: 'Lista de Compras',
