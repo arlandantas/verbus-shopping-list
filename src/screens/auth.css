@@ -105,3 +105,8 @@
   flex: none;
   align-items: center;
 }
+.auth-intro {
+  margin: 0;
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}

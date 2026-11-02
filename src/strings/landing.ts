@@ -1,9 +1,15 @@
+/** Short presentation shared by the landing and the first-access create/join screen (S-109). */
+export const intro = [
+  'Uma lista de compras compartilhada pelo grupo.',
+  'Todo mundo vê e edita junto, em tempo real.',
+  'Funciona também sem internet.',
+].join(' ')
+
 export const landing = {
   brand: 'Nosso Carrinho',
   signIn: 'Entrar',
   heroTitle: 'A lista de compras que a casa toda enxerga',
-  heroSubtitle:
-    'Monte a lista junto com quem divide a casa, marque no carrinho em tempo real durante a ida ao mercado e acompanhe o quanto gastou.',
+  heroSubtitle: intro,
   createAccount: 'Criar minha conta grátis',
   haveInvite: 'Recebi um convite',
   inviteTitle: 'Tem um convite?',

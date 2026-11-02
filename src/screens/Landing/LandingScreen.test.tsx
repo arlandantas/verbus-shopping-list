@@ -37,6 +37,13 @@ describe('parseInvite', () => {
 })
 
 describe('LandingScreen', () => {
+  it('S-109 AC1: shows the intro text without mentioning Não pode faltar', () => {
+    setup()
+    const lead = screen.getByText(t.heroSubtitle)
+    expect(lead.textContent).toMatch(/sem internet/i)
+    expect(lead.textContent).not.toMatch(/não pode faltar/i)
+  })
+
   it('primary CTA goes to /entrar', () => {
     setup()
     fireEvent.click(screen.getAllByRole('button', { name: t.createAccount })[0])

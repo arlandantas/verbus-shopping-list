@@ -123,6 +123,7 @@ export function FamilyScreen() {
   } else {
     body = (
       <>
+        <p className="auth-intro">{strings.landing.heroSubtitle}</p>
         <CreateForm />
         <JoinForm />
       </>
