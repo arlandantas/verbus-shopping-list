@@ -150,7 +150,15 @@ export function LandingScreen(): ReactNode {
           </div>
         </section>
       </main>
-      <footer className="landing-footer">{t.footer}</footer>
+      <footer className="landing-footer">
+        <p>{t.footer}</p>
+        <p>
+          {t.developedBy}{' '}
+          <a href={t.developerUrl} target="_blank" rel="noopener noreferrer">
+            {t.developerName}
+          </a>
+        </p>
+      </footer>
     </div>
   )
 }

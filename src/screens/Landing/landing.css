@@ -236,6 +236,12 @@
   font: var(--md-sys-typescale-body-medium);
   color: var(--md-sys-color-on-surface-variant);
 }
+.landing-footer p {
+  margin: 0 0 4px;
+}
+.landing-footer a {
+  color: var(--md-sys-color-primary);
+}
 
 @media (min-width: 48rem) {
   .landing-hero {
@@ -263,6 +269,6 @@
 }
 @media (min-width: 64rem) {
   .landing-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }

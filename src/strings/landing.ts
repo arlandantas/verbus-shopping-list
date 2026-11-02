@@ -35,8 +35,18 @@ export const landing = {
     },
     {
       icon: 'kitchen',
-      title: 'Despensa que lembra por você',
-      text: 'O que você compra todo mês fica guardado. É só marcar o que acabou.',
+      title: 'Despensa do que não pode faltar',
+      text: 'Guarde o que você sempre compra. Quando acabar, marque como falta, um a um ou todos de uma vez.',
+    },
+    {
+      icon: 'checklist',
+      title: 'Cole sua lista',
+      text: 'Copie do WhatsApp ou das Notas e adicione vários itens de uma vez, já com quantidade e categoria.',
+    },
+    {
+      icon: 'category',
+      title: 'Vários grupos e categorias',
+      text: 'Casa, viagem, churrasco: cada grupo tem a sua lista, as suas categorias e uma sugestão de itens para começar.',
     },
     {
       icon: 'history',
@@ -55,4 +65,7 @@ export const landing = {
     'Funciona no navegador e pode ser adicionada à tela inicial. Os itens sincronizam sozinhos quando a conexão volta.',
   finalTitle: 'Pronto para organizar as compras de casa?',
   footer: 'Feito para quem divide o mercado.',
+  developedBy: 'Desenvolvido por',
+  developerName: 'Arlan Dantas',
+  developerUrl: 'https://arlandantas.github.io',
 }

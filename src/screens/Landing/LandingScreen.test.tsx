@@ -44,6 +44,26 @@ describe('LandingScreen', () => {
     expect(lead.textContent).not.toMatch(/não pode faltar/i)
   })
 
+  it('S-119 AC1: lists the latest features (paste list, groups, pantry)', () => {
+    setup()
+    for (const title of [
+      'Cole sua lista',
+      'Vários grupos e categorias',
+      'Despensa do que não pode faltar',
+    ])
+      expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
+    expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(t.features.length)
+  })
+
+  it('S-119 AC2: footer credits the developer with a safe external link', () => {
+    setup()
+    const link = screen.getByRole('link', { name: t.developerName })
+    expect(link).toHaveAttribute('href', t.developerUrl)
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link.getAttribute('rel')).toContain('noopener')
+    expect(link.closest('footer')).toHaveTextContent(t.developedBy)
+  })
+
   it('primary CTA goes to /entrar', () => {
     setup()
     fireEvent.click(screen.getAllByRole('button', { name: t.createAccount })[0])

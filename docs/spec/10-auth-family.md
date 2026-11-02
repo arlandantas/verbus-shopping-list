@@ -12,6 +12,7 @@
 1. Visitante sem login em `/` vê a landing: proposta de valor, benefícios, passos e aviso de uso offline.
 2. CTA principal "Criar minha conta grátis" leva a `/entrar`. CTA secundário "Recebi um convite" aceita link ou código e leva a `/convite/:code`; inválido mostra erro inline.
 3. Só tokens de cor M3: a troca da paleta vale sem mexer na landing.
+4. Funcionalidades listadas (S-119): lista compartilhada, modo mercado, Despensa, colar lista, vários grupos e categorias, histórico e preços. Rodapé: "Desenvolvido por Arlan Dantas" com link para https://arlandantas.github.io.
 
 ## Vários grupos (E-LISTS, ADR-0024)
 1. O usuário pode criar outros grupos ou entrar em outros por convite a qualquer momento (seletor da Lista ou aba Grupo).
@@ -20,7 +21,7 @@
 4. Convite de grupo em que já está: só troca para ele. Limite: 10 grupos por usuário, 10 membros por grupo.
 5. Contas antigas: a família existente vira o primeiro grupo, sem migração.
 6. Renomear: só o criador (`ownerId`), pela tela do Grupo ("Renomear grupo"); o nome do convite acompanha (S-118, ADR-0030).
-7. Fora do escopo: sair ou excluir grupo.
+7. Fora do escopo (planejado, S-120): sair do grupo e apagar o grupo quando o último membro sai.
 
 ## Telas
 - Login

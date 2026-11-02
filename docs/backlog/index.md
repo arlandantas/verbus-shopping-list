@@ -132,3 +132,5 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-116 | UX | Boas-vindas em modal flutuante sobre a navegação | done | S-110 |
 | S-117 | UX | Despensa manual (sem retorno automático) + botão "Marcar todos como faltando"; ADR-0030 | done | S-105 |
 | S-118 | UX | Criador renomeia o grupo (regras + convite); ADR-0030 | done | S-108 |
+| S-119 | UX | Landing: novas funcionalidades (colar lista, vários grupos, Despensa) e rodapé "Desenvolvido por Arlan Dantas" | done | S-118 |
+| S-120 | UX | Sair de um grupo; se for o único membro, apagar o grupo; exige ADR e regras | todo | S-118 |
