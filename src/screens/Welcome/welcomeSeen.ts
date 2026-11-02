@@ -22,14 +22,15 @@ export function markWelcomeSeen(uid: string, groupId: string): void {
   }
 }
 
-let pending = false
-/** Set right before creating/joining a group: the screen remounts when the group flips, so a flag survives where navigate() would not. */
+const PENDING_MS = 15_000
+let pendingAt = 0
+/** Set right before creating/joining a group: the screen remounts when the group flips, so a flag survives where navigate() would not. Expires, so a write that never remounts the gate cannot trigger a late welcome. */
 export function requestWelcome(): void {
-  pending = true
+  pendingAt = Date.now()
 }
 export function cancelWelcome(): void {
-  pending = false
+  pendingAt = 0
 }
 export function isWelcomePending(): boolean {
-  return pending
+  return pendingAt > 0 && Date.now() - pendingAt < PENDING_MS
 }

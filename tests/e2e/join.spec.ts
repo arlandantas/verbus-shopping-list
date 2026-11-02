@@ -48,6 +48,7 @@ test('S-012 AC1: B joins by typing the code and A sees B in real time', async ({
     .getByLabel(strings.family.join.codeLabel)
     .fill(`${code.slice(0, 4).toLowerCase()}-${code.slice(4)}`)
   await b.getByRole('button', { name: strings.family.join.submit }).click()
+  await expect(b).toHaveURL(/\/boas-vindas$/) // S-110 AC3: welcome after joining by code
   await skipWelcome(b)
   await b.goto('/grupo')
   await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
@@ -74,7 +75,11 @@ test('S-012 AC2: signed-out B opens the invite, logs in, returns, confirms and j
   await expect(b).toHaveURL(new RegExp(`/convite/${code}$`))
   await expect(b.getByRole('heading', { name: strings.invite.title('Casa') })).toBeVisible()
   await b.getByRole('button', { name: strings.invite.confirm }).click()
+  await expect(b).toHaveURL(/\/boas-vindas$/) // S-110 AC3: welcome after joining by invite
+  await expect(b.getByRole('heading', { name: strings.welcome.steps[0].title })).toBeVisible()
   await skipWelcome(b)
+  await b.goto('/boas-vindas') // seen: does not come back
+  await expect(b).toHaveURL(/\/$/)
   await expect(b.getByRole('heading', { name: 'Casa' })).toBeVisible()
   await b.context().close()
 })
