@@ -1,12 +1,10 @@
 # Backlog
-
 Uma linha por história. Status: `todo` · `doing` · `done` · `blocked`.
 Detalhe da história: `stories/S-NNN.md`. Linhas `E-Mx` são épicos: o Arquiteto os detalha em histórias antes de iniciar o marco.
 Ordem = ordem de execução. Tudo até S-068 roda só com emuladores (sem input do usuário); S-013 espera input e pode correr em paralelo.
 E-SEC/E-M6 (ADR-0023): regras S-075..S-079 → PWA S-080..S-083 → web S-084..S-086; tudo sem input do usuário.
 E-LISTS (ADR-0024): S-087..S-092 rodam no fim, depois de S-086 (não logo após S-079): S-087 reescreve `users`/`families` em `firestore.rules` e as suítes de S-076..S-079, S-088 mexe no seed que S-086 também toca, e o portão de lançamento da ADR-0023 não deve atrasar. Tudo sem input do usuário.
 E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) → lista/mercado (S-058..S-060) → demais telas (S-061..S-065) → histórico por compra (S-066) → editar histórico (S-067, S-068).
-
 | ID | Marco | Título | Status | Deps |
 |---|---|---|---|---|
 | S-001 | M0 | Esqueleto Vite + React + TS + Vitest | done | — |
@@ -112,4 +110,6 @@ E-UX: fundação (S-051..S-055) → dados de edição (S-056) → sheet (S-057) 
 | S-098 | E-UX | Paleta verde do designer nos tokens M3 (semente #2E6A4F, claro e escuro) | done | S-095 |
 | S-096 | E-UX | Barra de progresso de itens no carrinho sobre o total, no topo da Lista (inspirada no doc do designer); pós-MVP | todo | S-095 |
 | S-097 | E-UX | Etiqueta por item (ex.: Urgente, Desejo, Essencial): campo novo no modelo, regras e sheet de edição; exige ADR; pós-MVP | todo | S-095 |
+| S-099 | E-UX | i18n: strings em pt-BR, en e es (módulo de traduções, seletor de idioma, padrão pelo navegador); exige ADR; pós-MVP | todo | S-095 |
 | E-MCP | — | Épico futuro: servidor MCP para agentes de IA/chatbot lerem e editarem a lista; exige ADR (autenticação, hospedagem fora do "sem servidor") | todo | E-UX |
+| S-100 | E-UX | Nome "Nosso Carrinho" no app, aba, manifest e landing; ícone PWA de carrinho simples (placeholder verde) | done | S-098 |

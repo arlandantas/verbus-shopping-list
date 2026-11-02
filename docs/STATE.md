@@ -10,11 +10,11 @@
 `.github/workflows/deploy-pages.yml` publica no GitHub Pages a cada push em main (base derivada do nome do repo). Falta o usuário: variáveis `VITE_FIREBASE_*` no repositório, Pages com Source = GitHub Actions, domínio no Firebase Auth, projeto Firebase real (S-013).
 
 ## Próximo passo
-Nada em andamento. Publicado em https://nossocarrinho.web.app (Firebase Hosting + regras, `pnpm deploy` / `firebase deploy --project prod --only firestore:rules,hosting`) até a S-098. S-093 (colar lista), S-094 (Despensa por categoria) e S-095 (landing) e S-098 (paleta verde) concluídas e publicadas em 2026-11-01. Depois: 3ª rodada de testes do usuário, dívidas abaixo, E-MCP.
+Nada em andamento. Publicado em https://nossocarrinho.web.app (Firebase Hosting + regras, `pnpm deploy` / `firebase deploy --project prod --only firestore:rules,hosting`) até a S-098. S-093 (colar lista), S-094 (Despensa por categoria) e S-095 (landing), S-098 (paleta verde) e S-100 (nome Nosso Carrinho + ícone) concluídas e publicadas em 2026-11-01. Todo pós-MVP: S-096, S-097, S-099 (i18n pt/en/es). Depois: 3ª rodada de testes do usuário, dívidas abaixo, E-MCP.
 
 ## Pendências do usuário
 - S-013: projeto Firebase (ID, região sugerida `southamerica-east1`), Google + e-mail/senha, config web, `firebase login`; variáveis do Vite no GitHub.
-- Ícones finais do PWA, nome de marca, cor final, teste em iPhone real (aviso de instalação, S-080).
+- Ícone final do PWA (hoje: carrinho simples branco sobre verde, placeholder gerado por `scripts/gen-icons.mjs`), teste em iPhone real (aviso de instalação, S-080).
 - No 1º deploy real: se o login Google violar a CSP, ajustar `vite/csp.ts` (ADR-0026: origens assumidas); rever App Check e proteção contra enumeração de e-mail.
 
 ## Dívidas conhecidas
