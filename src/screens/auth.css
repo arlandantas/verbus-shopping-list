@@ -70,3 +70,38 @@
   padding: 0;
   list-style: none;
 }
+
+.group-row {
+  border-radius: 16px;
+  background: var(--md-sys-color-surface-container);
+}
+.group-row__body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.group-row__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.group-row__supporting {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.group-row__trailing {
+  display: flex;
+  flex: none;
+  align-items: center;
+}

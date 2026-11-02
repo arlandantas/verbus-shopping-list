@@ -15,6 +15,7 @@ import { strings } from '@/strings/pt-BR'
 import { fireAndForget } from '@/data/writeErrors'
 import { RecurringToggle } from './RecurringToggle'
 import { InviteCard } from './InviteCard'
+import { GroupRow } from './GroupRow'
 import { CreateForm } from './CreateForm'
 import { JoinForm } from './JoinForm'
 import '../auth.css'
@@ -32,6 +33,7 @@ export function FamilyScreen() {
     const a = (location.state as { action?: unknown } | null)?.action
     return a === 'create' || a === 'join' ? a : null
   })
+  const [showMembers, setShowMembers] = useState(false)
   const [confirmOut, setConfirmOut] = useState(false)
   const t = strings.family
   const names = useMemberNames(family.status === 'ready' ? family.family.id : undefined)
@@ -56,33 +58,43 @@ export function FamilyScreen() {
   } else if (family.status === 'ready') {
     body = (
       <>
+        <Button icon="shopping_cart" onClick={() => void navigate('/')}>
+          {t.goToList}
+        </Button>
+        <GroupRow
+          icon="group"
+          title={t.members(family.family.members.length)}
+          expanded={showMembers}
+          onClick={() => setShowMembers(!showMembers)}
+          trailing={<Icon name={showMembers ? 'expand_less' : 'expand_more'} />}
+        />
+        {showMembers && (
+          <ul aria-label={t.membersSection} className="family-list">
+            {family.family.members.map((uid) => (
+              <ListItem
+                key={uid}
+                leading={<Icon name="group" />}
+                headline={names?.[uid] || t.memberFallback}
+              />
+            ))}
+          </ul>
+        )}
+        <GroupRow
+          icon="category"
+          title={strings.categories.link}
+          to="/categorias"
+          trailing={<Icon name="chevron_right" />}
+        />
+        <RecurringToggle
+          asRow
+          checked={family.family.recurringEnabled}
+          onChange={(v) => fireAndForget(setRecurringEnabled(family.family.id, v))}
+        />
         <InviteCard
           familyId={family.family.id}
           code={family.family.inviteCode}
           familyName={family.family.name}
         />
-        <h2 className="auth-heading">{t.members(family.family.members.length)}</h2>
-        <ul aria-label={t.membersSection} className="family-list">
-          {family.family.members.map((uid) => (
-            <ListItem
-              key={uid}
-              leading={<Icon name="group" />}
-              headline={names?.[uid] || t.memberFallback}
-            />
-          ))}
-        </ul>
-        <RecurringToggle
-          checked={family.family.recurringEnabled}
-          onChange={(v) => fireAndForget(setRecurringEnabled(family.family.id, v))}
-        />
-        <ul className="family-list">
-          <ListItem
-            leading={<Icon name="category" />}
-            headline={strings.categories.link}
-            trailing={<Icon name="chevron_right" />}
-            to="/categorias"
-          />
-        </ul>
         {atLimit && (
           <p role="alert" className="auth-error">
             {strings.invite.groupLimit}

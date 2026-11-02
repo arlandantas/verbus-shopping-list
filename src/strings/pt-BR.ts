@@ -38,6 +38,7 @@ export const strings = {
     members: (n: number) => (n === 1 ? '1 membro' : `${n} membros`),
     memberFallback: 'Membro',
     membersSection: 'Membros',
+    goToList: 'Ir para a lista',
     recurring: {
       label: 'Despensa e Não pode faltar',
       explain:

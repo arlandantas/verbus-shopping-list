@@ -102,6 +102,7 @@ describe('FamilyScreen (S-064 AC3)', () => {
 
   it('lists members with names and a fallback', () => {
     renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.family.members(2) }))
     const list = screen.getByRole('list', { name: strings.family.membersSection })
     expect(within(list).getByText('Ana')).toBeInTheDocument()
     expect(within(list).getByText(strings.family.memberFallback)).toBeInTheDocument()
@@ -111,6 +112,42 @@ describe('FamilyScreen (S-064 AC3)', () => {
     renderIt()
     fireEvent.click(screen.getByRole('link', { name: strings.categories.link }))
     expect(screen.getByText('cats page')).toBeInTheDocument()
+  })
+})
+
+describe('FamilyScreen layout (S-108)', () => {
+  it('S-108 AC1: blocks are ordered go-to-list, members, categories, toggle; members start collapsed', () => {
+    renderIt()
+    const go = screen.getByRole('button', { name: strings.family.goToList })
+    const members = screen.getByRole('button', { name: strings.family.members(2) })
+    const cats = screen.getByRole('link', { name: strings.categories.link })
+    const sw = screen.getByRole('switch', { name: strings.family.recurring.label })
+    const before = (a: Node, b: Node) =>
+      expect(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    before(go, members)
+    before(members, cats)
+    before(cats, sw)
+    expect(members).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByText('Ana')).not.toBeInTheDocument()
+    fireEvent.click(members)
+    expect(members).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByText('Ana')).toBeInTheDocument()
+    fireEvent.click(members)
+    expect(screen.queryByText('Ana')).not.toBeInTheDocument()
+  })
+  it('S-108 AC1: go-to-list navigates to the list', () => {
+    renderIt()
+    fireEvent.click(screen.getByRole('button', { name: strings.family.goToList }))
+    expect(screen.getByText('lista page')).toBeInTheDocument()
+  })
+  it('S-108 AC2: members, categories and toggle rows share the base component', () => {
+    renderIt()
+    const rows = [
+      screen.getByRole('button', { name: strings.family.members(2) }),
+      screen.getByRole('link', { name: strings.categories.link }),
+      screen.getByRole('switch', { name: strings.family.recurring.label }),
+    ].map((el) => el.closest('.group-row'))
+    rows.forEach((r) => expect(r).not.toBeNull())
   })
 })
 
